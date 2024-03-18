@@ -14,9 +14,8 @@ class NumericalModel():
         self.MaterialModel = material_model.MaterialModel()
         self.Discretization = disretization.Discretization()
         self.BoundaryCons = boundary_cons.BoundaryCons()
-        self. Interactions = interactions.Interactions()
+        self.Interactions = interactions.Interactions()
         self.SimulationSettings = simulation_settings.SimulationSettings()
-        self.Data = data.Data()
     
     def createInputFile(self) -> IO[str]:
         pass
