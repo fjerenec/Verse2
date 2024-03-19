@@ -49,28 +49,54 @@ class Sets():
     #Sets only contain the ID of the wanted type stored in the set and not the actual type itself!
     def __init__(self) -> None:
         #Initiate the hashtable for each of the "Set" subclasses
-        self.nodeSets = {}
-        self.bondSets = {}
+        self.setTable = {}
 
-    def create_node_set(self,arrayOfNodeIDs: np.ndarray[int,1], name: str = "set name") -> None:
+    def create_set(self,arrayOfIDs: np.ndarray[int,1], setName: str = "set name") -> None:
         #Need to check if keyword already exists. If so i need to warn the user if he want sto rewrite the data!
-        if name in self.nodeSets.keys():
-            print(f"A set with name -{name}- already exists. User input asking to override not implemented yet! Please rename the new set or delete the old one and try again!")
-            return
+        if arrayOfIDs.dtype != int:
+            print("All data in arrayOfIDs must of of type np.int64!")
+            return 
+        
+        if type(setName) != str:
+            setName = str(setName)
+
+        if setName in self.setTable.keys():
+            print(f"A set with name -{setName}- already exists. Would you like to overwrite?")
+            override = get_user_decision()
+            if override == True:
+                print("Set overwritten")
+                newSet = Set(arrayOfIDs, name = setName)
+                self.setTable[setName] = newSet
+            else:
+                return
         else:
-            newNodeSet = NodeSet(arrayOfNodeIDs, name = name)
-            self.nodeSets[name] = newNodeSet
+            newSet = Set(arrayOfIDs, name = setName)
+            self.setTable[setName] = newSet
+        
+    def delete_set(self,setName: str = "set name"):
+        if setName in self.sets.keys():
+            del self.setTable[setName]
+        else:
+            print("No set with given name exists. Nonexistent set cannot be deleted!")
 
 class Set():
-    def __init__(self,name: str = "Set") -> None:
+    def __init__(self,arrayOfIDs: np.ndarray[int,1], name: str = "Set") -> None:
         self.name = name
+        self.IDarray = arrayOfIDs
+    def type(self) -> type:
 
-class NodeSet(Set):
-    def __init__(self, arrayOfNodeIDs: np.ndarray[int,1], name: str = "NodeSet") -> None:
-        super().__init__(name)
-        self.nodes = arrayOfNodeIDs
+        return type(self)
+    
+    def get_data(self):
+        return self.IDarray[:]
 
-class BondSet(Set):
-    def __init__(self, arrayOfBondIDs: np.ndarray[int,1], name: str = "BondSet") -> None:
-        super().__init__(name)
-        self.bonds = arrayOfBondIDs
+def get_user_decision():
+    while True:
+        decision = input("Please enter your decision (Y/N): ").upper()  # Convert input to uppercase
+        if decision in ('Y', 'N'):
+            if decision == "Y":
+                return True
+            else:
+                return False
+        else:
+            print("Invalid input. Please enter either 'Y' or 'N'.")

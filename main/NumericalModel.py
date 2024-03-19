@@ -1,7 +1,7 @@
 import geometry
-import material_model
+import material
 import disretization
-import boundary_cons
+import loads
 import interactions
 import simulation_settings
 import data
@@ -11,9 +11,9 @@ class NumericalModel():
     def __init__(self,name: str = "Model") -> None:
         self.name = name
         self.Geometry = geometry.Geometry()
-        self.MaterialModel = material_model.MaterialModel()
+        self.Materials= material.Materials()
+        self.Loads = loads.BoundaryCons()
         self.Discretization = disretization.Discretization()
-        self.BoundaryCons = boundary_cons.BoundaryCons()
         self.Interactions = interactions.Interactions()
         self.SimulationSettings = simulation_settings.SimulationSettings()
     
