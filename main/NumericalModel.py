@@ -13,7 +13,7 @@ class NumericalModel():
         self.Geometry = geometry.Geometry()
         self.Materials= material.Materials()
         self.Loads = loads.BoundaryCons()
-        self.Discretization = disretization.Discretization()
+        self.Discretizations = disretization.Discretizations()
         self.Interactions = interactions.Interactions()
         self.SimulationSettings = simulation_settings.SimulationSettings()
     

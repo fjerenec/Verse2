@@ -10,8 +10,9 @@ class Geometry():
 
 class PartNodes():
     #Only one instance of this should ever be created in a single NumericalModel, since it contains the original nodes that constitute the part!
-    def __init__(self, arrayOfNodeCoords: np.ndarray[float,2], arrayOfNodeVolumes: np.ndarray[float,1]) -> None:
+    def __init__(self, arrayOfNodeCoords: np.ndarray[float,2], arrayOfNodeVolumes: np.ndarray[float,1],dim:int = 2) -> None:
         self.partNodesTable = {}
+        self.dim = dim
         for i in range(arrayOfNodeCoords.shape[0]):
             self.partNodesTable[i] = Node(nodeID = i, coordinatesArray = arrayOfNodeCoords[i], volume = arrayOfNodeVolumes[i])
 
