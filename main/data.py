@@ -39,8 +39,14 @@ class Set():
     def __init__(self,arrayOfIDs: np.ndarray[int,1], name: str = "Set") -> None:
         self.name = name
         self.IDarray = arrayOfIDs
-    def type(self) -> type:
+        self.IDTable = {key: None for key in arrayOfIDs}
 
+    def is_in_set(self, ID: int) -> bool:
+        if ID in self.IDTable.keys():
+            return True
+        else: return False
+
+    def type(self) -> type:
         return type(self)
     
     def get_data(self):

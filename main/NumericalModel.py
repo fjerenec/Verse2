@@ -19,3 +19,5 @@ class NumericalModel():
     
     def createInputFile(self) -> IO[str]:
         pass
+
+    

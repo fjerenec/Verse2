@@ -2,7 +2,8 @@ from numba import njit, prange
 import numpy as np
 from scipy.special import factorial
 from scipy.sparse import csr_matrix
-from pypardiso import spsolve
+#from pypardiso import spsolve
+from scipy.sparse.linalg import spsolve #Change this back to pypardiso! Using scipy only for MacOD
 
 @njit
 def find_neighbors(coords, r):
@@ -601,8 +602,11 @@ def gen_Gmat2D(coordVec,neighbors,start_idx,end_idx,delta):
 
 @njit
 def gen_Gmat2D_fixed(coordVec,neighbors,start_idx,end_idx,delta,area):
-    """This function is flawed as of the 28/02/2024 github state. The inputs in the Amat are not 
-    multiplied by the area of ceah PD material point. Therefore the resulting calculation do not give a force density vector."""
+    """Non:_fixed function :This function is flawed as of the 28/02/2024 github state. The inputs in the Amat are not 
+    multiplied by the area of each PD material point. Therefore the resulting calculation do not give a force density vector.
+    --------
+    This _fixed function has the area part in the calculation. Need to cehck if it is correct.
+    """
     #Calculate b matrix
     bmat = np.zeros((3,3))
     ##g20

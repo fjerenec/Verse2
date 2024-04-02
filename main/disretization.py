@@ -6,6 +6,7 @@ from data import get_user_decision
 class Discretizations():
     def __init__(self) -> None:
         self.discretizationsTable = {}
+        
 
     def create_discretization(self,discName:str = "Discretization Name"):
         if type(discName) != str:
@@ -22,6 +23,11 @@ class Discretizations():
         else:
             self.discretizationsTable[discName] = Discretization()
 
+    def set_selected_discretization(self,DiscretizationName: str) -> None:
+        if DiscretizationName in self.discretizationsTable.keys:
+            self.selectedDiscretization = self.discretizationsTable[DiscretizationName]
+        else:
+            print("No discretization with given name. Please provide a valid name!")
 
 class Discretization():
 
@@ -60,11 +66,11 @@ class Discretization():
         return nodeFamilyCoords
 
     
-    def generate_bonds(self,partNodes: geometry.PartNodes) -> None:
+    def generate_bonds(self,partNodes: geometry._PartNodes) -> None:
         #Check if everything needed for this function is satisfied!
 
 
-        #Save the IDs of each node to an array (deletions and additions of nodes -> node id might not be sequential -> save the ID in the sequence thez are in in the partNodesTable)
+        #Save the IDs of each node to an array (deletions and additions of nodes -> node id might not be sequential -> save the ID in the sequence they are in in the partNodesTable)
         self.nodeIdIndeces = np.zeros(shape=(len(partNodes.partNodesTable),0))
         self.coordVec = np.zeros(shape=(len(partNodes.partNodesTable),partNodes.dim))
         #Create coordVec array for later use in pddoW2
@@ -76,26 +82,17 @@ class Discretization():
         
         if self.hasInitialCrack == True:
             self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors2(self.coordVec,1.01*self.delta,self.cracks)
-            self.pd_point_count = self.n_neighbors.shape[0]
-            self.pd_bond_count = self.neighbors.shape[0]
-            self.bond_normals = pddo.calc_bond_normals(self.pd_point_count, self.pd_bond_count, self.coordVec, self.neighbors, self.start_idx, self.end_idx)
-            self.curLiveBonds = np.ones_like(self.neighbors)
-            self.curBondDamage = np.zeros_like(self.neighbors)
-            self.init_BondLens = pddo.calc_bondLenghts(self.coordVec,self.neighbors,self.start_idx,self.end_idx)
-            self.Gvec = pddo.gen_Gmat2D_fixed(self.coordVec,self.neighbors,self.start_idx,self.end_idx,self.delta,(self.delta/2)**2)
-            self.G11vec = self.Gvec[:,0]
-            self.G12vec = self.Gvec[:,2]
-            self.G22vec = self.Gvec[:,1]
 
         else:
             self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors(self.coordVec,1.01*self.delta)
-            self.pd_point_count = self.n_neighbors.shape[0]
-            self.pd_bond_count = self.neighbors.shape[0]
-            self.bond_normals = pddo.calc_bond_normals(self.pd_point_count, self.pd_bond_count, self.coordVec, self.neighbors, self.start_idx, self.end_idx)
-            self.curLiveBonds = np.ones_like(self.neighbors)
-            self.curBondDamage = np.zeros_like(self.neighbors)
-            self.init_BondLens = pddo.calc_bondLenghts(self.coordVec,self.neighbors,self.start_idx,self.end_idx)
-            self.Gvec = pddo.gen_Gmat2D_fixed(self.coordVec,self.neighbors,self.start_idx,self.end_idx,self.delta,(self.delta/2)**2)
-            self.G11vec = self.Gvec[:,0]
-            self.G12vec = self.Gvec[:,2]
-            self.G22vec = self.Gvec[:,1]
+        
+        self.pd_point_count = self.n_neighbors.shape[0]
+        self.pd_bond_count = self.neighbors.shape[0]
+        self.bond_normals = pddo.calc_bond_normals(self.pd_point_count, self.pd_bond_count, self.coordVec, self.neighbors, self.start_idx, self.end_idx)
+        self.curLiveBonds = np.ones_like(self.neighbors)
+        self.curBondDamage = np.zeros_like(self.neighbors)
+        self.init_BondLens = pddo.calc_bondLenghts(self.coordVec,self.neighbors,self.start_idx,self.end_idx)
+        self.Gvec = pddo.gen_Gmat2D_fixed(self.coordVec,self.neighbors,self.start_idx,self.end_idx,self.delta,(self.delta/2)**2)
+        self.G11vec = self.Gvec[:,0]
+        self.G12vec = self.Gvec[:,2]
+        self.G22vec = self.Gvec[:,1]
