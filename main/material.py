@@ -1,9 +1,10 @@
 from data import get_user_decision
-
+from data import Set
 class Materials():
     def __init__(self) -> None:
         self.materialsTable = {}
-        
+        self.materialsByIDTable = {}
+
     def create_material(self,materialName: str = "MaterialName", isIsotropic:bool = True):
         if type(materialName) != str:
             materialName = str(materialName)
@@ -78,23 +79,44 @@ class Anisotropic(Material):
         self.poisy = poisy
         self.poisz = poisz
 
+class MaterialSections():
+    def __init__(self) -> None:
+        self.materialSectionsTable = {}
+
+    def create(self,nodeSet: Set, material: Material, name:str = "MaterialSection"):
+        if name in self.materialSectionsTable.keys:
+            print(f"A material section with name -{name}- already exists. Would you like to overwrite?")
+            override = get_user_decision()
+            if override == True:
+                print("Material overwritten")
+                self.materialSectionsTable[name] = MaterialSection(nodeSet=nodeSet, material=material, name = name)
+        else:
+            self.materialSectionsTable[name] = MaterialSection(nodeSet=nodeSet, material=material, name = name)
 
 class MaterialSection():
 
-    MaterialSections = {}
+    def __init__(self,nodeSet:Set, material: Material, name:str) -> None:
+        self.nodeset = nodeSet
+        self.material = material
+        self.name = name
 
+class MaterialInterfaces():
     def __init__(self) -> None:
-        pass
+        self.materialInterfacesTable = {}
+    
+    def create(self,materialSection1: MaterialSection, materialSection2: MaterialSection, material: Material, name:str = "MaterialInterface"):
+        if name in self.materialInterfacesTable.keys:
+            print(f"A material interface with name -{name}- already exists. Would you like to overwrite?")
+            override = get_user_decision()
+            if override == True:
+                print("Material interface overwritten")
+                self.materialInterfacesTable[name] = MaterialSection(matSection1 = materialSection1, matSection2 = materialSection2, interfaceMaterial = material, matIntName = name)
+        else:
+            self.materialInterfacesTable[name] = MaterialSection(mateSection1 = materialSection1, matSection2 = materialSection2, interfaceMaterial = material, matIntName = name)
 
 class MaterialInterface():
-
-    MaterialInterfaces = {}        
-
-    def create_material_interface(self,  interfaceMaterial: Material, matSection1: MaterialSection, matSection2: MaterialSection,matIntName = "MaterialInterface" ):
-        self.interfaceMat = interfaceMaterial
-        self.matSec1 = matSection1
-        self.matSec2 = matSection2
-        MaterialInterface.MaterialInterfaces[matIntName] = self
-
-    def find_interface_bonds(self):
-        pass
+    def __init__(self, matSection1: MaterialSection, matSection2: MaterialSection, interfaceMaterial: Material,matIntName = "MaterialInterface" ) -> None:
+        self.material = interfaceMaterial  
+        self.matSection1 = matSection1
+        self.matSection2 = matSection2
+        self.name = matIntName

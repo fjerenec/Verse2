@@ -36,6 +36,7 @@ class Sets():
             print("No set with given name exists. Nonexistent set cannot be deleted!")
 
 class Set():
+    """Meant for storing nodes"""
     def __init__(self,arrayOfIDs: np.ndarray[int,1], name: str = "Set") -> None:
         self.name = name
         self.IDarray = arrayOfIDs

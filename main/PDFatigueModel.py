@@ -26,10 +26,63 @@ class FatigueInputData:
             self.G12vec = self.selectedDiscretisation.G12vec
             self.G22vec = self.selectedDiscretisation.G22vec
 
+            self.materialSectionsTable = numModel.MaterialSections.materialSectionsTable
+            self.materialInterfacesTable = numModel.MaterialInterfaces.materialInterfacesTable
+            self.materialInterfaceFound = bool(self.materialInterfacesTable) 
+            #self.BC_vec 
+            #self.num_max_it
+            #self.epsilon
             # self.emodArray = 
             # self.muArray = 
-
+            self.bondMaterialIDarray = np.empty_like(self.neighbors)
             self.force_convergence = []
+
+        def interface_check(self):
+            # Loop over all bonds and extract the IDs of the two points in the bond
+            for point_id_1 in range(self.coordVec.shape[0]):
+                for bond in range(self.start_idx[point_id_1], self.end_idx[point_id_1]):
+                    point_id_2 = self.neighbors[bond]
+
+                    if self.materialInterfaceFound:
+                        # Loop over all MaterialInterfaces
+                        for interface_name, material_interface in self.materialInterfacesTable.items():
+                            # Check if the points are in different MaterialSections of this MaterialInterface
+                            point_1_in_section_1 = point_id_1 in material_interface.matSection1.nodeSet.IDTable.keys()
+                            point_1_in_section_2 = point_id_1 in material_interface.matSection2.nodeSet.IDTable.keys()
+                            point_2_in_section_1 = point_id_2 in material_interface.matSection1.nodeSet.IDTable.keys()
+                            point_2_in_section_2 = point_id_2 in material_interface.matSection2.nodeSet.IDTable.keys()
+                            
+                            # If points are in different sections of this interface, retrieve Material properties
+                            isInMatInterface = (point_1_in_section_1 and point_2_in_section_2) or (point_1_in_section_2 and point_2_in_section_1)
+                            if isInMatInterface:
+                                self.bondMaterialIDarray[bond] = material_interface.material.materialID
+                                break
+                                # Store relevant data from Material object to a new array
+                                # Append to the new array, or perform any other required action
+
+                        for section_name, material_section in self.materialSectionsTable.items():
+                        #Loop over the MaterialSections -> This means the bond was not in any interface
+                        #If the bond is not in a material interface, then both point MUST be in the same material section
+                        #So i only need to check one point!
+                            point_in_material_section = point_id_1 in material_section.nodeSet.IDTable.keys()
+                            if point_in_material_section:
+                                self.bondMaterialIDarray[bond] = material_section.material.materialID
+                                break
+                    #If there is no Material Interface that means that the whole model is made up from only one material.
+                    #This also means that there is only one material section. So i can simply create an array filled with the material section material id
+                    else:
+                        #Check there is only one material interface:
+                        if len(self.materialSectionsTable) != 1:
+                            return print("There is more than one material section and no material interface in the model. A material interface must be defined in the case of multiple material section!")
+                        for material_section_same, material_section in self.materialSectionsTable.items():
+                            #For loop not neede since in this case there is only one material section.
+                            self.bondMaterialIDarray[:] = material_section.material.materialID
+                    
+                    # Loop over all MaterialSections
+
+
+
+                # After looping over all connections, you'll have the relevant data stored in the new array
 
 class PDFatigueSolver:
     def __init__(self, numModel: NumericalModel) -> None:
@@ -101,3 +154,5 @@ def _calc_bond_damage(cur_bondStretches:np.ndarray, s1:float, sc:float) -> np.nd
         if cur_bondStretches[bond] >= sc:
             new_damage[bond] = 1
     return new_damage
+
+

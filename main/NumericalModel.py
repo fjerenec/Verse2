@@ -12,6 +12,8 @@ class NumericalModel():
         self.name = name
         self.Geometry = geometry.Geometry()
         self.Materials= material.Materials()
+        self.MaterialSections = material.MaterialSections()
+        self.MaterialInterfaces = material.MaterialInterfaces()
         self.Loads = loads.BoundaryCons()
         self.Discretizations = disretization.Discretizations()
         self.Interactions = interactions.Interactions()
