@@ -7,24 +7,24 @@ from scipy.sparse import csr_matrix
 class FatigueInputData:
         def __init__(self, numModel: NumericalModel) -> None:
             self.coordVec = numModel.Geometry.part_nodes.coordVec
-            self.selectedDiscretisation = numModel.Discretisations.selectedDiscretisation
-            self.delta = self.selectedDiscretisation.delta
-            self.initialCracks = self.selectedDiscretisation.initialCracks
-            self.neighbors   = self.selectedDiscretisation.neighbors
-            self.start_idx   = self.selectedDiscretisation.start_idx
-            self.end_idx     = self.selectedDiscretisation.end_idx
-            self.n_neighbors = self.selectedDiscretisation.n_neighbors
+            self.selectedDiscretization = numModel.Discretizations.selectedDiscretization
+            self.delta = self.selectedDiscretization.delta
+            self.initialCracks = self.selectedDiscretization.initialCracks
+            self.neighbors   = self.selectedDiscretization.neighbors
+            self.start_idx   = self.selectedDiscretization.start_idx
+            self.end_idx     = self.selectedDiscretization.end_idx
+            self.n_neighbors = self.selectedDiscretization.n_neighbors
 
-            self.pd_point_count = self.selectedDiscretisation.pd_point_count
-            self.pd_bond_count  = self.selectedDiscretisation.pd_bond_count
-            self.bond_normals   = self.selectedDiscretisation.bond_normals
-            self.curLiveBonds   = self.selectedDiscretisation.curLiveBonds
-            self.curBondDamage  = self.selectedDiscretisation.curBondDamage
-            self.init_BondLens  = self.selectedDiscretisation.init_BondLens
-            self.Gvec   = self.selectedDiscretisation.Gvec
-            self.G11vec = self.selectedDiscretisation.G11vec
-            self.G12vec = self.selectedDiscretisation.G12vec
-            self.G22vec = self.selectedDiscretisation.G22vec
+            self.pd_point_count = self.selectedDiscretization.pd_point_count
+            self.pd_bond_count  = self.selectedDiscretization.pd_bond_count
+            self.bond_normals   = self.selectedDiscretization.bond_normals
+            self.curLiveBonds   = self.selectedDiscretization.curLiveBonds
+            self.curBondDamage  = self.selectedDiscretization.curBondDamage
+            self.init_BondLens  = self.selectedDiscretization.init_BondLens
+            self.Gvec   = self.selectedDiscretization.Gvec
+            self.G11vec = self.selectedDiscretization.G11vec
+            self.G12vec = self.selectedDiscretization.G12vec
+            self.G22vec = self.selectedDiscretization.G22vec
 
             self.materialSectionsTable = numModel.MaterialSections.materialSectionsTable
             self.materialInterfacesTable = numModel.MaterialInterfaces.materialInterfacesTable
@@ -34,10 +34,11 @@ class FatigueInputData:
             #self.epsilon
             # self.emodArray = 
             # self.muArray = 
-            self.bondMaterialIDarray = np.empty_like(self.neighbors)
+            
             self.force_convergence = []
 
-        def interface_check(self):
+        def gen_bond_material_array(self):
+            self.bondMaterialIDarray = np.empty_like(self.neighbors)
             # Loop over all bonds and extract the IDs of the two points in the bond
             for point_id_1 in range(self.coordVec.shape[0]):
                 for bond in range(self.start_idx[point_id_1], self.end_idx[point_id_1]):
@@ -47,10 +48,10 @@ class FatigueInputData:
                         # Loop over all MaterialInterfaces
                         for interface_name, material_interface in self.materialInterfacesTable.items():
                             # Check if the points are in different MaterialSections of this MaterialInterface
-                            point_1_in_section_1 = point_id_1 in material_interface.matSection1.nodeSet.IDTable.keys()
-                            point_1_in_section_2 = point_id_1 in material_interface.matSection2.nodeSet.IDTable.keys()
-                            point_2_in_section_1 = point_id_2 in material_interface.matSection1.nodeSet.IDTable.keys()
-                            point_2_in_section_2 = point_id_2 in material_interface.matSection2.nodeSet.IDTable.keys()
+                            point_1_in_section_1 = point_id_1 in material_interface.materialSection1.nodeSet.IDTable.keys()
+                            point_1_in_section_2 = point_id_1 in material_interface.materialSection2.nodeSet.IDTable.keys()
+                            point_2_in_section_1 = point_id_2 in material_interface.materialSection1.nodeSet.IDTable.keys()
+                            point_2_in_section_2 = point_id_2 in material_interface.materialSection2.nodeSet.IDTable.keys()
                             
                             # If points are in different sections of this interface, retrieve Material properties
                             isInMatInterface = (point_1_in_section_1 and point_2_in_section_2) or (point_1_in_section_2 and point_2_in_section_1)
@@ -77,10 +78,6 @@ class FatigueInputData:
                         for material_section_same, material_section in self.materialSectionsTable.items():
                             #For loop not neede since in this case there is only one material section.
                             self.bondMaterialIDarray[:] = material_section.material.materialID
-                    
-                    # Loop over all MaterialSections
-
-
 
                 # After looping over all connections, you'll have the relevant data stored in the new array
 

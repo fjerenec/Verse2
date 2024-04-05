@@ -24,7 +24,7 @@ class Discretizations():
             self.discretizationsTable[discName] = Discretization()
 
     def set_selected_discretization(self,DiscretizationName: str) -> None:
-        if DiscretizationName in self.discretizationsTable.keys:
+        if DiscretizationName in self.discretizationsTable.keys():
             self.selectedDiscretization = self.discretizationsTable[DiscretizationName]
         else:
             print("No discretization with given name. Please provide a valid name!")
