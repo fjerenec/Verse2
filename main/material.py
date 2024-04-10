@@ -3,7 +3,7 @@ from data import Set
 class Materials():
     def __init__(self) -> None:
         self.materialsTable = {}
-        self.materialsByIDTable = {}
+        self.materialsByIDTable = {material.materialID: material for material in self.materialsTable.values()}
 
     def create_material(self,materialName: str = "MaterialName", isIsotropic:bool = True):
         if type(materialName) != str:
@@ -18,6 +18,8 @@ class Materials():
                     self.materialsTable[materialName] = Isotropic(materialName=materialName)
                 else:
                     self.materialsTable[materialName] = Anisotropic(materialName=materialName)
+                
+                self.materialsByIDTable[self.materialsTable[materialName].materialID] = self.materialsTable[materialName]
             else:
                 return
         else:
@@ -25,6 +27,8 @@ class Materials():
                 self.materialsTable[materialName] = Isotropic(materialName=materialName)
             else:
                 self.materialsTable[materialName] = Anisotropic(materialName=materialName)
+            self.materialsByIDTable[self.materialsTable[materialName].materialID] = self.materialsTable[materialName]
+
 
     def delete_material(self, materialName: str)-> None:
         if type(materialName) != str:
@@ -54,6 +58,10 @@ class Material():
 
     def set_density(self,density:float):
         self.density = density
+
+    def set_stretch_thresholds(self,damageInitStretch: float, breakageStretch: float):
+        self.s0 = damageInitStretch
+        self.sc = breakageStretch
 
     def get_material_properties(self):
         return vars(self)       

@@ -52,6 +52,9 @@ class Set():
     
     def get_data(self):
         return self.IDarray[:]
+    
+    def get_number_of_points(self):
+        return self.IDarray.shape[0]
 
 def get_user_decision():
     while True:

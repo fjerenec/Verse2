@@ -936,6 +936,65 @@ def applyDispBC(BCvec,stiffnessMat,RHSvec):
 
     else: 
         print("Dimensions of stiffness matrix do not match dimensions of the RHS vector!")
+
+def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2], RHSvec: np.ndarray[float,1], dim:int):
+    """Apply displacement boundary conditions to the global stiffnes matrix and RHS vector.
+        Works for many combined BCloads together.
+    Inputs:
+    -------
+    BCvec : 2d array of floats. Contains the points for which displacement BC will be applied to and the boundary conditions that will be applied to them. BCvec.shape = [number of constrained points, number of constrained DOF]
+                BCvec[:,0] -> contains point ID's from the discretization. Points with the ID writen here get constrained
+                BCvec[:,1:4] -> contains bool's to see if the DOF is contrained. BCvec[:,1] -> DOF 0, BCvec[:,2] -> DOF 1, BCvec[:,2] -> DOF 3.
+                BCvec[:,4:7] -> contains the value of the applied displacement for DOF's from BCvec[:,1:4]
+    
+    stiffnessMat : 2d array of floats. The stiffness matrix created using the "pddo.gen_StiffMat()" function. stiffnessMat.shape = [number of points in discretization * 2, number of points in discretization * 2] = [number of DOF, number of DOF] -> for 2D
+                    This stiffness matrix does not have any BC applied to it!
+    
+    RHSvec : 1d array of floats. Array of zeros to be used to construct the RHS vector with applied BC's. RHSvec.shape = [number of DOF]
+
+    Outputs:
+    --------
+    BCstiffnessMat : 2d array of floats. The stiffness matrix from the inputs but with BC's applied! BCstiffnessMat.shape = [number of DOF,number of DOF]
+    
+    RHSvec : 1d array of floats. The RHS vector from the inputs but with applied BC's. RHSvec.shape = [number of DOF]
+    
+    """
+
+    if (stiffnessMat.shape[1] == RHSvec.shape[0]):
+        BCpts  = BCvec[:,0]
+        BCdofs = dim #This is the number of DOF which are constrained in the BCs
+        BCstiffnessMat = stiffnessMat
+        RHSvec2 = np.zeros_like(RHSvec)
+        for i in range(BCpts.shape[0]):
+            pt = np.int64(BCpts[i])
+            for locdof in range(BCdofs):
+                locdof_isFixed = bool(BCvec[i,locdof+1])
+                if locdof_isFixed:
+                    globdof = np.int64(pt*dim + locdof)
+                    RHSvec2cur = BCstiffnessMat[:,globdof] * BCvec[i,locdof+4]
+
+                    #Modification of the RHS Vector to be added to the RHS vector outside of the outer loop
+                    RHSvec2 = RHSvec2 + RHSvec2cur
+                    RHSvec[globdof] = BCvec[i,locdof+4]
+
+                    #Modify the stiffnes matrix
+                    BCstiffnessMat[:,globdof] = 0
+                    BCstiffnessMat[globdof,:] = 0
+                    BCstiffnessMat[globdof,globdof] = np.float64(1)
+        
+        RHSvec = RHSvec - RHSvec2
+
+        for i in range(BCpts.shape[0]):
+            pt = np.int64(BCpts[i])
+            for locdof in range(BCdofs):
+                globdof = pt*dim + locdof
+                RHSvec[globdof] = BCvec[i,locdof+4]
+
+        return BCstiffnessMat,RHSvec
+
+    else: 
+        print("Dimensions of stiffness matrix do not match dimensions of the RHS vector!")
+
 @njit
 def calc_bond_normals(pd_point_count, pd_bond_count, coordVec, neighbors, start_idx, end_idx):
         normals = np.empty(shape=(pd_bond_count,2))
@@ -1242,5 +1301,53 @@ def _generate_stiffness_matrix(coordVec,neighbors, start_idx, end_idx, G11vec, G
                 stiffMat[pt*2+1,2*neighbors[j]] = Sbar12
                 stiffMat[pt*2+1,2*neighbors[j]+1] = Sbar22
 
-    stiffMat = stiffMat*mu 
+    stiffMat = stiffMat * mu
+    return stiffMat
+
+@njit
+def _generate_stiffness_matrix2(coordVec,neighbors, start_idx, end_idx, G11vec, G12vec,G22vec, mu, LiveBonds, Damage, stiffMat):
+    """Function is only meant to be called inside the "gen_stiffness_matrix" method of the PDFatigueModel class!
+    """
+    for pt in range(coordVec.shape[0]):
+        for j in range(start_idx[pt],end_idx[pt]):
+            currentBondStatus = LiveBonds[j]
+            alive = True
+            if currentBondStatus == alive:
+                #Calculate S for the bond between point "j" in family of "pt"
+                G11 = G11vec[j]  
+                G12 = G12vec[j]
+                G22 =  G22vec[j]
+                G11G22 = G11+G22
+                S11 = G11G22 + 2*G11
+                S12 = 2*G12
+                S22 = G11G22 + 2*G22
+                
+                #Calculate S for the bond petween point "pt" in family of "j"
+                j_pt = find_valueID(neighbors[start_idx[neighbors[j]]:end_idx[neighbors[j]]],pt) + start_idx[neighbors[j]]
+                jG11 = G11vec[j_pt]  
+                jG12 = G12vec[j_pt]
+                jG22 =  G22vec[j_pt]
+                jG11G22 = jG11+jG22
+                jS11 = jG11G22 + 2*jG11
+                jS12 = 2*jG12
+                jS22 = jG11G22 + 2*jG22
+
+                #Calculate Sbar for bond pt_j (pt is main point j in fam member)
+                Sbar11 = (1-Damage[j])*0.5*(S11+jS11) * mu[j]
+                Sbar12 = (1-Damage[j])*0.5*(S12+jS12) * mu[j]
+                Sbar22 = (1-Damage[j])*0.5*(S22+jS22) * mu[j]
+
+                #Sum of contibutions of main point in every Xsi
+                stiffMat[pt*2,pt*2] = stiffMat[pt*2,pt*2] - Sbar11
+                stiffMat[pt*2,pt*2+1] = stiffMat[pt*2,pt*2+1] - Sbar12
+                stiffMat[pt*2+1,pt*2] = stiffMat[pt*2+1,pt*2] - Sbar12
+                stiffMat[pt*2+1,pt*2+1] = stiffMat[pt*2+1,pt*2+1] - Sbar22
+
+                #Contributions of family members of main point
+                stiffMat[pt*2,2*neighbors[j]] = Sbar11
+                stiffMat[pt*2,2*neighbors[j]+1] = Sbar12
+                stiffMat[pt*2+1,2*neighbors[j]] = Sbar12
+                stiffMat[pt*2+1,2*neighbors[j]+1] = Sbar22
+
+    stiffMat = stiffMat
     return stiffMat

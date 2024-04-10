@@ -14,7 +14,7 @@ class NumericalModel():
         self.Materials= material.Materials()
         self.MaterialSections = material.MaterialSections()
         self.MaterialInterfaces = material.MaterialInterfaces()
-        self.Loads = loads.BoundaryCons()
+        self.Loads = loads.Loads()
         self.Discretizations = disretization.Discretizations()
         self.Interactions = interactions.Interactions()
         self.SimulationSettings = simulation_settings.SimulationSettings()
