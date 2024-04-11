@@ -2,7 +2,7 @@ from numba import njit, prange
 import numpy as np
 from scipy.special import factorial
 from scipy.sparse import csr_matrix
-#from pypardiso import spsolve
+# from pypardiso import spsolve
 from scipy.sparse.linalg import spsolve #Change this back to pypardiso! Using scipy only for MacOD
 
 @njit
