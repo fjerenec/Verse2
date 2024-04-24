@@ -61,7 +61,7 @@ class FatigueInputData:
                         point_2_in_section_1 = point_id_2 in material_interface.materialSection1.nodeSet.IDTable.keys()
                         point_2_in_section_2 = point_id_2 in material_interface.materialSection2.nodeSet.IDTable.keys()
                         
-                        # If points are in different sections of this interface, retrieve Material properties
+                        # If points are in different sections of this interface, retrieve Material id
                         isInMatInterface = (point_1_in_section_1 and point_2_in_section_2) or (point_1_in_section_2 and point_2_in_section_1)
                         if isInMatInterface:
                             self.bondMaterialIDarray[bond] = material_interface.material.materialID
@@ -85,7 +85,7 @@ class FatigueInputData:
                     if len(self.materialSectionsTable) != 1:
                         return print("There is more than one material section and no material interface in the model. A material interface must be defined in the case of multiple material section!")
                     for material_section_same, material_section in self.materialSectionsTable.items():
-                        #For loop not neede since in this case there is only one material section.
+                        #For loop not needed since in this case there is only one material section.
                         self.bondMaterialIDarray[:] = material_section.material.materialID
     
     def gen_damage_evolution_stretch_arrays(self):

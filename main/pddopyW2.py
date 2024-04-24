@@ -660,6 +660,66 @@ def gen_Gmat2D_fixed(coordVec,neighbors,start_idx,end_idx,delta,area):
     return G_xsigvals
 
 @njit
+def gen_Gmat2D_fixed2(coordVec: np.ndarray[float,2], neighbors:np.ndarray[float,1], start_idx:np.ndarray[float,1], end_idx:np.ndarray[float,1], delta:float, area: np.ndarray[float,1]) -> np.ndarray[float,1]:
+    """This function is does the same as gen_Gmat2D except for the fact that it takes the volume into account when creating A matrices.
+        Also in this implementation of this function, the area of EACH point is used and not a homogenous area across all points.
+    --------
+    This _fixed function has the area part in the calculation. Need to check if it is correct.
+    """
+    #Calculate b matrix
+    bmat = np.zeros((3,3))
+    ##g20
+    bmat[0,0] = 2
+    ##g02
+    bmat[1,1] = 2
+    ##g11
+    bmat[2,2] = 1
+
+    #Calculate the a parameters for g functions of G matrix
+    ptavecs = np.zeros((coordVec.shape[0],3,3),dtype = float)
+    Amat = np.zeros((3,3),dtype=float)
+    xsiweight = float(0)
+    pvec = np.zeros((neighbors.shape[0],3))
+    weight = np.zeros(neighbors.shape[0])
+    Qvec = np.zeros(3,dtype=float)
+    for pt in range(coordVec.shape[0]):
+        Amat[:,:]=0
+        for j in range(start_idx[pt], end_idx[pt]):
+            xsi = coordVec[neighbors[j]] - coordVec[pt]
+            xsiX = xsi[0]
+            xsiY = xsi[1]
+            xsimag = (xsiX**2 + xsiY**2)**0.5
+            xsiweight = (delta/xsimag)**3 * area[neighbors[j]] # I can just multiply with the area here once instead of 4 times below!
+            Amat[0,0] += xsiX**4 * xsiweight #* area[j]
+            Amat[0,1] += xsiX**2 * xsiY**2 * xsiweight #* area[j]
+            Amat[1,1] += xsiY**4 * xsiweight #* area[j]
+            Amat[2,2] += xsiX**2 * xsiY**2 * xsiweight #* area[j]
+            pvec[j,0] = xsiX**2
+            pvec[j,1] = xsiY**2
+            pvec[j,2] = xsiX * xsiY
+            weight[j] = xsiweight
+        Amat[1,0] = Amat[0,1]
+        #Matrix conditioning Q@A@Q @ Qinv@a = Q@b
+        Qvec[0] = 1/Amat[0,0]
+        Qvec[1] = 1/Amat[1,1]
+        Qvec[2] = 1/Amat[2,2]
+        Q =np.eye(3)*np.sqrt(Qvec)
+        QAmatQ =  Q@Amat@Q
+        Qbmat = Q@bmat
+        
+        QAmatQinv = np.linalg.inv(QAmatQ)
+        ptavecs[pt]=(Q@np.dot(QAmatQinv,Qbmat)).T
+
+    #Create the values of g for each xsi
+    G_xsigvals = np.zeros((neighbors.shape[0],ptavecs.shape[1]),dtype=float)
+    for pt in range(coordVec.shape[0]):
+        for j in range(start_idx[pt], end_idx[pt]):
+            G_xsigvals[j] = np.sum(ptavecs[pt] * pvec[j] * weight[j],axis=1)
+
+    return G_xsigvals
+
+
+@njit
 def gen_Gmat3D(coordVec,neighbors,start_idx,end_idx,delta):
     ""
     #Calculate b matrix
