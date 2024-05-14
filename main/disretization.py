@@ -33,14 +33,15 @@ class Discretization():
 
     def __init__(self) -> None:
         self.hasInitialCrack = False
-        self.initialCracks = np.empty(shape=(0,2,2))
+        self.initialCracks = np.zeros(shape=(0,2,2))
 
     def set_horizon(self, horizonRad) -> None:
         self.delta = float(horizonRad)
 
     def create_crack(self,p1x,p1y,p2x,p2y) -> None:
         crack = np.array([[[p1x,p1y],[p2x,p2y]]],dtype=float)
-        self.initialCracks.append(crack)
+        self.initialCracks = np.append(self.initialCracks,crack,axis=0)
+        # self.initialCracks.append(crack)
         self.hasInitialCrack = True
 
     def deactivate_cracks(self) -> bool:
@@ -83,11 +84,11 @@ class Discretization():
             i += 1
             
         if self.hasInitialCrack == True:
-            self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors2(self.coordVec,1.01*self.delta,self.cracks)
+            self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors2(self.coordVec,1.01*self.delta,self.initialCracks)
 
         else:
             self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors(self.coordVec,1.01*self.delta)
-        print("the area:",self.ptArea)
+        # print("the area:",self.ptArea)
 
         self.pd_point_count = self.n_neighbors.shape[0]
         self.pd_bond_count = self.neighbors.shape[0]

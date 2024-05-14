@@ -40,7 +40,7 @@ def find_neighbors(coords, r):
                     neighbors[current_neighbor] = j
                     n_neighbors[i] += 1
                     current_neighbor += 1
-    end_index = np.cumsum(n_neighbors)    
+    end_index = np.cumsum(n_neighbors)
     start_index[1:] = end_index[:n_points-1]
     return neighbors[:end_index[n_points-1]], start_index,end_index, n_neighbors
 
@@ -82,11 +82,11 @@ def find_neighbors2(coords, r, cracks):
                     for curcrack in range(cracks.shape[0]):
                         #if intersect2(point1 of crack,point2 of crack,point1 of bond,point2 of crack)
                         alive = alive*np.logical_not(intersect2(cracks[curcrack,0],cracks[curcrack,1],coords[i],coords[j])) #first the cracks then the point
-                    if alive == True: 
+                    if alive == True:
                         neighbors[current_neighbor] = j
                         n_neighbors[i] += 1
                         current_neighbor += 1
-    end_index = np.cumsum(n_neighbors)    
+    end_index = np.cumsum(n_neighbors)
     start_index[1:] = end_index[:n_points-1]
     return neighbors[:end_index[n_points-1]], start_index,end_index, n_neighbors
 
@@ -102,7 +102,7 @@ def intersect2(A,B,C,D):
 def tse_terms(M,N):
     """
     Calculate the number of TSE terms based on the dimensionality of PD points "M" and the specified maximum order of TSE terms "N"
-    M must! be higher or equal to N. The output includes the term x1^0 * x2^0 * ... * xi^0. For a relative function PDDO the output need to be 
+    M must! be higher or equal to N. The output includes the term x1^0 * x2^0 * ... * xi^0. For a relative function PDDO the output need to be
     lowered by 1.
     Inputs:
     ---------
@@ -133,7 +133,7 @@ def tse_pows(N,M,D):
     Since xsi is a connection it has some length in every dimension so it is a vector of relative position between two points
     with vector components xsi = (xsi1,xsi2,xsi3,..,xsiM)! -> could also be wirtten as xsi = (x,y,z,..,t), but this way you quickly
     run out of characters to represent dimensions.
-    
+
     Inputs:
     ---------
     M : int. Dimensionality of pd points
@@ -143,18 +143,18 @@ def tse_pows(N,M,D):
     Output:
     ---------
     p : 2d array[:,:]. Contains the powers of each xsi of each component of xsi (each dimension of xsi) and for each TSE term.
-                        p.shape[0] = "number of tse terms". 
+                        p.shape[0] = "number of tse terms".
                         p.shape[1] = "M" (the dimensionllality of the points).
                             Each column in "p" (p[:,m]) contains the powers for one component of xsi.
     """
 
-    icount = 0 #A counter that keeps track of the current number of bonds, while looping through each points and finding their family membrs. 
+    icount = 0 #A counter that keeps track of the current number of bonds, while looping through each points and finding their family membrs.
     p = np.zeros((D,M),dtype=np.int64)
-    num1=np.zeros((10,1),dtype=np.int64) # Temporary parameter 
+    num1=np.zeros((10,1),dtype=np.int64) # Temporary parameter
     num = np.zeros((10,1),dtype=np.int64) # Temporary parameter
     m=np.int64(1)
     n=N
-    
+
     def loop2(m,n,num):
         nonlocal icount
         nonlocal p
@@ -168,7 +168,7 @@ def tse_pows(N,M,D):
                     icount = icount+1
                     for m in range(1,M+1):
                         p[icount-1,m-1]=num1[m-1]
-                        
+
 
         return p
     return loop2(m,n,num)
@@ -193,7 +193,7 @@ def gen_bmat(porders,pows):
     Function to compute the right hand side vector (or matrix if you want to compute more than 1 derivative). Relative function!
     Inputs
     -------
-    porders: 2d array of floats. Contains the orders of differentiation for each dimension. 
+    porders: 2d array of floats. Contains the orders of differentiation for each dimension.
                 porders.shape =[number of derivatives wanted/stated, dimensionality]
                 porders = [[1,2],[0,1]] ->
                 proders[0,0] = order of differentiraion for 1st dimension for the first derivation
@@ -225,7 +225,7 @@ def gen_bmat(porders,pows):
     return bmat
 
 
-    
+
 def gen_gComponents(coords,porders,N,delta,vols=1):
     """
     Generate the "a" coeffs, powers(xsi_i) of xsi components and weights(xsi) of g(xsi) functions, for a relative function.
@@ -233,7 +233,7 @@ def gen_gComponents(coords,porders,N,delta,vols=1):
     Inputs
     -------
     coords  : 2d array of floats. Coordinates of points -->coords.shape = [number of points, dimensionality of points].
-    porders: 2d array of floats. Contains the orders of differentiation for each dimension. 
+    porders: 2d array of floats. Contains the orders of differentiation for each dimension.
                 porders.shape =[number of derivatives wanted/stated, dimensionality]
                 porders = [[1,2],[0,1]] ->
                 proders[0,0] = order of differentiraion for 1st dimension for the first derivation
@@ -243,7 +243,7 @@ def gen_gComponents(coords,porders,N,delta,vols=1):
 
     N : int. Maximum order of TSE terms
     delta : float. Radius of the horizon of point families
-    vols :  array of floats. Contains the volume of each point. vols.shape = [number of points]. 
+    vols :  array of floats. Contains the volume of each point. vols.shape = [number of points].
             If "vols" is not provided in inputs, it is assumed that each points has the same volume and that the domain is regularly discretized.
             The "vols" is thus filled with a single number computed as the product of the discretization step sizes for each dimension
 
@@ -265,7 +265,7 @@ def gen_gComponents(coords,porders,N,delta,vols=1):
     D = tse_terms(M,N)-1 #compute the number of tse terms
     pows = tse_pows(N,M,D+1)[1:,:]  # compute the powers of x,y,z,...n, for each term
     fams,start_idx,end_idx,_ = find_neighbors(coords,1.01*delta) # 1) compute the 1D vector of families, 2) the indexes at which each family starts in coords, 3)the indexes at which each family ends in coords, 4)and the numnber of neighbors
-     
+
     # Amat = np.zeros((D,D),dtype=np.float64)
     # Ainv = np.zeros((D,D),dtype=np.float64)
 
@@ -277,25 +277,25 @@ def gen_gComponents(coords,porders,N,delta,vols=1):
         # for m in range(M):
         #     vol =vol * (coords[1,0]-coords[0,0])
         vols[:] = vol
-    
+
     bmat = gen_bmat(porders,pows)
     ptavecs = np.empty((n_points,porders.shape[0],D),dtype=np.float64)
     pvec = np.zeros((end_idx[-1],D),dtype=np.float64) #end_idx[-1] is the number of xsi there are in the whole domain. fams.shape[0] is larger since we had to assume the maximum number of members for each point(not all families are full!)
-    weight = np.zeros(end_idx[-1],dtype=np.float64) 
+    weight = np.zeros(end_idx[-1],dtype=np.float64)
 
     @njit
     def avecsloop(coords,fams,start_idx,end_idx,delta,vols,bmat,ptavecs,pvec,weight):
         """
-        Computes the things that are stated in the outer function. This function just goes through the actual computation, while the outer function 
-        prepares all the necessary data needed for the coputation. This function should never be called dirrectly   
-        Inputs: 
+        Computes the things that are stated in the outer function. This function just goes through the actual computation, while the outer function
+        prepares all the necessary data needed for the coputation. This function should never be called dirrectly
+        Inputs:
         --------
         coords      : array of array of floats (coordinates of points=. shape = [number of points, dimensionality of points]. Coordinates should be floats.
         fams        : 1D array of floats (ID numbers of points). Contains the ID's of the neighbors of all points starting with the ID's of neighbors of point 0.
         start_idx   : 1D array of ints. Component "i" of the start_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" start.
         end_idx     : 1D array of ints. Component "i" of the end_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" end.
         delta   : float. Radius of the horizon of point families.
-        vols    : array of floats. Contains the volume of each point. vols.shape = [number of points]. 
+        vols    : array of floats. Contains the volume of each point. vols.shape = [number of points].
                     If "vols" is not provided in inputs, it is assumed that each points has the same volume and that the domain is regularly discretized.
                     The "vols" is thus filled with a single number computed as the product of the discretization step sizes for each dimension
         bmat    : 2d array of floats. Contains the RHS vector/matrix. bmat.shape = [number of TSE terms,number of derrivatives to compute]
@@ -303,7 +303,7 @@ def gen_gComponents(coords,porders,N,delta,vols=1):
                     Contains the values of "a" coefficients in g functions corresponding with the wanted/stated derivatives.
                     Since each point can have a different horizon shape and each point computes its Amat (which together with bmat defines the "a" coefficients),
                     from the bonds in the family, each point can have different "a" coefficients in its g functions.
-                    ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms]. 
+                    ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms].
 
         pvec    : 2d array of floats. Is empty at input. Used as a container to write in
                     Contains the values of the product of xsi component powers for each TSE term for each xsi/bond.
@@ -320,14 +320,14 @@ def gen_gComponents(coords,porders,N,delta,vols=1):
                     ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms]
 
         pvec    : 2d array of floats. Contains the values of the product of xsi component powers for each TSE term for each xsi/bond.
-                    pvec.shape = [numbers of xsi's/bonds,number of TSE terms]. 
+                    pvec.shape = [numbers of xsi's/bonds,number of TSE terms].
 
         weight : 1d array of floats. Contains the values of the weight function for every xsi/bond. weight.shape = [number of xsi's/bonds]
         """
         for pt in range(n_points): #range(n_points)
             Amat = np.zeros((D,D))
             for ptmemloc in range(start_idx[pt],end_idx[pt]):#:range(start_idx[pt],end_idx[pt])
-                xsi = coords[fams[ptmemloc]]-coords[pt] 
+                xsi = coords[fams[ptmemloc]]-coords[pt]
                 ximag = np.sum(xsi*xsi)**0.5 #based on a few custom loops i made, this line is around half the computational cost
                 #Calculate the powers of components of xsi based on the TSE term powers
                 curpvec = axis1prod(np.power(xsi,pows)) # used my own function because np.prod() is now support by numba if i want to use the axis=1 optional argument. My function is even faster!
@@ -355,7 +355,7 @@ def gen_gComponents2(coords,porders,N,delta,vols=1):
     Inputs
     -------
     coords  : 2d array of floats. Coordinates of points -->coords.shape = [number of points, dimensionality of points].
-    porders: 2d array of floats. Contains the orders of differentiation for each dimension. 
+    porders: 2d array of floats. Contains the orders of differentiation for each dimension.
                 porders.shape =[number of derivatives wanted/stated, dimensionality]
                 porders = [[1,2],[0,1]] ->
                 proders[0,0] = order of differentiraion for 1st dimension for the first derivation
@@ -365,7 +365,7 @@ def gen_gComponents2(coords,porders,N,delta,vols=1):
 
     N : int. Maximum order of TSE terms
     delta : float. Radius of the horizon of point families
-    vols :  array of floats. Contains the volume of each point. vols.shape = [number of points]. 
+    vols :  array of floats. Contains the volume of each point. vols.shape = [number of points].
             If "vols" is not provided in inputs, it is assumed that each points has the same volume and that the domain is regularly discretized.
             The "vols" is thus filled with a single number computed as the product of the discretization step sizes for each dimension
 
@@ -387,7 +387,7 @@ def gen_gComponents2(coords,porders,N,delta,vols=1):
     D = tse_terms(M,N)-1 #compute the number of tse terms
     pows = tse_pows(N,M,D+1)[1:,:]  # compute the powers of x,y,z,...n, for each term
     fams,start_idx,end_idx,_ = find_neighbors(coords,1.01*delta) # 1) compute the 1D vector of families, 2) the indexes at which each family starts in coords, 3)the indexes at which each family ends in coords, 4)and the numnber of neighbors
-     
+
     # Amat = np.zeros((D,D),dtype=np.float64)
     # Ainv = np.zeros((D,D),dtype=np.float64)
 
@@ -399,11 +399,11 @@ def gen_gComponents2(coords,porders,N,delta,vols=1):
         # for m in range(M):
         #     vol =vol * (coords[1,0]-coords[0,0])
         vols[:] = vol
-    
+
     bmat = gen_bmat(porders,pows)
     ptavecs = np.empty((n_points,porders.shape[0],D),dtype=np.float64)
     pvec = np.zeros((end_idx[-1],D),dtype=np.float64) #end_idx[-1] is the number of xsi there are in the whole domain. fams.shape[0] is larger since we had to assume the maximum number of members for each point(not all families are full!)
-    weightvecs = np.zeros((end_idx[-1],D),dtype=np.float64) 
+    weightvecs = np.zeros((end_idx[-1],D),dtype=np.float64)
 
     powssum = np.sum(pows,axis=1)
 
@@ -416,16 +416,16 @@ def gen_gComponents2(coords,porders,N,delta,vols=1):
     @njit
     def avecsloop2(coords,fams,start_idx,end_idx,delta,vols,bmat,ptavecs,pvec,powMat,weightvecs):
         """
-        Computes the things that are stated in the outer function. This function just goes through the actual computation, while the outer function 
-        prepares all the necessary data needed for the coputation. This function should never be called dirrectly   
-        Inputs: 
+        Computes the things that are stated in the outer function. This function just goes through the actual computation, while the outer function
+        prepares all the necessary data needed for the coputation. This function should never be called dirrectly
+        Inputs:
         --------
         coords      : array of array of floats (coordinates of points=. shape = [number of points, dimensionality of points]. Coordinates should be floats.
         fams        : 1D array of floats (ID numbers of points). Contains the ID's of the neighbors of all points starting with the ID's of neighbors of point 0.
         start_idx   : 1D array of ints. Component "i" of the start_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" start.
         end_idx     : 1D array of ints. Component "i" of the end_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" end.
         delta   : float. Radius of the horizon of point families.
-        vols    : array of floats. Contains the volume of each point. vols.shape = [number of points]. 
+        vols    : array of floats. Contains the volume of each point. vols.shape = [number of points].
                     If "vols" is not provided in inputs, it is assumed that each points has the same volume and that the domain is regularly discretized.
                     The "vols" is thus filled with a single number computed as the product of the discretization step sizes for each dimension
         bmat    : 2d array of floats. Contains the RHS vector/matrix. bmat.shape = [number of TSE terms,number of derrivatives to compute]
@@ -433,7 +433,7 @@ def gen_gComponents2(coords,porders,N,delta,vols=1):
                     Contains the values of "a" coefficients in g functions corresponding with the wanted/stated derivatives.
                     Since each point can have a different horizon shape and each point computes its Amat (which together with bmat defines the "a" coefficients),
                     from the bonds in the family, each point can have different "a" coefficients in its g functions.
-                    ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms]. 
+                    ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms].
 
         pvec    : 2d array of floats. Is empty at input. Used as a container to write in
                     Contains the values of the product of xsi component powers for each TSE term for each xsi/bond.
@@ -450,14 +450,14 @@ def gen_gComponents2(coords,porders,N,delta,vols=1):
                     ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms]
 
         pvecs    : 2d array of floats. Contains the values of the product of xsi component powers for each TSE term for each xsi/bond.
-                    pvec.shape = [numbers of xsi's/bonds,number of TSE terms]. 
+                    pvec.shape = [numbers of xsi's/bonds,number of TSE terms].
 
         weight : 1d array of floats. Contains the values of the weight function for every xsi/bond. weight.shape = [number of xsi's/bonds]
         """
         for pt in range(n_points): #range(n_points)
             Amat = np.zeros((D,D))
             for ptmemloc in range(start_idx[pt],end_idx[pt]):#:range(start_idx[pt],end_idx[pt])
-                xsi = coords[fams[ptmemloc]]-coords[pt] 
+                xsi = coords[fams[ptmemloc]]-coords[pt]
                 ximag = np.sum(xsi*xsi)**0.5 #based on a few custom loops i made, this line is around half the computational cost
                 #Calculate the powers of components of xsi based on the TSE term powers
                 curpvec = axis1prod(np.power(xsi,pows)) # used my own function because np.prod() is now support by numba if i want to use the axis=1 optional argument. My function is even faster!
@@ -493,13 +493,13 @@ def gen_xsigval(ptavecs,pvec,weight,start_index,end_index):
                     pvec.shape = [numbers of xsi's/bonds,number of TSE terms]
 
     weight : 1d array of floats. Contains the values of the weight function for every xsi/bond. weight.shape = [number of xsi's/bonds]
-    
+
     start_index   : 1D array of ints. Component "i" of the start_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" start.
     end_index     : 1D array of ints. Component "i" of the end_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" end.
-    
+
     Outputs:
     --------
-   
+
     """
     g = np.zeros((end_index[-1],ptavecs.shape[1]),dtype=np.float64)
     for pt in prange(start_index.shape[0]):
@@ -519,7 +519,7 @@ def PDDOderive(funvals,fams,g,vols,start_index,end_index):
             #Calculate the value of g(xsi) for every xsi in domain
             ptres = ptres+ (funvals[fams[ptmemloc]]-funvals[pt])*g[ptmemloc]*vols[ptmemloc]
             #print(ptres,ptmemloc)
-        
+
         res[pt] = ptres
     return res
 
@@ -546,7 +546,7 @@ def find_valueID(arr,val):
 
 @njit
 def gen_Gmat2D(coordVec,neighbors,start_idx,end_idx,delta):
-    """This function is flawed as of the 28/02/2024 github state. The inputs in the Amat are not 
+    """This function is flawed as of the 28/02/2024 github state. The inputs in the Amat are not
     multiplied by the area of ceah PD material point. Therefore the resulting calculation do not give a force density vector."""
     #Calculate b matrix
     bmat = np.zeros((3,3))
@@ -588,7 +588,7 @@ def gen_Gmat2D(coordVec,neighbors,start_idx,end_idx,delta):
         Q =np.eye(3)*np.sqrt(Qvec)
         QAmatQ =  Q@Amat@Q
         Qbmat = Q@bmat
-        
+
         QAmatQinv = np.linalg.inv(QAmatQ)
         ptavecs[pt]=(Q@np.dot(QAmatQinv,Qbmat)).T
 
@@ -602,7 +602,7 @@ def gen_Gmat2D(coordVec,neighbors,start_idx,end_idx,delta):
 
 @njit
 def gen_Gmat2D_fixed(coordVec,neighbors,start_idx,end_idx,delta,area):
-    """Non:_fixed function :This function is flawed as of the 28/02/2024 github state. The inputs in the Amat are not 
+    """Non:_fixed function :This function is flawed as of the 28/02/2024 github state. The inputs in the Amat are not
     multiplied by the area of each PD material point. Therefore the resulting calculation do not give a force density vector.
     --------
     This _fixed function has the area part in the calculation. Need to cehck if it is correct.
@@ -647,7 +647,7 @@ def gen_Gmat2D_fixed(coordVec,neighbors,start_idx,end_idx,delta,area):
         Q =np.eye(3)*np.sqrt(Qvec)
         QAmatQ =  Q@Amat@Q
         Qbmat = Q@bmat
-        
+
         QAmatQinv = np.linalg.inv(QAmatQ)
         ptavecs[pt]=(Q@np.dot(QAmatQinv,Qbmat)).T
 
@@ -689,11 +689,11 @@ def gen_Gmat2D_fixed2(coordVec: np.ndarray[float,2], neighbors:np.ndarray[float,
             xsiX = xsi[0]
             xsiY = xsi[1]
             xsimag = (xsiX**2 + xsiY**2)**0.5
-            xsiweight = (delta/xsimag)**3 * area[neighbors[j]] # I can just multiply with the area here once instead of 4 times below!
-            Amat[0,0] += xsiX**4 * xsiweight #* area[j]
-            Amat[0,1] += xsiX**2 * xsiY**2 * xsiweight #* area[j]
-            Amat[1,1] += xsiY**4 * xsiweight #* area[j]
-            Amat[2,2] += xsiX**2 * xsiY**2 * xsiweight #* area[j]
+            xsiweight = (delta/xsimag)**3 #* area[neighbors[j]] # I can just multiply with the area here once instead of 4 times below!
+            Amat[0,0] += xsiX**4 * xsiweight * area[neighbors[j]]
+            Amat[0,1] += xsiX**2 * xsiY**2 * xsiweight * area[neighbors[j]]
+            Amat[1,1] += xsiY**4 * xsiweight * area[neighbors[j]]
+            Amat[2,2] += xsiX**2 * xsiY**2 * xsiweight * area[neighbors[j]]
             pvec[j,0] = xsiX**2
             pvec[j,1] = xsiY**2
             pvec[j,2] = xsiX * xsiY
@@ -706,7 +706,7 @@ def gen_Gmat2D_fixed2(coordVec: np.ndarray[float,2], neighbors:np.ndarray[float,
         Q =np.eye(3)*np.sqrt(Qvec)
         QAmatQ =  Q@Amat@Q
         Qbmat = Q@bmat
-        
+
         QAmatQinv = np.linalg.inv(QAmatQ)
         ptavecs[pt]=(Q@np.dot(QAmatQinv,Qbmat)).T
 
@@ -736,8 +736,8 @@ def gen_Gmat3D(coordVec,neighbors,start_idx,end_idx,delta):
     bmat[4,4] = 1
     ##g011
     bmat[5,5] = 1
-    
-    
+
+
     #Calculate the a parameters for g functions of G matrix
     ptavecs = np.zeros((coordVec.shape[0],6,6),dtype = float)
     Amat = np.zeros((6,6),dtype=float)
@@ -761,11 +761,11 @@ def gen_Gmat3D(coordVec,neighbors,start_idx,end_idx,delta):
             Amat[0,1] += (xsiX*xsiY)**2 * xsiweight #
             Amat[0,2] += (xsiX *xsiZ)**2* xsiweight #
             Amat[1,2] += (xsiY *xsiZ)**2* xsiweight #
-            
+
             Amat[3,3] += (xsiX*xsiY)**2 * xsiweight #
             Amat[4,4] += (xsiX*xsiZ)**2 * xsiweight #
             Amat[5,5] += (xsiY*xsiZ)**2 * xsiweight #
-            
+
 
             pvec[j,0] = xsiX**2
             pvec[j,1] = xsiY**2
@@ -788,7 +788,7 @@ def gen_Gmat3D(coordVec,neighbors,start_idx,end_idx,delta):
         Q =np.eye(6)*np.sqrt(Qvec)
         QAmatQ =  Q@Amat@Q
         Qbmat = Q@bmat
-        
+
         QAmatQinv = np.linalg.inv(QAmatQ)
         ptavecs[pt]=(Q@np.dot(QAmatQinv,Qbmat)).T
 
@@ -799,7 +799,6 @@ def gen_Gmat3D(coordVec,neighbors,start_idx,end_idx,delta):
             G_xsigvals[j] = np.sum(ptavecs[pt] * pvec[j] * weight[j],axis=1)
 
     return G_xsigvals
-
 
 @njit(parallel = True)
 def gen_StiffMat(coordVec,delta,Emod):
@@ -813,17 +812,17 @@ def gen_StiffMat(coordVec,delta,Emod):
     for pt in prange(coordVec.shape[0]):
         for j in range(start_idx[pt],end_idx[pt]):
             #Calculate S for the bond between point "j" in family of "pt"
-            G11 = G11vec[j]  
+            G11 = G11vec[j]
             G12 = G12vec[j]
             G22 =  G22vec[j]
             G11G22 = G11+G22
             S11 = G11G22 + 2*G11
             S12 = 2*G12
             S22 = G11G22 + 2*G22
-            
+
             #Calculate S for the bond petween point "pt" in family of "j"
             j_pt = find_valueID(neighbors[start_idx[neighbors[j]]:end_idx[neighbors[j]]],pt) + start_idx[neighbors[j]]
-            jG11 = G11vec[j_pt]  
+            jG11 = G11vec[j_pt]
             jG12 = G12vec[j_pt]
             jG22 =  G22vec[j_pt]
             jG11G22 = jG11+jG22
@@ -848,7 +847,7 @@ def gen_StiffMat(coordVec,delta,Emod):
             stiffMat[pt*2+1,2*neighbors[j]] = Sbar12
             stiffMat[pt*2+1,2*neighbors[j]+1] = Sbar22
 
-    stiffMat = stiffMat*mu 
+    stiffMat = stiffMat*mu
     return stiffMat
 
 @njit
@@ -866,7 +865,7 @@ def gen_StiffMat3D(coordVec,delta,Emod):
     for pt in range(coordVec.shape[0]):
         for j in range(start_idx[pt],end_idx[pt]):
             #Calculate S for the bond between point "j" in family of "pt"
-            G11 = G11vec[j]  
+            G11 = G11vec[j]
             G12 = G12vec[j]
             G13 = G13vec[j]
             G22 = G22vec[j]
@@ -880,10 +879,10 @@ def gen_StiffMat3D(coordVec,delta,Emod):
             S12 = 2*G12
             S13 = 2*G13
             S23 = 2*G23
-            
+
             #Calculate S for the bond petween point "pt" in family of "j"
             j_pt = find_valueID(neighbors[start_idx[neighbors[j]]:end_idx[neighbors[j]]],pt) + start_idx[neighbors[j]]
-            jG11 = G11vec[j_pt]  
+            jG11 = G11vec[j_pt]
             jG12 = G12vec[j_pt]
             jG13 = G13vec[j_pt]
             jG22 =  G22vec[j_pt]
@@ -933,7 +932,7 @@ def gen_StiffMat3D(coordVec,delta,Emod):
             stiffMat[pt*3+2,3*neighbors[j]+1] = Sbar23
             stiffMat[pt*3+2,3*neighbors[j]+2] = Sbar33
 
-    stiffMat = stiffMat*mu 
+    stiffMat = stiffMat*mu
     return stiffMat
 
 @njit
@@ -944,18 +943,18 @@ def applyDispBC(BCvec,stiffnessMat,RHSvec):
     BCvec : 2d array of floats. Contains the points for which displacement BC will be applied to and the boundary conditions that will be applied to them. BCvec.shape = [number of constrained points, number of constrained DOF]
                 BCvec.shape[0] -> contains point ID's from the discretization. POints with the ID writen here get constrained
                 BCvec.shape[1] -> for 2d, this dimension is of length 2 or 3. The first input in the ID's, the second is the X direction constraints and third the Y direction constraints.
-    
+
     stiffnessMat : 2d array of floats. The stiffness matrix created using the "pddo.gen_StiffMat()" function. stiffnessMat.shape = [number of points in discretization * 2, number of points in discretization * 2] = [number of DOF, number of DOF] -> for 2D
                     This stiffness matrix does not have any BC applied to it!
-    
+
     RHSvec : 1d array of floats. Array of zeros to be used to construct the RHS vector with applied BC's. RHSvec.shape = [number of DOF]
 
     Outputs:
     --------
     BCstiffnessMat : 2d array of floats. The stiffness matrix from the inputs but with BC's applied! BCstiffnessMat.shape = [number of DOF,number of DOF]
-    
+
     RHSvec : 1d array of floats. The RHS vector from the inputs but with applied BC's. RHSvec.shape = [number of DOF]
-    
+
     """
     dim = 0
     if BCvec.shape[1] == 3: # 3 because the first (zeroth in python) column are ID's
@@ -983,7 +982,7 @@ def applyDispBC(BCvec,stiffnessMat,RHSvec):
                 BCstiffnessMat[:,globdof] = 0
                 BCstiffnessMat[globdof,:] = 0
                 BCstiffnessMat[globdof,globdof] = np.float64(1)
-        
+
         RHSvec = RHSvec - RHSvec2
 
         for i in range(BCpts.shape[0]):
@@ -994,7 +993,7 @@ def applyDispBC(BCvec,stiffnessMat,RHSvec):
 
         return BCstiffnessMat,RHSvec
 
-    else: 
+    else:
         print("Dimensions of stiffness matrix do not match dimensions of the RHS vector!")
 
 def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2], RHSvec: np.ndarray[float,1], dim:int):
@@ -1006,18 +1005,18 @@ def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2],
                 BCvec[:,0] -> contains point ID's from the discretization. Points with the ID writen here get constrained
                 BCvec[:,1:4] -> contains bool's to see if the DOF is contrained. BCvec[:,1] -> DOF 0, BCvec[:,2] -> DOF 1, BCvec[:,2] -> DOF 3.
                 BCvec[:,4:7] -> contains the value of the applied displacement for DOF's from BCvec[:,1:4]
-    
+
     stiffnessMat : 2d array of floats. The stiffness matrix created using the "pddo.gen_StiffMat()" function. stiffnessMat.shape = [number of points in discretization * 2, number of points in discretization * 2] = [number of DOF, number of DOF] -> for 2D
                     This stiffness matrix does not have any BC applied to it!
-    
+
     RHSvec : 1d array of floats. Array of zeros to be used to construct the RHS vector with applied BC's. RHSvec.shape = [number of DOF]
 
     Outputs:
     --------
     BCstiffnessMat : 2d array of floats. The stiffness matrix from the inputs but with BC's applied! BCstiffnessMat.shape = [number of DOF,number of DOF]
-    
+
     RHSvec : 1d array of floats. The RHS vector from the inputs but with applied BC's. RHSvec.shape = [number of DOF]
-    
+
     """
 
     if (stiffnessMat.shape[1] == RHSvec.shape[0]):
@@ -1041,7 +1040,7 @@ def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2],
                     BCstiffnessMat[:,globdof] = 0
                     BCstiffnessMat[globdof,:] = 0
                     BCstiffnessMat[globdof,globdof] = np.float64(1)
-        
+
         RHSvec = RHSvec - RHSvec2
 
         for i in range(BCpts.shape[0]):
@@ -1052,7 +1051,7 @@ def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2],
 
         return BCstiffnessMat,RHSvec
 
-    else: 
+    else:
         print("Dimensions of stiffness matrix do not match dimensions of the RHS vector!")
 
 @njit
@@ -1094,31 +1093,31 @@ class Material():
     def damage_model(self,stretch,damage,delta,thickness):
         return (1-damage)* (24*self.mu/(np.pi*thickness*delta**3)) * stretch
 
-class HistoryData(): 
+class HistoryData():
     def __init__(self) -> None:
         self.force_convergence = []
 
 class PDFatigueModel:
     def __init__(self,coordVec,delta,cracks,Emod):
         """Initialised with information that is needed to create the variables that will stay the same during tze simulaion. At the time of writihng this calss was made for fatigue, so anything concerning the geometzry stays the same.
-            Se The neighbors stay the same! The G matrices therefore stay the same and are noit updated after crack growth! 
+            Se The neighbors stay the same! The G matrices therefore stay the same and are noit updated after crack growth!
         """
         self.geometry = PDGeometry(coordVec,delta,cracks)
         self.material = Material(Emod)
         self.historyData = HistoryData()
 
-    
+
     def calc_int_bond_force_from_stretch(self,constitutive_model,bond_stretch,bond_normal,bond_damage,delta,thickness):
         return constitutive_model(bond_stretch,bond_damage,delta,thickness) * bond_normal
 
     def gen_stiffness_matrix(self,LiveBonds: np.ndarray, bondDamage: np.ndarray) -> np.ndarray:
         stiffMat = np.zeros((self.geometry.coordVec.shape[0]*2,self.geometry.coordVec.shape[0]*2),dtype=float)
         return _generate_stiffness_matrix(self.geometry.coordVec,self.geometry.neighbors, self.geometry.start_idx, self.geometry.end_idx, self.geometry.G11vec, self.geometry.G12vec, self.geometry.G22vec, self.material.mu, LiveBonds, bondDamage, stiffMat)
-    
+
     def apply_displacement_BC(self,BCvec,stiffnessMat,RHSvec):
         """Only works for dense matrix form"""
         return applyDispBC(BCvec,stiffnessMat,RHSvec)
-    
+
     def calc_bond_stretches(self,cur_coordVec):
         """Calculate the stretches of each bond"""
         return (calc_bondLenghts(cur_coordVec,self.geometry.neighbors,self.geometry.start_idx,self.geometry.end_idx)-self.geometry.init_BondLens)/self.geometry.init_BondLens
@@ -1132,7 +1131,7 @@ class PDFatigueModel:
 
         if num_max_it < 0 or type(num_max_it) != int:
             print("The maximum number of iterations can not be a negative value and it must be an integer type!")
-        
+
         if epsilon <= 0:
             print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
 
@@ -1166,7 +1165,7 @@ class PDFatigueModel:
 
         if num_max_it < 0 or type(num_max_it) != int:
             print("The maximum number of iterations can not be a negative value and it must be an integer type!")
-        
+
         if epsilon <= 0:
             print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
 
@@ -1207,7 +1206,7 @@ class PDFatigueModel:
 
         if num_max_it < 0 or type(num_max_it) != int:
             print("The maximum number of iterations can not be a negative value and it must be an integer type!")
-        
+
         if epsilon <= 0:
             print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
         _disps = np.zeros_like(self.geometry.coordVec)
@@ -1215,7 +1214,7 @@ class PDFatigueModel:
         for iter in range(num_max_it):# and error > epsilon:
             print("Iteration {}".format(iter))
             _stiffmat = self.gen_stiffness_matrix(self.geometry.curLiveBonds, self.geometry.curBondDamage)
-            
+
             if iter ==0:
                 _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
                 _BC_RHSvec_base = _BC_RHSvec
@@ -1251,7 +1250,7 @@ class PDFatigueModel:
 
         if num_max_it < 0 or type(num_max_it) != int:
             print("The maximum number of iterations can not be a negative value and it must be an integer type!")
-        
+
         if epsilon <= 0:
             print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
 
@@ -1268,7 +1267,7 @@ class PDFatigueModel:
             else:
                 BCvec[:,1:] = 0
                 _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
-                
+
             _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
             #Solve sistem of equation for disaplcements
             _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
@@ -1276,7 +1275,7 @@ class PDFatigueModel:
             _newCoordVec = _newCoordVec + _disps
             #Calculate bond stretches
             _cur_bond_stretches = self.calc_bond_stretches(_newCoordVec)
-            print(_cur_bond_stretches)
+            # print(_cur_bond_stretches)
             self.geometry.curBondDamage = self.update_bond_damage(np.abs(_cur_bond_stretches),s1,sc)
             #Calculate the internal forces based on the calculated stretches
             internal_bondforce = np.zeros(shape=2)
@@ -1292,14 +1291,14 @@ class PDFatigueModel:
                 i += 1
             #Calculate the residual of the forces (Residual_forces = F_external - F_internal)
             _residual_forces = (_BC_RHSvec - internal_pointforces)
-            print(_BC_RHSvec)
-            print(internal_pointforces)
-            print(_residual_forces)
+            # print(_BC_RHSvec)
+            # print(internal_pointforces)
+            # print(_residual_forces)
             # Calculate the norm of the residual and check if it is smaller than some defined value for epsilon
             # _residual_forces_norm = np.linalg.norm(_residual_forces/internal_pointforces)
             dif_vec = _residual_forces.reshape((np.int(_residual_forces.shape[0]/2),2)) - internal_pointforces.reshape((np.int(internal_pointforces.shape[0]/2),2))
-            _residual_forces_norm = np.linalg.norm(np.sum(dif_vec,axis=0)/np.sum(internal_pointforces.reshape((np.int(internal_pointforces.shape[0]/2),2)))) 
-            #If residual is small enough return the displacements          
+            _residual_forces_norm = np.linalg.norm(np.sum(dif_vec,axis=0)/np.sum(internal_pointforces.reshape((np.int(internal_pointforces.shape[0]/2),2))))
+            #If residual is small enough return the displacements
             if _residual_forces_norm <= epsilon:
                 print(f"Convergence succesfull in step: {iter}. Maximum bond stretch = {_cur_bond_stretches.max()}")
                 return _disps
@@ -1326,17 +1325,17 @@ def _generate_stiffness_matrix(coordVec,neighbors, start_idx, end_idx, G11vec, G
             alive = True
             if currentBondStatus == alive:
                 #Calculate S for the bond between point "j" in family of "pt"
-                G11 = G11vec[j]  
+                G11 = G11vec[j]
                 G12 = G12vec[j]
                 G22 =  G22vec[j]
                 G11G22 = G11+G22
                 S11 = G11G22 + 2*G11
                 S12 = 2*G12
                 S22 = G11G22 + 2*G22
-                
+
                 #Calculate S for the bond petween point "pt" in family of "j"
                 j_pt = find_valueID(neighbors[start_idx[neighbors[j]]:end_idx[neighbors[j]]],pt) + start_idx[neighbors[j]]
-                jG11 = G11vec[j_pt]  
+                jG11 = G11vec[j_pt]
                 jG12 = G12vec[j_pt]
                 jG22 =  G22vec[j_pt]
                 jG11G22 = jG11+jG22
@@ -1374,17 +1373,17 @@ def _generate_stiffness_matrix2(coordVec,neighbors, start_idx, end_idx, G11vec, 
             alive = True
             if currentBondStatus == alive:
                 #Calculate S for the bond between point "j" in family of "pt"
-                G11 = G11vec[j]  
+                G11 = G11vec[j]
                 G12 = G12vec[j]
                 G22 =  G22vec[j]
                 G11G22 = G11+G22
                 S11 = G11G22 + 2*G11
                 S12 = 2*G12
                 S22 = G11G22 + 2*G22
-                
+
                 #Calculate S for the bond petween point "pt" in family of "j"
                 j_pt = find_valueID(neighbors[start_idx[neighbors[j]]:end_idx[neighbors[j]]],pt) + start_idx[neighbors[j]]
-                jG11 = G11vec[j_pt]  
+                jG11 = G11vec[j_pt]
                 jG12 = G12vec[j_pt]
                 jG22 =  G22vec[j_pt]
                 jG11G22 = jG11+jG22
@@ -1411,3 +1410,62 @@ def _generate_stiffness_matrix2(coordVec,neighbors, start_idx, end_idx, G11vec, 
 
     stiffMat = stiffMat
     return stiffMat
+
+@njit
+def _generate_bond_stiffnesses(coordVec,neighbors, start_idx, end_idx, G11vec, G12vec,G22vec, mu):
+    """Function is only meant to be called inside the "gen_stiffness_matrix" method of the PDFatigueModel class!
+    """
+    bond_stiff_matrix_array = np.zeros(shape=(neighbors.shape[0],2,2))
+    for pt in range(coordVec.shape[0]):
+        for j in range(start_idx[pt],end_idx[pt]):
+                #Calculate S for the bond between point "j" in family of "pt"
+                G11 = G11vec[j]
+                G12 = G12vec[j]
+                G22 =  G22vec[j]
+                G11G22 = G11+G22
+                S11 = G11G22 + 2*G11
+                S12 = 2*G12
+                S22 = G11G22 + 2*G22
+
+                #Calculate S for the bond petween point "pt" in family of "j"
+                j_pt = find_valueID(neighbors[start_idx[neighbors[j]]:end_idx[neighbors[j]]],pt) + start_idx[neighbors[j]]
+                jG11 = G11vec[j_pt]
+                jG12 = G12vec[j_pt]
+                jG22 =  G22vec[j_pt]
+                jG11G22 = jG11+jG22
+                jS11 = jG11G22 + 2*jG11
+                jS12 = 2*jG12
+                jS22 = jG11G22 + 2*jG22
+
+                #Calculate Sbar for bond pt_j (pt is main point j in fam member)
+                Sbar11 = 0.5*(S11+jS11) * mu[j]
+                Sbar12 = 0.5*(S12+jS12) * mu[j]
+                Sbar22 = 0.5*(S22+jS22) * mu[j]
+
+
+                bond_stiff_matrix_array[j,0,0] = Sbar11
+                bond_stiff_matrix_array[j,0,1] = Sbar12
+                bond_stiff_matrix_array[j,1,0] = Sbar12
+                bond_stiff_matrix_array[j,1,1] = Sbar22
+
+    return bond_stiff_matrix_array
+
+@njit
+def _generate_bond_displacement_vecs(dispVec, neighbors, start_idx, end_idx):
+
+    del_disps = np.zeros((neighbors.shape[0],2))
+    for pt in range(dispVec.shape[0]):
+        for j in range(start_idx[pt],end_idx[pt]):
+            del_disps[j] = dispVec[neighbors[j]] - dispVec[pt]
+
+    return del_disps
+
+@njit
+def generate_force_dens_vecs(bond_stiffness_mat:np.ndarray[float,3], bond_displacement_vecs:np.ndarray[float,2]) -> np.ndarray:
+    force_dens_vecs = np.zeros(shape = bond_displacement_vecs.shape)
+    for bond in range (bond_displacement_vecs.shape[0]):
+
+        force_dens_vecs[bond,0] = bond_stiffness_mat[bond,0,0] * bond_displacement_vecs[bond,0] + bond_stiffness_mat[bond,0,1] * bond_displacement_vecs[bond,1]
+        force_dens_vecs[bond,1] = bond_stiffness_mat[bond,1,0] * bond_displacement_vecs[bond,0] + bond_stiffness_mat[bond,1,1] * bond_displacement_vecs[bond,1]
+
+    return force_dens_vecs

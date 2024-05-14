@@ -134,16 +134,10 @@ class PDFatigueSolver:
         stiffMat = np.zeros((self.FID.coordVec.shape[0]*2,self.FID.coordVec.shape[0]*2),dtype=float)
         return pddo._generate_stiffness_matrix2(self.FID.coordVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx, self.FID.G11vec, self.FID.G12vec, self.FID.G22vec, self.FID.muArr, LiveBonds, bondDamage, stiffMat)
     
-    def gen_bond_stiffness_matrices(self) -> np.ndarray:
-        return pddo._generate_bond_stiffnesses(self.FID.coordVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx, self.FID.G11vec, self.FID.G12vec, self.FID.G22vec, self.FID.muArr)
-
     def apply_displacement_BC(self,BCvec,stiffnessMat,RHSvec):
         """Only works for dense matrix form"""
         return pddo.applyDispBC2(BCvec,stiffnessMat,RHSvec,dim=self.FID.dim)
-
-    def gen_bond_displacement_vecs(self,dispVec: np.ndarray[float,2]) -> np.ndarray:
-        return pddo._generate_bond_displacement_vecs(dispVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx)
-
+    
     def calc_bond_stretches(self,cur_coordVec):
         """Calculate the stretches of each bond"""
         return (pddo.calc_bondLenghts(cur_coordVec,self.FID.neighbors,self.FID.start_idx,self.FID.end_idx)-self.FID.init_BondLens)/self.FID.init_BondLens
@@ -155,8 +149,8 @@ class PDFatigueSolver:
         stiffMat = self.gen_stiffness_matrix(self.FID.curLiveBonds,self.FID.curBondDamage)
         forceDensVec = stiffMat @ disps
         return forceDensVec
-    
-    def solve_for_eq3(self):
+
+    def solve_for_eq3(self) -> np.ndarray:
         """Solves for equlibirum state of the system with desegnated "epsilon" as the maximum residual fraction"""
         BCvec = self.FID.combined_BC_vec
         num_max_it = self.FID.num_max_it
