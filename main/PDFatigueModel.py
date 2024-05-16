@@ -9,6 +9,7 @@ class FatigueInputData:
         self.coordVec = numModel.Geometry.part_nodes.coordVec
         self.selectedDiscretization = numModel.Discretizations.selectedDiscretization
         self.delta = self.selectedDiscretization.delta
+        self.ptVolumes = self.selectedDiscretization.ptArea
         self.initialCracks = self.selectedDiscretization.initialCracks
         self.neighbors   = self.selectedDiscretization.neighbors
         self.start_idx   = self.selectedDiscretization.start_idx

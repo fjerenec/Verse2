@@ -88,7 +88,7 @@ class Discretization():
 
         else:
             self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors(self.coordVec,1.01*self.delta)
-        # print("the area:",self.ptArea)
+        print("the area:",self.ptArea)
 
         self.pd_point_count = self.n_neighbors.shape[0]
         self.pd_bond_count = self.neighbors.shape[0]

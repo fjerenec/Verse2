@@ -1469,3 +1469,12 @@ def generate_force_dens_vecs(bond_stiffness_mat:np.ndarray[float,3], bond_displa
         force_dens_vecs[bond,1] = bond_stiffness_mat[bond,1,0] * bond_displacement_vecs[bond,0] + bond_stiffness_mat[bond,1,1] * bond_displacement_vecs[bond,1]
 
     return force_dens_vecs
+
+def family_integration(neighbors: np.ndarray[float,1], start_idx:np.ndarray[int,1], end_idx:np.ndarray[int,1], bond_values:np.ndarray[float,1],point_volumes: np.ndarray[float,1]) -> np.ndarray[float,1]:
+    pt_sum = np.empty_like(point_volumes)
+    for pt in range(point_volumes.shape[0]):
+        cur_sum = 0
+        for j in range(start_idx[pt],end_idx[pt]):
+            cur_sum = cur_sum + bond_values[j] * point_volumes[neighbors[j]]
+        pt_sum[pt] = cur_sum
+    return pt_sum
