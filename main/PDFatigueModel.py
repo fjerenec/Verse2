@@ -3,6 +3,7 @@ from NumericalModel import NumericalModel
 import pddopyW2 as pddo
 from scipy.sparse.linalg import spsolve
 from scipy.sparse import csr_matrix
+from scipy.sparse.linalg import cg
 
 class FatigueInputData:
     def __init__(self, numModel: NumericalModel) -> None:
@@ -107,7 +108,7 @@ class FatigueInputData:
 
         self.muArr = np.empty_like(self.emodArr,dtype = float)
         for i, emod in enumerate(self.emodArr):
-            self.muArr[i] = emod/(float(1-0.25))
+            self.muArr[i] = emod/(2*(float(1+0.25)))
 
     def create_combined_disp_BC_vec(self):
         numOfPtsInAllSets = 0
@@ -152,7 +153,7 @@ class PDFatigueSolver:
     def update_bond_damage(self,cur_bondStretches:np.ndarray, s1:np.ndarray[float,1], sc:np.ndarray[float,1])-> np.ndarray:
         return _calc_bond_damage(cur_bondStretches,s1,sc)
     
-    def solve_lin_sys(self,disps) -> np.ndarray:
+    def solve_lin_sys_for_f(self,disps) -> np.ndarray:
         stiffMat = self.gen_stiffness_matrix(self.FID.curLiveBonds,self.FID.curBondDamage)
         forceDensVec = stiffMat @ disps
         return forceDensVec
@@ -170,7 +171,7 @@ class PDFatigueSolver:
         
         if epsilon <= 0:
             print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
-
+        # Need to create an ""initialLiveBonds" parameter so that i can restart the simulation from the beginning without having to reset the whole geometric model!
         _stiffmat = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
         _residual_force_norm_old =  1
         for iter in range(num_max_it):# and error > epsilon:
@@ -179,6 +180,7 @@ class PDFatigueSolver:
             _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
             _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
             _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
+            # _solu, info = cg(_BC_stiffmatCSR,_BC_RHSvec)
             _disps = np.reshape(_solu,(int(_solu.shape[0]/2),2))
             _newCoordVec = self.FID.coordVec + _disps
             _cur_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))

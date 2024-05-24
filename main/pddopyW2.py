@@ -802,7 +802,7 @@ def gen_Gmat3D(coordVec,neighbors,start_idx,end_idx,delta):
 
 @njit(parallel = True)
 def gen_StiffMat(coordVec,delta,Emod):
-    mu = Emod/(float(1-0.25))
+    mu = Emod/(2*(float(1+0.25)))
     stiffMat = np.zeros((coordVec.shape[0]*2,coordVec.shape[0]*2),dtype=float)
     neighbors,start_idx,end_idx,n_neighbors = find_neighbors(coordVec,1.01*delta)
     Gvec = gen_Gmat2D(coordVec,neighbors,start_idx,end_idx,delta)
@@ -852,7 +852,7 @@ def gen_StiffMat(coordVec,delta,Emod):
 
 @njit
 def gen_StiffMat3D(coordVec,delta,Emod):
-    mu = Emod/(float(1-0.25))
+    mu = Emod/(2*(float(1+0.25)))
     stiffMat = np.zeros((coordVec.shape[0]*3,coordVec.shape[0]*3),dtype=float)
     neighbors,start_idx,end_idx,n_neighbors = find_neighbors(coordVec,1.01*delta)
     Gvec = gen_Gmat3D(coordVec,neighbors,start_idx,end_idx,delta)
@@ -1088,7 +1088,7 @@ class PDGeometry():
 class Material():
     def __init__(self,Emod) -> None:
         self.Emod = Emod
-        self.mu = self.Emod/(float(1-0.25))
+        self.mu = self.Emod/(2*(float(1+0.25)))
 
     def damage_model(self,stretch,damage,delta,thickness):
         return (1-damage)* (24*self.mu/(np.pi*thickness*delta**3)) * stretch
