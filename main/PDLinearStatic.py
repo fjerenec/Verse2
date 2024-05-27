@@ -192,13 +192,13 @@ class PDFatigueSolver:
                 print(f"Residual forces/Externalforces = {_residual_force_norm}")
                 print(f"Change of residual from previous step: {t1}")
                 self.result = _disps
-                return 
+                return
             _residual_force_norm_old = _residual_force_norm
         print("Solution did not converge!")
         self.result = _disps
         return
 
-def _calc_bond_damage(cur_bondStretches:np.ndarray, s0arr:np.ndarray[float,1], scarr:np.ndarray[float,1]) -> np.ndarray:
+def _calc_bond_damage(cur_bondStretches:np.ndarray[float,1], s0arr:np.ndarray[float,1], scarr:np.ndarray[float,1]) -> np.ndarray:
     new_damage = np.zeros(cur_bondStretches.shape[0])
     for bond in range(cur_bondStretches.shape[0]):
         s0 = s0arr[bond]

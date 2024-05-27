@@ -4,6 +4,7 @@ import pddopyW2 as pddo
 from scipy.sparse.linalg import spsolve
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import cg
+from numba import njit
 
 class FatigueInputData:
     def __init__(self, numModel: NumericalModel) -> None:
@@ -20,6 +21,8 @@ class FatigueInputData:
         self.pd_point_count = self.selectedDiscretization.pd_point_count
         self.pd_bond_count  = self.selectedDiscretization.pd_bond_count
         self.bond_normals   = self.selectedDiscretization.bond_normals
+        self.initLiveBonds  = self.selectedDiscretization.initLiveBonds
+        self.initBondDamage = self.selectedDiscretization.initBondDamage
         self.curLiveBonds   = self.selectedDiscretization.curLiveBonds
         self.curBondDamage  = self.selectedDiscretization.curBondDamage
         self.init_BondLens  = self.selectedDiscretization.init_BondLens
@@ -117,14 +120,13 @@ class FatigueInputData:
             numOfPtsInAllSets += numOfPtsInDispLoad
 
         self.combined_BC_vec = np.ndarray(shape=(numOfPtsInAllSets,7))
-        
         previousSetsSum = 0
         currentSetLength = 0
         for name, displacement_load in self.dispLoadsTable.items():
             currentSetLength = displacement_load.nodeSet.get_number_of_points()
             currentSetsSum = previousSetsSum+currentSetLength
             self.combined_BC_vec[previousSetsSum : currentSetsSum] = displacement_load.BC_vec
-            previousSetsSum = currentSetLength
+            previousSetsSum = currentSetsSum
 
 class PDFatigueSolver:
     def __init__(self, numModel: NumericalModel) -> None:
@@ -160,7 +162,7 @@ class PDFatigueSolver:
     
     def solve_for_eq3(self):
         """Solves for equlibirum state of the system with desegnated "epsilon" as the maximum residual fraction"""
-        BCvec = self.FID.combined_BC_vec
+        BCvec = self.FID.combined_BC_vec#[:-1]
         num_max_it = self.FID.num_max_it
         epsilon = self.FID.epsilon
         s0 = self.FID.s0arr
@@ -171,7 +173,8 @@ class PDFatigueSolver:
         
         if epsilon <= 0:
             print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
-        # Need to create an ""initialLiveBonds" parameter so that i can restart the simulation from the beginning without having to reset the whole geometric model!
+
+        self.FID.curLiveBonds = self.FID.initLiveBonds
         _stiffmat = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
         _residual_force_norm_old =  1
         for iter in range(num_max_it):# and error > epsilon:
@@ -185,7 +188,7 @@ class PDFatigueSolver:
             _newCoordVec = self.FID.coordVec + _disps
             _cur_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
             self.FID.curBondDamage = self.update_bond_damage(_cur_bond_stretches,s0,sc)
-            # #need a line to update "LiveBonds" array!
+            self.FID.curLiveBonds = _update_live_bonds(self.FID.curBondDamage)
             _stiffmat = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
             _internal_force_vec = _stiffmat @ _solu
             _residual_force_norm = np.abs(np.linalg.norm(_BC_RHSvec-_internal_force_vec) / np.linalg.norm(_BC_RHSvec)-1)
@@ -218,4 +221,11 @@ def _calc_bond_damage(cur_bondStretches:np.ndarray, s0arr:np.ndarray[float,1], s
             new_damage[bond] = 1
     return new_damage
 
+@njit
+def _update_live_bonds(bond_damage: np.ndarray[float,1]) -> np.ndarray[int,1]:
+    live_bonds = np.zeros_like(bond_damage)
+    for bond in range(live_bonds.shape[0]):
+        if bond_damage[bond] < 1:
+            live_bonds[bond] = 1
+    return live_bonds
 

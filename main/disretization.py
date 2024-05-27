@@ -88,12 +88,13 @@ class Discretization():
 
         else:
             self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors(self.coordVec,1.01*self.delta)
-        print("the area:",self.ptArea)
 
         self.pd_point_count = self.n_neighbors.shape[0]
         self.pd_bond_count = self.neighbors.shape[0]
         self.bond_normals = pddo.calc_bond_normals(self.pd_point_count, self.pd_bond_count, self.coordVec, self.neighbors, self.start_idx, self.end_idx)
+        self.initLiveBonds = np.ones_like(self.neighbors)
         self.curLiveBonds = np.ones_like(self.neighbors)
+        self.initBondDamage = np.zeros_like(self.neighbors)
         self.curBondDamage = np.zeros_like(self.neighbors)
         self.init_BondLens = pddo.calc_bondLenghts(self.coordVec,self.neighbors,self.start_idx,self.end_idx)
         self.Gvec = pddo.gen_Gmat2D_fixed2(self.coordVec,self.neighbors,self.start_idx,self.end_idx,self.delta,self.ptArea)

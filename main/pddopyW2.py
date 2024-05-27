@@ -4,6 +4,7 @@ from scipy.special import factorial
 from scipy.sparse import csr_matrix
 # from pypardiso import spsolve
 from scipy.sparse.linalg import spsolve #Change this back to pypardiso! Using scipy only for MacOD
+from scipy.sparse.linalg import cg
 
 @njit
 def find_neighbors(coords, r):
