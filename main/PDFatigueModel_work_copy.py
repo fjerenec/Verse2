@@ -128,6 +128,21 @@ class FatigueInputData:
             self.combined_BC_vec[previousSetsSum : currentSetsSum] = displacement_load.BC_vec
             previousSetsSum = currentSetsSum
 
+
+class LoadInc:
+    def __init__(self) -> None:
+        self.BCvec;
+        self.num_max_it;
+        self.epsilon;
+        self.s0_arr;
+        self.sc_arr;
+
+        self.initLiveBonds;
+        self.curLiveBonds;
+
+        self.initBondDamage;
+        self.curBondDamage;
+
 class PDFatigueSolver:
     def __init__(self, numModel: NumericalModel) -> None:
         """FID = FatigueInputData"""
@@ -160,13 +175,13 @@ class PDFatigueSolver:
         forceDensVec = stiffMat @ disps
         return forceDensVec
     
-    def solve_for_eq3(self):
+    def solve_for_eq3(self, LoadInrement: LoadInc):
         """Solves for equlibirum state of the system with desegnated "epsilon" as the maximum residual fraction"""
-        BCvec = self.FID.combined_BC_vec
-        num_max_it = self.FID.num_max_it
-        epsilon = self.FID.epsilon
-        s0 = self.FID.s0arr
-        sc = self.FID.scarr
+        BCvec = LoadInrement.combined_BC_vec
+        num_max_it = LoadInrement.num_max_it
+        epsilon = LoadInrement.epsilon
+        s0 = LoadInrement.s0arr
+        sc = LoadInrement.scarr
 
         if num_max_it < 0 or type(num_max_it) != int:
             print("The maximum number of iterations can not be a negative value and it must be an integer type!")
@@ -174,27 +189,27 @@ class PDFatigueSolver:
         if epsilon <= 0:
             print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
 
-        self.FID.curLiveBonds = self.FID.initLiveBonds
-        _stiffmat = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
+        LoadInrement.curLiveBonds = LoadInrement.initLiveBonds
+        _stiffmat = self.gen_stiffness_matrix(LoadInrement.curLiveBonds, LoadInrement.curBondDamage)
         _residual_force_norm_old =  1
         for iter in range(num_max_it):# and error > epsilon:
             print("Iteration {}".format(iter))
-            _RHSvec = np.zeros(self.FID.coordVec.shape[0]*2)
+            _RHSvec = np.zeros(LoadInrement.coordVec.shape[0]*2)
             _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
             _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
             _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
             # _solu, info = cg(_BC_stiffmatCSR,_BC_RHSvec)
             _disps = np.reshape(_solu,(int(_solu.shape[0]/2),2))
-            _newCoordVec = self.FID.coordVec + _disps
+            _newCoordVec = LoadInrement.coordVec + _disps
             _cur_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
-            self.FID.curBondDamage = self.update_bond_damage(_cur_bond_stretches,s0,sc)
-            self.FID.curLiveBonds = _update_live_bonds(self.FID.curBondDamage)
-            _stiffmat = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
+            LoadInrement.curBondDamage = self.update_bond_damage(_cur_bond_stretches,s0,sc)
+            LoadInrement.curLiveBonds = _update_live_bonds(LoadInrement.curBondDamage)
+            _stiffmat = self.gen_stiffness_matrix(LoadInrement.curLiveBonds, LoadInrement.curBondDamage)
             _internal_force_vec = _stiffmat @ _solu
             _residual_force_norm = np.abs(np.linalg.norm(_BC_RHSvec-_internal_force_vec) / np.linalg.norm(_BC_RHSvec)-1)
             print("Residual force norm = ",_residual_force_norm)
             t1= np.abs(1-_residual_force_norm/_residual_force_norm_old)
-            self.FID.force_convergence.append(_residual_force_norm)
+            LoadInrement.force_convergence.append(_residual_force_norm)
             print(f"Change of residual from previous step: {t1}")
             if _cur_bond_stretches.max() <= s0.min():
                 print("Applied load was not large enough to cause damage!")
@@ -208,6 +223,12 @@ class PDFatigueSolver:
             _residual_force_norm_old = _residual_force_norm
         print("Solution did not converge!")
         self.result = _disps
+        return
+    
+    def incremental_solve_for_eq(self):
+        #Loop over loading instances -> wil be called a "STEP" as in abaqus
+        for step in 
+        #For individual loading instance, use "solve_for_eq"
         return
 
 def _calc_bond_damage(cur_bondStretches:np.ndarray, s0arr:np.ndarray[float,1], scarr:np.ndarray[float,1]) -> np.ndarray:
