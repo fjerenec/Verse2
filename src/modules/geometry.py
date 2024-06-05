@@ -1,4 +1,8 @@
-import data
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join('..', 'src')))
+
+import modules.data as data
 import numpy as np
 
 class Geometry():

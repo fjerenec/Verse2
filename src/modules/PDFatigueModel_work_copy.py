@@ -1,14 +1,21 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join('..', 'src')))
+
 import numpy as np
-from NumericalModel import NumericalModel
-import pddopyW2 as pddo
+from modules.NumericalModel import NumericalModel
+import libs.pddopyW2 as pddo
 from scipy.sparse.linalg import spsolve
 from scipy.sparse import csr_matrix
+from scipy.sparse.linalg import cg
+from numba import njit
 
 class FatigueInputData:
     def __init__(self, numModel: NumericalModel) -> None:
         self.coordVec = numModel.Geometry.part_nodes.coordVec
         self.selectedDiscretization = numModel.Discretizations.selectedDiscretization
         self.delta = self.selectedDiscretization.delta
+        self.ptVolumes = self.selectedDiscretization.ptArea
         self.initialCracks = self.selectedDiscretization.initialCracks
         self.neighbors   = self.selectedDiscretization.neighbors
         self.start_idx   = self.selectedDiscretization.start_idx
@@ -18,6 +25,8 @@ class FatigueInputData:
         self.pd_point_count = self.selectedDiscretization.pd_point_count
         self.pd_bond_count  = self.selectedDiscretization.pd_bond_count
         self.bond_normals   = self.selectedDiscretization.bond_normals
+        self.initLiveBonds  = self.selectedDiscretization.initLiveBonds
+        self.initBondDamage = self.selectedDiscretization.initBondDamage
         self.curLiveBonds   = self.selectedDiscretization.curLiveBonds
         self.curBondDamage  = self.selectedDiscretization.curBondDamage
         self.init_BondLens  = self.selectedDiscretization.init_BondLens
@@ -106,7 +115,7 @@ class FatigueInputData:
 
         self.muArr = np.empty_like(self.emodArr,dtype = float)
         for i, emod in enumerate(self.emodArr):
-            self.muArr[i] = emod/(float(1-0.25))
+            self.muArr[i] = emod/(2*(float(1+0.25)))
 
     def create_combined_disp_BC_vec(self):
         numOfPtsInAllSets = 0
@@ -115,14 +124,28 @@ class FatigueInputData:
             numOfPtsInAllSets += numOfPtsInDispLoad
 
         self.combined_BC_vec = np.ndarray(shape=(numOfPtsInAllSets,7))
-        
         previousSetsSum = 0
         currentSetLength = 0
         for name, displacement_load in self.dispLoadsTable.items():
             currentSetLength = displacement_load.nodeSet.get_number_of_points()
             currentSetsSum = previousSetsSum+currentSetLength
             self.combined_BC_vec[previousSetsSum : currentSetsSum] = displacement_load.BC_vec
-            previousSetsSum = currentSetLength
+            previousSetsSum = currentSetsSum
+
+
+class LoadInc:
+    def __init__(self) -> None:
+        self.BCvec = 0
+        self.num_max_it = 0
+        self.epsilon = 0
+        self.s0_arr = 0
+        self.sc_arr = 0
+
+        self.initLiveBonds = 0
+        self.curLiveBonds = 0
+
+        self.initBondDamage = 0
+        self.curBondDamage = 0
 
 class PDFatigueSolver:
     def __init__(self, numModel: NumericalModel) -> None:
@@ -134,10 +157,16 @@ class PDFatigueSolver:
         stiffMat = np.zeros((self.FID.coordVec.shape[0]*2,self.FID.coordVec.shape[0]*2),dtype=float)
         return pddo._generate_stiffness_matrix2(self.FID.coordVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx, self.FID.G11vec, self.FID.G12vec, self.FID.G22vec, self.FID.muArr, LiveBonds, bondDamage, stiffMat)
     
+    def gen_bond_stiffness_matrices(self) -> np.ndarray:
+        return pddo._generate_bond_stiffnesses(self.FID.coordVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx, self.FID.G11vec, self.FID.G12vec, self.FID.G22vec, self.FID.muArr)
+
     def apply_displacement_BC(self,BCvec,stiffnessMat,RHSvec):
         """Only works for dense matrix form"""
         return pddo.applyDispBC2(BCvec,stiffnessMat,RHSvec,dim=self.FID.dim)
-    
+
+    def gen_bond_displacement_vecs(self,dispVec: np.ndarray[float,2]) -> np.ndarray:
+        return pddo._generate_bond_displacement_vecs(dispVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx)
+
     def calc_bond_stretches(self,cur_coordVec):
         """Calculate the stretches of each bond"""
         return (pddo.calc_bondLenghts(cur_coordVec,self.FID.neighbors,self.FID.start_idx,self.FID.end_idx)-self.FID.init_BondLens)/self.FID.init_BondLens
@@ -145,18 +174,18 @@ class PDFatigueSolver:
     def update_bond_damage(self,cur_bondStretches:np.ndarray, s1:np.ndarray[float,1], sc:np.ndarray[float,1])-> np.ndarray:
         return _calc_bond_damage(cur_bondStretches,s1,sc)
     
-    def solve_lin_sys(self,disps) -> np.ndarray:
+    def solve_lin_sys_for_f(self,disps) -> np.ndarray:
         stiffMat = self.gen_stiffness_matrix(self.FID.curLiveBonds,self.FID.curBondDamage)
         forceDensVec = stiffMat @ disps
         return forceDensVec
-
-    def solve_for_eq3(self) -> np.ndarray:
+    
+    def solve_for_eq3(self, LoadInrement: LoadInc):
         """Solves for equlibirum state of the system with desegnated "epsilon" as the maximum residual fraction"""
-        BCvec = self.FID.combined_BC_vec
-        num_max_it = self.FID.num_max_it
-        epsilon = self.FID.epsilon
-        s0 = self.FID.s0arr
-        sc = self.FID.scarr
+        BCvec = LoadInrement.combined_BC_vec
+        num_max_it = LoadInrement.num_max_it
+        epsilon = LoadInrement.epsilon
+        s0 = LoadInrement.s0arr
+        sc = LoadInrement.scarr
 
         if num_max_it < 0 or type(num_max_it) != int:
             print("The maximum number of iterations can not be a negative value and it must be an integer type!")
@@ -164,25 +193,27 @@ class PDFatigueSolver:
         if epsilon <= 0:
             print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
 
-        _stiffmat = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
+        LoadInrement.curLiveBonds = LoadInrement.initLiveBonds
+        _stiffmat = self.gen_stiffness_matrix(LoadInrement.curLiveBonds, LoadInrement.curBondDamage)
         _residual_force_norm_old =  1
         for iter in range(num_max_it):# and error > epsilon:
             print("Iteration {}".format(iter))
-            _RHSvec = np.zeros(self.FID.coordVec.shape[0]*2)
+            _RHSvec = np.zeros(LoadInrement.coordVec.shape[0]*2)
             _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
             _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
             _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
+            # _solu, info = cg(_BC_stiffmatCSR,_BC_RHSvec)
             _disps = np.reshape(_solu,(int(_solu.shape[0]/2),2))
-            _newCoordVec = self.FID.coordVec + _disps
+            _newCoordVec = LoadInrement.coordVec + _disps
             _cur_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
-            self.FID.curBondDamage = self.update_bond_damage(_cur_bond_stretches,s0,sc)
-            # #need a line to update "LiveBonds" array!
-            _stiffmat = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
+            LoadInrement.curBondDamage = self.update_bond_damage(_cur_bond_stretches,s0,sc)
+            LoadInrement.curLiveBonds = _update_live_bonds(LoadInrement.curBondDamage)
+            _stiffmat = self.gen_stiffness_matrix(LoadInrement.curLiveBonds, LoadInrement.curBondDamage)
             _internal_force_vec = _stiffmat @ _solu
             _residual_force_norm = np.abs(np.linalg.norm(_BC_RHSvec-_internal_force_vec) / np.linalg.norm(_BC_RHSvec)-1)
             print("Residual force norm = ",_residual_force_norm)
             t1= np.abs(1-_residual_force_norm/_residual_force_norm_old)
-            self.FID.force_convergence.append(_residual_force_norm)
+            LoadInrement.force_convergence.append(_residual_force_norm)
             print(f"Change of residual from previous step: {t1}")
             if _cur_bond_stretches.max() <= s0.min():
                 print("Applied load was not large enough to cause damage!")
@@ -192,13 +223,19 @@ class PDFatigueSolver:
                 print(f"Residual forces/Externalforces = {_residual_force_norm}")
                 print(f"Change of residual from previous step: {t1}")
                 self.result = _disps
-                return
+                return 
             _residual_force_norm_old = _residual_force_norm
         print("Solution did not converge!")
         self.result = _disps
         return
+    
+    def incremental_solve_for_eq(self):
+        # #Loop over loading instances -> wil be called a "STEP" as in abaqus
+        # for step in 
+        # #For individual loading instance, use "solve_for_eq"
+        return
 
-def _calc_bond_damage(cur_bondStretches:np.ndarray[float,1], s0arr:np.ndarray[float,1], scarr:np.ndarray[float,1]) -> np.ndarray:
+def _calc_bond_damage(cur_bondStretches:np.ndarray, s0arr:np.ndarray[float,1], scarr:np.ndarray[float,1]) -> np.ndarray:
     new_damage = np.zeros(cur_bondStretches.shape[0])
     for bond in range(cur_bondStretches.shape[0]):
         s0 = s0arr[bond]
@@ -209,4 +246,10 @@ def _calc_bond_damage(cur_bondStretches:np.ndarray[float,1], s0arr:np.ndarray[fl
             new_damage[bond] = 1
     return new_damage
 
-
+@njit
+def _update_live_bonds(bond_damage: np.ndarray[float,1]) -> np.ndarray[int,1]:
+    live_bonds = np.zeros_like(bond_damage)
+    for bond in range(live_bonds.shape[0]):
+        if bond_damage[bond] < 1:
+            live_bonds[bond] = 1
+    return live_bonds

@@ -1,10 +1,14 @@
-import geometry
-import material
-import disretization
-import loads
-import interactions
-import simulation_settings
-import data
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join('..', 'src')))
+
+import modules.geometry as geometry
+import modules.material as material 
+import modules.disretization as disretization
+import modules.loads as loads
+import modules.interactions as interactions
+import modules.simulation_settings as simulation_settings
+import modules.data as data
 from typing import IO
 
 class NumericalModel():

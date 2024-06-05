@@ -1,4 +1,8 @@
-from data import Set, get_user_decision
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join('..', 'src')))
+
+from modules.data import Set, get_user_decision
 import numpy as np
 
 class BoundaryCons():

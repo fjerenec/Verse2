@@ -1,7 +1,11 @@
-import geometry
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join('..', 'src')))
+
+import modules.geometry as geometry
 import numpy as np
-import pddopyW2 as pddo
-from data import get_user_decision
+import libs.pddopyW2 as pddo
+from modules.data import get_user_decision
 
 class Discretizations():
     def __init__(self) -> None:

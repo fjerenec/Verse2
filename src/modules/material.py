@@ -1,5 +1,9 @@
-from data import get_user_decision
-from data import Set
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join('..', 'src')))
+
+from modules.data import get_user_decision, Set
+
 class Materials():
     def __init__(self) -> None:
         self.materialsTable = {}
