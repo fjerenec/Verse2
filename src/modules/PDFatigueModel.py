@@ -4,6 +4,7 @@ sys.path.append(os.path.abspath(os.path.join('..', 'src')))
 
 import numpy as np
 from modules.NumericalModel import NumericalModel
+from modules.data import HistoryOutput, Results
 import libs.pddopyW2 as pddo
 from scipy.sparse.linalg import spsolve
 from scipy.sparse import csr_matrix
@@ -136,17 +137,45 @@ class PDFatigueSolver:
     def __init__(self, numModel: NumericalModel) -> None:
         """FID = FatigueInputData"""
         self.FID = FatigueInputData(numModel)
+        self.HistroryOutput = HistoryOutput()
         pass
     
     def gen_stiffness_matrix(self,LiveBonds: np.ndarray, bondDamage: np.ndarray) -> np.ndarray:
+        """
+        Generate the stiffness matrix for the given LiveBonds and bondDamage.
+
+        Args:
+            LiveBonds (np.ndarray): An array of live bonds.
+            bondDamage (np.ndarray): An array of bond damage values.
+
+        Returns:
+            np.ndarray: The stiffness matrix.
+
+        """
         stiffMat = np.zeros((self.FID.coordVec.shape[0]*2,self.FID.coordVec.shape[0]*2),dtype=float)
         return pddo._generate_stiffness_matrix2(self.FID.coordVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx, self.FID.G11vec, self.FID.G12vec, self.FID.G22vec, self.FID.muArr, LiveBonds, bondDamage, stiffMat)
     
-    def gen_bond_stiffness_matrices(self) -> np.ndarray:
+    def gen_bond_stiffness_matrices(self) -> np.ndarray[float,2]:
+        """
+        Generate the bond stiffness matrices.
+
+        Returns:
+            np.ndarray[float,2]: The bond stiffness matrices.
+        """
         return pddo._generate_bond_stiffnesses(self.FID.coordVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx, self.FID.G11vec, self.FID.G12vec, self.FID.G22vec, self.FID.muArr)
 
     def apply_displacement_BC(self,BCvec,stiffnessMat,RHSvec):
-        """Only works for dense matrix form"""
+        """Does not work for compressed matrix forms
+        Apply displacement boundary conditions to the given stiffness matrix and RHS vector.
+
+        Parameters:
+            BCvec (np.ndarray): The boundary condition vector.
+            stiffnessMat (np.ndarray): The stiffness matrix.
+            RHSvec (np.ndarray): The RHS vector.
+
+        Returns:
+            np.ndarray: The modified stiffness matrix and RHS vector with boundary conditions applied.
+        """
         return pddo.applyDispBC2(BCvec,stiffnessMat,RHSvec,dim=self.FID.dim)
 
     def gen_bond_displacement_vecs(self,dispVec: np.ndarray[float,2]) -> np.ndarray:
@@ -160,12 +189,43 @@ class PDFatigueSolver:
         return _calc_bond_damage(cur_bondStretches,s1,sc)
     
     def solve_lin_sys_for_f(self,disps) -> np.ndarray:
+        """
+        Solve the linear system for the force density vector (RHS).
+
+        Args:
+            disps (np.ndarray): The displacement vector.
+
+        Returns:
+            np.ndarray: The force density vector.
+        """
         stiffMat = self.gen_stiffness_matrix(self.FID.curLiveBonds,self.FID.curBondDamage)
         forceDensVec = stiffMat @ disps
         return forceDensVec
     
-    def solve_for_eq3(self):
-        """Solves for equlibirum state of the system with desegnated "epsilon" as the maximum residual fraction"""
+    def solve_for_static_eq(self):
+        """
+        Solves for the equilibrium state of the system with the given "epsilon" as the maximum residual fraction.
+        This function iteratively solves for the equilibrium state of the system using the Newton-Raphson method (calculate the stiffness matrix and take a step).
+        Material nonlinearity is implemented as a reduction of the modulus of elasticity based on damage.
+        This means that as the simulation iterates to get the equilibrium, it allways starts from the initial comfiguration (displacements do not get added together to get the final displacements).
+        It starts with the initial live bonds and updates the stiffness matrix and bond damage based on the current live bonds.
+        The displacement vector is calculated using sparse linear algebra operations, and the new coordinate vector is obtained by adding the displacement vector to the current coordinate vector.
+        The bond stretches are calculated using the new coordinate vector, and the bond damage is updated accordingly.
+        The live bonds are updated based on the current bond damage.
+        The process is repeated until the maximum number of iterations is reached or the change in the residual force norm is smaller than the given epsilon.
+        No geometric nonlinearity is implemented.
+        
+        Parameters:
+            self (PDFatigueSolver): The instance of the PDFatigueSolver class.
+        
+        Returns:
+            None
+        
+        Prints:
+            Iteration number and the residual force norm at each iteration.
+            The change in the residual force norm from the previous step
+        """
+
         BCvec = self.FID.combined_BC_vec
         num_max_it = self.FID.num_max_it
         epsilon = self.FID.epsilon
@@ -211,8 +271,21 @@ class PDFatigueSolver:
                 return 
             _residual_force_norm_old = _residual_force_norm
         print("Solution did not converge!")
-        self.result = _disps
+        results = Results()
+        results.add_result("displacements", _disps)
+        results.add_result("currentBondDamage", self.FID.curBondDamage)
+        results.add_result("currentLiveBonds", self.FID.curLiveBonds)
+        results.add_result("currentLiveBonds", self.FID.curLiveBonds)
+        results.add_result("forceConvergence", self.FID.force_convergence)
+        results.is_from_increment()
+        self.HistroryOutput.add_result_to_history(results)
         return
+
+    def solve_for_fatigue(self):
+        # Solve for the static part. Once equilibrium is reached for static part i can update bond damage based on the fatigue part
+        self.solve_for_eq3()
+
+
 
 def _calc_bond_damage(cur_bondStretches:np.ndarray, s0arr:np.ndarray[float,1], scarr:np.ndarray[float,1]) -> np.ndarray:
     new_damage = np.zeros(cur_bondStretches.shape[0])

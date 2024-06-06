@@ -57,6 +57,7 @@ class Set():
         return self.IDarray.shape[0]
 
 def get_user_decision():
+
     while True:
         decision = input("Please enter your decision (Y/N): ").upper()  # Convert input to uppercase
         if decision in ('Y', 'N'):
@@ -66,3 +67,33 @@ def get_user_decision():
                 return False
         else:
             print("Invalid input. Please enter either 'Y' or 'N'.")
+
+
+
+class Results():
+    """
+    This type stores the results of a increment or step of the simulation. It does not have fixed result categories.
+    Each result is stored in a dictionary with the name of the result as the key (e.g. "stress") and the result as the value.
+    """
+    def __init__(self) -> None:
+        self.results = {}
+
+    def add_result(self, name: str, result):
+        self.results[name] = result
+
+    def is_from_step(self):
+        self.from_step = True
+
+    def is_from_increment(self):
+        self.from_increment = True
+
+class HistoryOutput():
+    """
+    Simply stores "Results" objects into a list.
+    Each index of the list corresponds to a step in the simulation.
+    """
+    def __init__(self) -> None:
+        self.history = []
+    
+    def add_result_to_history(self, result: Results):
+        self.history.append(result)

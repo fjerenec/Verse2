@@ -31,6 +31,7 @@ class _PartNodes():
     #         else:
     #             print("Node ID does not exist. Cannot delete nonexistent PartNode")
 
+
     def add_part_nodes(self, arrayOfAddedNodesCoords: np.ndarray[float,2], addedNodesVolume: np.ndarray[float,1]) -> None:
         #Node Ids start at 0 (python indexing). If len is 10 the max ID in the array would be 9 (0 to 9 are 10 numbers!)
         numOfCurPartNodes = len(self.partNodesTable)

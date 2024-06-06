@@ -801,6 +801,8 @@ def gen_Gmat3D(coordVec,neighbors,start_idx,end_idx,delta):
 
     return G_xsigvals
 
+
+# ----------- Mehcanics part --------------------------------------------------------#
 @njit(parallel = True)
 def gen_StiffMat(coordVec,delta,Emod):
     mu = Emod/(2*(float(1+0.25)))
@@ -1068,185 +1070,6 @@ def calc_bond_normals(pd_point_count, pd_bond_count, coordVec, neighbors, start_
                 i += 1
         return normals
 
-
-class PDGeometry():
-    def __init__(self,coordVec : np.ndarray, delta: float, cracks: np.ndarray) -> None:
-        self.coordVec = coordVec
-        self.delta = delta
-        self.initialCracks = cracks
-        self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = find_neighbors2(coordVec,1.01*delta,cracks)
-        self.pd_point_count = self.n_neighbors.shape[0]
-        self.pd_bond_count = self.neighbors.shape[0]
-        self.bond_normals = calc_bond_normals(self.pd_point_count, self.pd_bond_count, self.coordVec, self.neighbors, self.start_idx, self.end_idx)
-        self.curLiveBonds = np.ones_like(self.neighbors)
-        self.curBondDamage = np.zeros_like(self.neighbors)
-        self.init_BondLens = calc_bondLenghts(self.coordVec,self.neighbors,self.start_idx,self.end_idx)
-        self.Gvec = gen_Gmat2D_fixed(coordVec,self.neighbors,self.start_idx,self.end_idx,delta,(self.delta/2)**2)
-        self.G11vec = self.Gvec[:,0]
-        self.G12vec = self.Gvec[:,2]
-        self.G22vec = self.Gvec[:,1]
-
-class Material():
-    def __init__(self,Emod) -> None:
-        self.Emod = Emod
-        self.mu = self.Emod/(2*(float(1+0.25)))
-
-    def damage_model(self,stretch,damage,delta,thickness):
-        return (1-damage)* (24*self.mu/(np.pi*thickness*delta**3)) * stretch
-
-class HistoryData():
-    def __init__(self) -> None:
-        self.force_convergence = []
-
-class PDFatigueModel:
-    def __init__(self,coordVec,delta,cracks,Emod):
-        """Initialised with information that is needed to create the variables that will stay the same during tze simulaion. At the time of writihng this calss was made for fatigue, so anything concerning the geometzry stays the same.
-            Se The neighbors stay the same! The G matrices therefore stay the same and are noit updated after crack growth!
-        """
-        self.geometry = PDGeometry(coordVec,delta,cracks)
-        self.material = Material(Emod)
-        self.historyData = HistoryData()
-
-
-    def calc_int_bond_force_from_stretch(self,constitutive_model,bond_stretch,bond_normal,bond_damage,delta,thickness):
-        return constitutive_model(bond_stretch,bond_damage,delta,thickness) * bond_normal
-
-    def gen_stiffness_matrix(self,LiveBonds: np.ndarray, bondDamage: np.ndarray) -> np.ndarray:
-        stiffMat = np.zeros((self.geometry.coordVec.shape[0]*2,self.geometry.coordVec.shape[0]*2),dtype=float)
-        return _generate_stiffness_matrix(self.geometry.coordVec,self.geometry.neighbors, self.geometry.start_idx, self.geometry.end_idx, self.geometry.G11vec, self.geometry.G12vec, self.geometry.G22vec, self.material.mu, LiveBonds, bondDamage, stiffMat)
-
-    def apply_displacement_BC(self,BCvec,stiffnessMat,RHSvec):
-        """Only works for dense matrix form"""
-        return applyDispBC(BCvec,stiffnessMat,RHSvec)
-
-    def calc_bond_stretches(self,cur_coordVec):
-        """Calculate the stretches of each bond"""
-        return (calc_bondLenghts(cur_coordVec,self.geometry.neighbors,self.geometry.start_idx,self.geometry.end_idx)-self.geometry.init_BondLens)/self.geometry.init_BondLens
-
-    def update_bond_damage(self,cur_bondStretches:np.ndarray, s1:float, sc:float)-> np.ndarray:
-        return _calc_bond_damage(cur_bondStretches,s1,sc)
-
-
-    def solve_for_eq(self, BCvec:np.ndarray, s1:float, sc:float , num_max_it:int, epsilon:float) -> np.ndarray:
-        """Solves for equlibirum state of the system with desegnated "epsilon" as the maximum residual fraction"""
-
-        if num_max_it < 0 or type(num_max_it) != int:
-            print("The maximum number of iterations can not be a negative value and it must be an integer type!")
-
-        if epsilon <= 0:
-            print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
-
-        for iter in range(num_max_it):# and error > epsilon:
-            print("Iteration {}".format(iter))
-            _stiffmat = self.gen_stiffness_matrix(self.geometry.curLiveBonds, self.geometry.curBondDamage)
-            _RHSvec = np.zeros(self.geometry.coordVec.shape[0]*2)
-            _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
-            _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
-            _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
-            _disps = np.reshape(_solu,(int(_solu.shape[0]/2),2))
-            _newCoordVec = self.geometry.coordVec + _disps
-            _cur_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
-            self.geometry.curBondDamage = self.update_bond_damage(_cur_bond_stretches,s1,sc)
-            # #need a line to update "LiveBonds" array!
-            _stiffmat = self.gen_stiffness_matrix(self.geometry.curLiveBonds, self.geometry.curBondDamage)
-            _new_force_vec = _stiffmat @ _solu
-            _change_in_force = np.linalg.norm(_new_force_vec - _BC_RHSvec) / np.linalg.norm(_BC_RHSvec) - 1
-            print("Change in force = ",_change_in_force)
-            if _cur_bond_stretches.max() <= s1:
-                print("Applied load was not large enough to cause damage!")
-                break
-            if _change_in_force <= epsilon:
-                print("Damage has converged in {} steps!".format(iter))
-                return _disps
-        print("Solution did not converge!")
-        return _disps
-
-    def solve_for_eq3(self, BCvec:np.ndarray, s1:float, sc:float , num_max_it:int, epsilon:float) -> np.ndarray:
-        """Solves for equlibirum state of the system with desegnated "epsilon" as the maximum residual fraction"""
-
-        if num_max_it < 0 or type(num_max_it) != int:
-            print("The maximum number of iterations can not be a negative value and it must be an integer type!")
-
-        if epsilon <= 0:
-            print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
-
-        _stiffmat = self.gen_stiffness_matrix(self.geometry.curLiveBonds, self.geometry.curBondDamage)
-        _residual_force_norm_old =  1
-        for iter in range(num_max_it):# and error > epsilon:
-            print("Iteration {}".format(iter))
-            _RHSvec = np.zeros(self.geometry.coordVec.shape[0]*2)
-            _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
-            _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
-            _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
-            _disps = np.reshape(_solu,(int(_solu.shape[0]/2),2))
-            _newCoordVec = self.geometry.coordVec + _disps
-            _cur_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
-            self.geometry.curBondDamage = self.update_bond_damage(_cur_bond_stretches,s1,sc)
-            # #need a line to update "LiveBonds" array!
-            _stiffmat = self.gen_stiffness_matrix(self.geometry.curLiveBonds, self.geometry.curBondDamage)
-            _internal_force_vec = _stiffmat @ _solu
-            _residual_force_norm = np.abs(np.linalg.norm(_BC_RHSvec-_internal_force_vec) / np.linalg.norm(_BC_RHSvec)-1)
-            print("Residual force norm = ",_residual_force_norm)
-            t1= np.abs(1-_residual_force_norm/_residual_force_norm_old)
-            self.historyData.force_convergence.append(_residual_force_norm)
-            print(f"Change of residual from previous step: {t1}")
-            if _cur_bond_stretches.max() <= s1:
-                print("Applied load was not large enough to cause damage!")
-                break
-            if t1<= epsilon:
-                print(f"Damage has converged in {iter} steps! Residual forces/Externalforces = {_residual_force_norm}.Change of residual from previous step: {t1}")
-                print(f"Residual forces/Externalforces = {_residual_force_norm}")
-                print(f"Change of residual from previous step: {t1}")
-                return _disps
-            _residual_force_norm_old = _residual_force_norm
-        print("Solution did not converge!")
-        return _disps
-
-    def solve_for_eq2(self, BCvec:np.ndarray, s1:float, sc:float , num_max_it:int, epsilon:float) -> np.ndarray:
-        """Solves for equlibirum state of the system with desegnated "epsilon" as the maximum residual fraction"""
-
-        if num_max_it < 0 or type(num_max_it) != int:
-            print("The maximum number of iterations can not be a negative value and it must be an integer type!")
-
-        if epsilon <= 0:
-            print("Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 < epsilon)")
-        _disps = np.zeros_like(self.geometry.coordVec)
-        _RHSvec = np.zeros(self.geometry.coordVec.shape[0]*2)
-        for iter in range(num_max_it):# and error > epsilon:
-            print("Iteration {}".format(iter))
-            _stiffmat = self.gen_stiffness_matrix(self.geometry.curLiveBonds, self.geometry.curBondDamage)
-
-            if iter ==0:
-                _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
-                _BC_RHSvec_base = _BC_RHSvec
-            else:
-                BCvec[:,1:] = 0
-                _residual_forces[-1200:] = 0
-                _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_residual_forces)
-                _BC_RHSvec = _residual_forces
-
-            _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
-            _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
-            _disps = _disps + np.reshape(_solu,(int(_solu.shape[0]/2),2))
-            _newCoordVec = self.geometry.coordVec + _disps
-            _cur_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
-            self.geometry.curBondDamage = self.update_bond_damage(_cur_bond_stretches,s1,sc)
-            # #need a line to update "LiveBonds" array!
-            _stiffmat = self.gen_stiffness_matrix(self.geometry.curLiveBonds, self.geometry.curBondDamage)
-            _internal_force_vec = _stiffmat @ np.reshape(_disps,_solu.shape)
-            _residual_forces = (_BC_RHSvec_base - _internal_force_vec)
-            _change_in_force_norm = np.linalg.norm(_residual_forces) / np.linalg.norm(_BC_RHSvec)
-            print("Change in force = ",_change_in_force_norm)
-            if _cur_bond_stretches.max() <= s1:
-                print("Applied load was not large enough to cause damage!")
-                break
-            if _change_in_force_norm <= epsilon:
-                print("Damage has converged in {} steps!".format(iter))
-                return _disps
-        print("Solution did not converge!")
-        return _disps
-
-    def solve_increment_NR(self, BCvec:np.ndarray, s1:float, sc:float , num_max_it:int, epsilon:float) -> np.ndarray:
         """Solve the current incremental load for equilibrium using Newton-Rhapson method."""
 
         if num_max_it < 0 or type(num_max_it) != int:
@@ -1413,7 +1236,7 @@ def _generate_stiffness_matrix2(coordVec,neighbors, start_idx, end_idx, G11vec, 
     return stiffMat
 
 @njit
-def _generate_bond_stiffnesses(coordVec,neighbors, start_idx, end_idx, G11vec, G12vec,G22vec, mu):
+def _generate_bond_stiffnesses(coordVec,neighbors, start_idx, end_idx, G11vec, G12vec,G22vec, mu) -> np.ndarray[float,2]:
     """Function is only meant to be called inside the "gen_stiffness_matrix" method of the PDFatigueModel class!
     """
     bond_stiff_matrix_array = np.zeros(shape=(neighbors.shape[0],2,2))
