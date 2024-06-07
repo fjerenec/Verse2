@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modules.data &mdash; pyVerse2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pyVerse2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">modules package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../libs.html">libs package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyVerse2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modules.data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modules.data</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="Sets">
+<a class="viewcode-back" href="../../modules.html#modules.data.Sets">[docs]</a>
+<span class="k">class</span> <span class="nc">Sets</span><span class="p">():</span>
+    <span class="c1">#Sets only contain the ID of the wanted type stored in the set and not the actual type itself!</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1">#Initiate the hashtable for each of the &quot;Set&quot; subclasses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setTable</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Sets.create_set">
+<a class="viewcode-back" href="../../modules.html#modules.data.Sets.create_set">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arrayOfIDs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">setName</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;set name&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1">#Need to check if keyword already exists. If so i need to warn the user if he want sto rewrite the data!</span>
+        <span class="k">if</span> <span class="n">arrayOfIDs</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All data in arrayOfIDs must of of type np.int64!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> 
+        
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">setName</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">setName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">setName</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">setName</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">setTable</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A set with name -</span><span class="si">{</span><span class="n">setName</span><span class="si">}</span><span class="s2">- already exists. Would you like to overwrite?&quot;</span><span class="p">)</span>
+            <span class="n">override</span> <span class="o">=</span> <span class="n">get_user_decision</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">override</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Set overwritten&quot;</span><span class="p">)</span>
+                <span class="n">newSet</span> <span class="o">=</span> <span class="n">Set</span><span class="p">(</span><span class="n">arrayOfIDs</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">setName</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setTable</span><span class="p">[</span><span class="n">setName</span><span class="p">]</span> <span class="o">=</span> <span class="n">newSet</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newSet</span> <span class="o">=</span> <span class="n">Set</span><span class="p">(</span><span class="n">arrayOfIDs</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">setName</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setTable</span><span class="p">[</span><span class="n">setName</span><span class="p">]</span> <span class="o">=</span> <span class="n">newSet</span></div>
+
+        
+<div class="viewcode-block" id="Sets.delete_set">
+<a class="viewcode-back" href="../../modules.html#modules.data.Sets.delete_set">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">setName</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;set name&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">setName</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">setTable</span><span class="p">[</span><span class="n">setName</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No set with given name exists. Nonexistent set cannot be deleted!&quot;</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Set">
+<a class="viewcode-back" href="../../modules.html#modules.data.Set">[docs]</a>
+<span class="k">class</span> <span class="nc">Set</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Meant for storing nodes&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arrayOfIDs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Set&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IDarray</span> <span class="o">=</span> <span class="n">arrayOfIDs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IDTable</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">arrayOfIDs</span><span class="p">}</span>
+
+<div class="viewcode-block" id="Set.is_in_set">
+<a class="viewcode-back" href="../../modules.html#modules.data.Set.is_in_set">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_in_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ID</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">IDTable</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Set.type">
+<a class="viewcode-back" href="../../modules.html#modules.data.Set.type">[docs]</a>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Set.get_data">
+<a class="viewcode-back" href="../../modules.html#modules.data.Set.get_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">IDarray</span><span class="p">[:]</span></div>
+
+    
+<div class="viewcode-block" id="Set.get_number_of_points">
+<a class="viewcode-back" href="../../modules.html#modules.data.Set.get_number_of_points">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">IDarray</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+<div class="viewcode-block" id="get_user_decision">
+<a class="viewcode-back" href="../../modules.html#modules.data.get_user_decision">[docs]</a>
+<span class="k">def</span> <span class="nf">get_user_decision</span><span class="p">():</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">decision</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Please enter your decision (Y/N): &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>  <span class="c1"># Convert input to uppercase</span>
+        <span class="k">if</span> <span class="n">decision</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">decision</span> <span class="o">==</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid input. Please enter either &#39;Y&#39; or &#39;N&#39;.&quot;</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="Results">
+<a class="viewcode-back" href="../../modules.html#modules.data.Results">[docs]</a>
+<span class="k">class</span> <span class="nc">Results</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This type stores the results of a increment or step of the simulation. It does not have fixed result categories.</span>
+<span class="sd">    Each result is stored in a dictionary with the name of the result as the key (e.g. &quot;stress&quot;) and the result as the value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Results.add_result">
+<a class="viewcode-back" href="../../modules.html#modules.data.Results.add_result">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="Results.is_from_step">
+<a class="viewcode-back" href="../../modules.html#modules.data.Results.is_from_step">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_from_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_step</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Results.is_from_increment">
+<a class="viewcode-back" href="../../modules.html#modules.data.Results.is_from_increment">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_from_increment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_increment</span> <span class="o">=</span> <span class="kc">True</span></div>
+</div>
+
+
+<div class="viewcode-block" id="HistoryOutput">
+<a class="viewcode-back" href="../../modules.html#modules.data.HistoryOutput">[docs]</a>
+<span class="k">class</span> <span class="nc">HistoryOutput</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simply stores &quot;Results&quot; objects into a list.</span>
+<span class="sd">    Each index of the list corresponds to a step in the simulation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+    
+<div class="viewcode-block" id="HistoryOutput.add_result_to_history">
+<a class="viewcode-back" href="../../modules.html#modules.data.HistoryOutput.add_result_to_history">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_result_to_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">Results</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Filip Jerenec.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modules.disretization &mdash; pyVerse2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pyVerse2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">modules package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../libs.html">libs package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyVerse2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modules.disretization</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modules.disretization</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">)))</span>
+
+<span class="kn">import</span> <span class="nn">modules.geometry</span> <span class="k">as</span> <span class="nn">geometry</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">libs.pddopyW2</span> <span class="k">as</span> <span class="nn">pddo</span>
+<span class="kn">from</span> <span class="nn">modules.data</span> <span class="kn">import</span> <span class="n">get_user_decision</span>
+
+<div class="viewcode-block" id="Discretizations">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretizations">[docs]</a>
+<span class="k">class</span> <span class="nc">Discretizations</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discretizationsTable</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="Discretizations.create_discretization">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretizations.create_discretization">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_discretization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">discName</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Discretization Name&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">discName</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">discName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">discName</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">discName</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretizationsTable</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A discretization with name -</span><span class="si">{</span><span class="n">discName</span><span class="si">}</span><span class="s2">- already exists. Would you like to overwrite?&quot;</span><span class="p">)</span>
+            <span class="n">override</span> <span class="o">=</span> <span class="n">get_user_decision</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">override</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Discretization overwritten&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">discretizationsTable</span><span class="p">[</span><span class="n">discName</span><span class="p">]</span> <span class="o">=</span> <span class="n">Discretization</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">discretizationsTable</span><span class="p">[</span><span class="n">discName</span><span class="p">]</span> <span class="o">=</span> <span class="n">Discretization</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Discretizations.set_selected_discretization">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretizations.set_selected_discretization">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_selected_discretization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">DiscretizationName</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">DiscretizationName</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretizationsTable</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretizationsTable</span><span class="p">[</span><span class="n">DiscretizationName</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No discretization with given name. Please provide a valid name!&quot;</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Discretization">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization">[docs]</a>
+<span class="k">class</span> <span class="nc">Discretization</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasInitialCrack</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialCracks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Discretization.set_horizon">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization.set_horizon">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_horizon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizonRad</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the horizon radius of the object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            horizonRad (float): The radius of the horizon in units of your choice.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: This function does not return anything.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">horizonRad</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Discretization.create_crack">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization.create_crack">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_crack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p1x</span><span class="p">,</span><span class="n">p1y</span><span class="p">,</span><span class="n">p2x</span><span class="p">,</span><span class="n">p2y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a crack and adds it to the initial cracks list.</span>
+<span class="sd">        The bonds that intersect with any of the bonds in this list is not added to the family of a material point.</span>
+<span class="sd">        Therefore, when creating A matrices (from PDDO to create g functions), the points connected by these bonds are not included in the summation.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            p1x (float): The x-coordinate of the first point of the crack.</span>
+<span class="sd">            p1y (float): The y-coordinate of the first point of the crack.</span>
+<span class="sd">            p2x (float): The x-coordinate of the second point of the crack.</span>
+<span class="sd">            p2y (float): The y-coordinate of the second point of the crack.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">crack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="n">p1x</span><span class="p">,</span><span class="n">p1y</span><span class="p">],[</span><span class="n">p2x</span><span class="p">,</span><span class="n">p2y</span><span class="p">]]],</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialCracks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initialCracks</span><span class="p">,</span><span class="n">crack</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasInitialCrack</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Discretization.deactivate_cracks">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization.deactivate_cracks">[docs]</a>
+    <span class="k">def</span> <span class="nf">deactivate_cracks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deactivates the cracks by setting the `hasInitialCrack` attribute to False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: This function does not return anything.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasInitialCrack</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Discretization.activate_cracks">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization.activate_cracks">[docs]</a>
+    <span class="k">def</span> <span class="nf">activate_cracks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Activates the cracks by setting the `hasInitialCrack` attribute to True.</span>
+
+<span class="sd">        This function does not take any parameters.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: This function does not return anything.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasInitialCrack</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Discretization.is_crack_active">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization.is_crack_active">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_crack_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a boolean value indicating whether the crack is currently active or not.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: A boolean value indicating whether the crack is currently active or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasInitialCrack</span></div>
+
+
+<div class="viewcode-block" id="Discretization.get_node_family_IDs">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization.get_node_family_IDs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_node_family_IDs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nodeID</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ID&#39;s of the nodes that are inside the family of the given node ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodeID (int): The ID of the node for which the family IDs are to be retrieved.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray[int,1]: An array of node family IDs that are included in the node defined with `nodeID`.</span>
+
+<span class="sd">        This function finds the position of the given node ID in the `nodeIdIndeces` array. It then uses the position to</span>
+<span class="sd">        find the corresponding indices in the `start_idx` and `end_idx` arrays. It slices the `neighbors` array using</span>
+<span class="sd">        these indices and retrieves the node family IDs from the `nodeIdIndeces` array. Finally, it returns the node family</span>
+<span class="sd">        IDs as a 1-dimensional numpy array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># nodeIdPosition = np.where(self.nodeIdIndeces == nodeID)[0]</span>
+        <span class="n">firstMemberIndex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span><span class="p">[</span><span class="n">nodeID</span><span class="p">]</span>
+        <span class="n">lastMemberIndex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span><span class="p">[</span><span class="n">nodeID</span><span class="p">]</span>
+        <span class="n">nodeFamily</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="n">firstMemberIndex</span><span class="p">:</span><span class="n">lastMemberIndex</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">nodeFamily</span></div>
+
+
+<div class="viewcode-block" id="Discretization.get_node_family_coords">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization.get_node_family_coords">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_node_family_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nodeID</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="mi">2</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the coordinates of the nodes that are part of the family of a given node ID.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            nodeID (int): The ID of the node whose family members coordinates are to be retireved.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray[int,2]: An array of shape (n, 2) containing the coordinates of the nodes in the family of the given &quot;nodeID&quot; parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">firstMemberIndex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span><span class="p">[</span><span class="n">nodeID</span><span class="p">]</span>
+        <span class="n">lastMemberIndex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span><span class="p">[</span><span class="n">nodeID</span><span class="p">]</span>
+        <span class="n">nodeFamilyCoords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="n">firstMemberIndex</span><span class="p">:</span><span class="n">lastMemberIndex</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">nodeFamilyCoords</span></div>
+
+
+
+<div class="viewcode-block" id="Discretization.generate_bonds">
+<a class="viewcode-back" href="../../modules.html#modules.disretization.Discretization.generate_bonds">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">partNodes</span><span class="p">:</span> <span class="n">geometry</span><span class="o">.</span><span class="n">_PartNodes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates bonds between nodes in a given geometry.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            partNodes (geometry._PartNodes): The PartNodes object containing the nodes for which bonds need to be generated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None: This function does not return anything.</span>
+
+<span class="sd">        This function generates bonds between nodes in a given geometry. It takes a PartNodes object as input, which contains the nodes for which bonds need to be generated.</span>
+<span class="sd">        The function first checks if all the necessary data for generating bonds is available.</span>
+<span class="sd">        Then, it saves the IDs and coordinates of each node in the partNodesTable to separate arrays.</span>
+<span class="sd">        It creates a coordVec array for later use in pddoW2. </span>
+<span class="sd">        If the object has an initial crack, it calls the find_neighbors2 function from the pddo module with the coordVec, a scaled delta value, and the initial cracks as parameters.</span>
+<span class="sd">        Otherwise, it calls the find_neighbors function from the pddo module with the coordVec and a scaled delta value (this function does not tak into account the initial cracks).</span>
+<span class="sd">        The function then calculates the number of points and bonds in the generated neighbors.</span>
+<span class="sd">        It calculates the bond normals using the calc_bond_normals function from the pddo module.</span>
+<span class="sd">        It initializes the live bonds and bond damage arrays with ones and zeros respectively.</span>
+<span class="sd">        It calculates the initial bond lengths using the calc_bondLenghts function from the pddo module.</span>
+<span class="sd">        It generates the Gvec matrix using the gen_Gmat2D_fixed2 function from the pddo module.</span>
+<span class="sd">        Finally, it assigns the values from the Gvec matrix to the G11vec, G12vec, and G22vec arrays.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#Check if everything needed for this function is satisfied!</span>
+        <span class="k">if</span> <span class="n">partNodes</span><span class="o">.</span><span class="n">partNodesTable</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The partNodesTable is empty. The nodes are not generated yet.&#39;</span><span class="p">)</span>
+
+        <span class="c1">#Save the IDs of each node to an array (deletions and additions of nodes -&gt; node id might not be sequential -&gt; save the ID in the sequence they are in in the partNodesTable)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeIdIndeces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">partNodes</span><span class="o">.</span><span class="n">partNodesTable</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">partNodes</span><span class="o">.</span><span class="n">partNodesTable</span><span class="p">),</span><span class="n">partNodes</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ptArea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">partNodes</span><span class="o">.</span><span class="n">partNodesTable</span><span class="p">)))</span>
+        <span class="c1">#Create coordVec array for later use in pddoW2</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">node_key_ID</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">partNodes</span><span class="o">.</span><span class="n">partNodesTable</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeIdIndeces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_key_ID</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ptArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">vol</span><span class="p">()</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasInitialCrack</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">pddo</span><span class="o">.</span><span class="n">find_neighbors2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span><span class="p">,</span><span class="mf">1.01</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">initialCracks</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">pddo</span><span class="o">.</span><span class="n">find_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span><span class="p">,</span><span class="mf">1.01</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pd_point_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pd_bond_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bond_normals</span> <span class="o">=</span> <span class="n">pddo</span><span class="o">.</span><span class="n">calc_bond_normals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pd_point_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pd_bond_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initLiveBonds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curLiveBonds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initBondDamage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curBondDamage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_BondLens</span> <span class="o">=</span> <span class="n">pddo</span><span class="o">.</span><span class="n">calc_bondLenghts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Gvec</span> <span class="o">=</span> <span class="n">pddo</span><span class="o">.</span><span class="n">gen_Gmat2D_fixed2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ptArea</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G11vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Gvec</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G12vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Gvec</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G22vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Gvec</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Filip Jerenec.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

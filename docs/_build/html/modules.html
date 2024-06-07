@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modules package &mdash; pyVerse2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="libs package" href="libs.html" />
+    <link rel="prev" title="Welcome to pyVerse2’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyVerse2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">modules package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.NumericalModel">modules.NumericalModel module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.NumericalModel.NumericalModel"><code class="docutils literal notranslate"><span class="pre">NumericalModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.NumericalModel.NumericalModel.createInputFile"><code class="docutils literal notranslate"><span class="pre">NumericalModel.createInputFile()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.PDFatigueModel">modules.PDFatigueModel module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.PDFatigueModel.FatigueInputData"><code class="docutils literal notranslate"><span class="pre">FatigueInputData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.FatigueInputData.create_combined_disp_BC_vec"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.create_combined_disp_BC_vec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.FatigueInputData.gen_bond_emod_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_emod_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.FatigueInputData.gen_bond_material_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_material_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.FatigueInputData.gen_bond_mu_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_mu_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.FatigueInputData.gen_damage_evolution_stretch_arrays"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_damage_evolution_stretch_arrays()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.apply_displacement_BC"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.apply_displacement_BC()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.calc_bond_stretches"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.calc_bond_stretches()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.calc_fatigue_damage"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.calc_fatigue_damage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.gen_bond_displacement_vecs"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.gen_bond_displacement_vecs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.gen_bond_stiffness_matrices"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.gen_bond_stiffness_matrices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.gen_stiffness_matrix"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.gen_stiffness_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.solve_for_fatigue"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.solve_for_fatigue()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.solve_for_static_eq"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.solve_for_static_eq()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.solve_lin_sys_for_f"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.solve_lin_sys_for_f()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver.update_bond_damage"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.update_bond_damage()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.PDFatigueModel_work_copy">modules.PDFatigueModel_work_copy module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.FatigueInputData"><code class="docutils literal notranslate"><span class="pre">FatigueInputData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.FatigueInputData.create_combined_disp_BC_vec"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.create_combined_disp_BC_vec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_emod_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_emod_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_material_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_material_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_mu_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_mu_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.FatigueInputData.gen_damage_evolution_stretch_arrays"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_damage_evolution_stretch_arrays()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.LoadInc"><code class="docutils literal notranslate"><span class="pre">LoadInc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.apply_displacement_BC"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.apply_displacement_BC()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.calc_bond_stretches"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.calc_bond_stretches()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_bond_displacement_vecs"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.gen_bond_displacement_vecs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_bond_stiffness_matrices"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.gen_bond_stiffness_matrices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_stiffness_matrix"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.gen_stiffness_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.incremental_solve_for_eq"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.incremental_solve_for_eq()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.solve_for_eq3"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.solve_for_eq3()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.solve_lin_sys_for_f"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.solve_lin_sys_for_f()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.update_bond_damage"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.update_bond_damage()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.PDLinearStatic">modules.PDLinearStatic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.PDLinearStatic.FatigueInputData"><code class="docutils literal notranslate"><span class="pre">FatigueInputData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.FatigueInputData.create_combined_disp_BC_vec"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.create_combined_disp_BC_vec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.FatigueInputData.gen_bond_emod_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_emod_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.FatigueInputData.gen_bond_material_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_material_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.FatigueInputData.gen_bond_mu_array"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_bond_mu_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.FatigueInputData.gen_damage_evolution_stretch_arrays"><code class="docutils literal notranslate"><span class="pre">FatigueInputData.gen_damage_evolution_stretch_arrays()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.PDLinearStatic.PDFatigueSolver"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.PDFatigueSolver.apply_displacement_BC"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.apply_displacement_BC()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.PDFatigueSolver.calc_bond_stretches"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.calc_bond_stretches()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.PDFatigueSolver.gen_stiffness_matrix"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.gen_stiffness_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.PDFatigueSolver.solve_for_eq3"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.solve_for_eq3()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.PDFatigueSolver.solve_lin_sys"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.solve_lin_sys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.PDLinearStatic.PDFatigueSolver.update_bond_damage"><code class="docutils literal notranslate"><span class="pre">PDFatigueSolver.update_bond_damage()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.data">modules.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.data.HistoryOutput"><code class="docutils literal notranslate"><span class="pre">HistoryOutput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.HistoryOutput.add_result_to_history"><code class="docutils literal notranslate"><span class="pre">HistoryOutput.add_result_to_history()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.data.Results"><code class="docutils literal notranslate"><span class="pre">Results</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Results.add_result"><code class="docutils literal notranslate"><span class="pre">Results.add_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Results.is_from_increment"><code class="docutils literal notranslate"><span class="pre">Results.is_from_increment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Results.is_from_step"><code class="docutils literal notranslate"><span class="pre">Results.is_from_step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.data.Set"><code class="docutils literal notranslate"><span class="pre">Set</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Set.get_data"><code class="docutils literal notranslate"><span class="pre">Set.get_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Set.get_number_of_points"><code class="docutils literal notranslate"><span class="pre">Set.get_number_of_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Set.is_in_set"><code class="docutils literal notranslate"><span class="pre">Set.is_in_set()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Set.type"><code class="docutils literal notranslate"><span class="pre">Set.type()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.data.Sets"><code class="docutils literal notranslate"><span class="pre">Sets</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Sets.create_set"><code class="docutils literal notranslate"><span class="pre">Sets.create_set()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.data.Sets.delete_set"><code class="docutils literal notranslate"><span class="pre">Sets.delete_set()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.data.get_user_decision"><code class="docutils literal notranslate"><span class="pre">get_user_decision()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.disretization">modules.disretization module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.disretization.Discretization"><code class="docutils literal notranslate"><span class="pre">Discretization</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretization.activate_cracks"><code class="docutils literal notranslate"><span class="pre">Discretization.activate_cracks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretization.create_crack"><code class="docutils literal notranslate"><span class="pre">Discretization.create_crack()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretization.deactivate_cracks"><code class="docutils literal notranslate"><span class="pre">Discretization.deactivate_cracks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretization.generate_bonds"><code class="docutils literal notranslate"><span class="pre">Discretization.generate_bonds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretization.get_node_family_IDs"><code class="docutils literal notranslate"><span class="pre">Discretization.get_node_family_IDs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretization.get_node_family_coords"><code class="docutils literal notranslate"><span class="pre">Discretization.get_node_family_coords()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretization.is_crack_active"><code class="docutils literal notranslate"><span class="pre">Discretization.is_crack_active()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretization.set_horizon"><code class="docutils literal notranslate"><span class="pre">Discretization.set_horizon()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.disretization.Discretizations"><code class="docutils literal notranslate"><span class="pre">Discretizations</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretizations.create_discretization"><code class="docutils literal notranslate"><span class="pre">Discretizations.create_discretization()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.disretization.Discretizations.set_selected_discretization"><code class="docutils literal notranslate"><span class="pre">Discretizations.set_selected_discretization()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.geometry">modules.geometry module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.geometry.Geometry"><code class="docutils literal notranslate"><span class="pre">Geometry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.geometry.Geometry.input_part_nodes"><code class="docutils literal notranslate"><span class="pre">Geometry.input_part_nodes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.interactions">modules.interactions module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.interactions.Interactions"><code class="docutils literal notranslate"><span class="pre">Interactions</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.loads">modules.loads module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.loads.BoundaryCons"><code class="docutils literal notranslate"><span class="pre">BoundaryCons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.loads.DisplacementLoad"><code class="docutils literal notranslate"><span class="pre">DisplacementLoad</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.loads.ForceLoad"><code class="docutils literal notranslate"><span class="pre">ForceLoad</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.loads.Load"><code class="docutils literal notranslate"><span class="pre">Load</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.loads.Loads"><code class="docutils literal notranslate"><span class="pre">Loads</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.loads.Loads.create_disp_load"><code class="docutils literal notranslate"><span class="pre">Loads.create_disp_load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.loads.Loads.create_total_force_load"><code class="docutils literal notranslate"><span class="pre">Loads.create_total_force_load()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.material">modules.material module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.material.Anisotropic"><code class="docutils literal notranslate"><span class="pre">Anisotropic</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Anisotropic.set_tensile_properties"><code class="docutils literal notranslate"><span class="pre">Anisotropic.set_tensile_properties()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.material.Isotropic"><code class="docutils literal notranslate"><span class="pre">Isotropic</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Isotropic.set_tensile_properties"><code class="docutils literal notranslate"><span class="pre">Isotropic.set_tensile_properties()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.material.Material"><code class="docutils literal notranslate"><span class="pre">Material</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Material.delete_material_id"><code class="docutils literal notranslate"><span class="pre">Material.delete_material_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Material.deleted_ids"><code class="docutils literal notranslate"><span class="pre">Material.deleted_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Material.get_material_properties"><code class="docutils literal notranslate"><span class="pre">Material.get_material_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Material.next_id"><code class="docutils literal notranslate"><span class="pre">Material.next_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Material.set_density"><code class="docutils literal notranslate"><span class="pre">Material.set_density()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Material.set_stretch_thresholds"><code class="docutils literal notranslate"><span class="pre">Material.set_stretch_thresholds()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.material.MaterialInterface"><code class="docutils literal notranslate"><span class="pre">MaterialInterface</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.material.MaterialInterfaces"><code class="docutils literal notranslate"><span class="pre">MaterialInterfaces</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.MaterialInterfaces.create"><code class="docutils literal notranslate"><span class="pre">MaterialInterfaces.create()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.material.MaterialSection"><code class="docutils literal notranslate"><span class="pre">MaterialSection</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.material.MaterialSections"><code class="docutils literal notranslate"><span class="pre">MaterialSections</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.MaterialSections.create"><code class="docutils literal notranslate"><span class="pre">MaterialSections.create()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modules.material.Materials"><code class="docutils literal notranslate"><span class="pre">Materials</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Materials.create_material"><code class="docutils literal notranslate"><span class="pre">Materials.create_material()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules.material.Materials.delete_material"><code class="docutils literal notranslate"><span class="pre">Materials.delete_material()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.sections">modules.sections module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-modules.simulation_settings">modules.simulation_settings module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules.simulation_settings.SimulationSettings"><code class="docutils literal notranslate"><span class="pre">SimulationSettings</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libs.html">libs package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyVerse2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">modules package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="modules-package">
+<h1>modules package<a class="headerlink" href="#modules-package" title="Link to this heading"></a></h1>
+<section id="module-modules.NumericalModel">
+<span id="modules-numericalmodel-module"></span><h2>modules.NumericalModel module<a class="headerlink" href="#module-modules.NumericalModel" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.NumericalModel.NumericalModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.NumericalModel.</span></span><span class="sig-name descname"><span class="pre">NumericalModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Model'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/NumericalModel.html#NumericalModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.NumericalModel.NumericalModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class combines all the different modules into one which represents the numerical model.
+This numerical model is used to create the input files for the solvers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.NumericalModel.NumericalModel.createInputFile">
+<span class="sig-name descname"><span class="pre">createInputFile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/modules/NumericalModel.html#NumericalModel.createInputFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.NumericalModel.NumericalModel.createInputFile" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.PDFatigueModel">
+<span id="modules-pdfatiguemodel-module"></span><h2>modules.PDFatigueModel module<a class="headerlink" href="#module-modules.PDFatigueModel" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.FatigueInputData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.PDFatigueModel.</span></span><span class="sig-name descname"><span class="pre">FatigueInputData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numModel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.NumericalModel.NumericalModel" title="modules.NumericalModel.NumericalModel"><span class="pre">NumericalModel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#FatigueInputData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.FatigueInputData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.FatigueInputData.create_combined_disp_BC_vec">
+<span class="sig-name descname"><span class="pre">create_combined_disp_BC_vec</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#FatigueInputData.create_combined_disp_BC_vec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.FatigueInputData.create_combined_disp_BC_vec" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.FatigueInputData.gen_bond_emod_array">
+<span class="sig-name descname"><span class="pre">gen_bond_emod_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#FatigueInputData.gen_bond_emod_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.FatigueInputData.gen_bond_emod_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.FatigueInputData.gen_bond_material_array">
+<span class="sig-name descname"><span class="pre">gen_bond_material_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#FatigueInputData.gen_bond_material_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.FatigueInputData.gen_bond_material_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.FatigueInputData.gen_bond_mu_array">
+<span class="sig-name descname"><span class="pre">gen_bond_mu_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#FatigueInputData.gen_bond_mu_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.FatigueInputData.gen_bond_mu_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.FatigueInputData.gen_damage_evolution_stretch_arrays">
+<span class="sig-name descname"><span class="pre">gen_damage_evolution_stretch_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#FatigueInputData.gen_damage_evolution_stretch_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.FatigueInputData.gen_damage_evolution_stretch_arrays" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.PDFatigueModel.</span></span><span class="sig-name descname"><span class="pre">PDFatigueSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numModel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.NumericalModel.NumericalModel" title="modules.NumericalModel.NumericalModel"><span class="pre">NumericalModel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.apply_displacement_BC">
+<span class="sig-name descname"><span class="pre">apply_displacement_BC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BCvec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stiffnessMat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RHSvec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.apply_displacement_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.apply_displacement_BC" title="Link to this definition"></a></dt>
+<dd><p>Does not work for compressed matrix forms
+Apply displacement boundary conditions to the given stiffness matrix and RHS vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BCvec</strong> (<em>np.ndarray</em>) – The boundary condition vector.</p></li>
+<li><p><strong>stiffnessMat</strong> (<em>np.ndarray</em>) – The stiffness matrix.</p></li>
+<li><p><strong>RHSvec</strong> (<em>np.ndarray</em>) – The RHS vector.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The modified stiffness matrix and RHS vector with boundary conditions applied.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.calc_bond_stretches">
+<span class="sig-name descname"><span class="pre">calc_bond_stretches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_coordVec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.calc_bond_stretches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.calc_bond_stretches" title="Link to this definition"></a></dt>
+<dd><p>Calculate the stretches of each bond</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.calc_fatigue_damage">
+<span class="sig-name descname"><span class="pre">calc_fatigue_damage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.data.Results" title="modules.data.Results"><span class="pre">Results</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.calc_fatigue_damage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.calc_fatigue_damage" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.gen_bond_displacement_vecs">
+<span class="sig-name descname"><span class="pre">gen_bond_displacement_vecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dispVec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.gen_bond_displacement_vecs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.gen_bond_displacement_vecs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.gen_bond_stiffness_matrices">
+<span class="sig-name descname"><span class="pre">gen_bond_stiffness_matrices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.gen_bond_stiffness_matrices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.gen_bond_stiffness_matrices" title="Link to this definition"></a></dt>
+<dd><p>Generate the bond stiffness matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The bond stiffness matrices.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray[float,2]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.gen_stiffness_matrix">
+<span class="sig-name descname"><span class="pre">gen_stiffness_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LiveBonds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bondDamage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.gen_stiffness_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.gen_stiffness_matrix" title="Link to this definition"></a></dt>
+<dd><p>Generate the stiffness matrix for the given LiveBonds and bondDamage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>LiveBonds</strong> (<em>np.ndarray</em>) – An array of live bonds.</p></li>
+<li><p><strong>bondDamage</strong> (<em>np.ndarray</em>) – An array of bond damage values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The stiffness matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.solve_for_fatigue">
+<span class="sig-name descname"><span class="pre">solve_for_fatigue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.solve_for_fatigue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.solve_for_fatigue" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.solve_for_static_eq">
+<span class="sig-name descname"><span class="pre">solve_for_static_eq</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.solve_for_static_eq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.solve_for_static_eq" title="Link to this definition"></a></dt>
+<dd><p>Solves for the equilibrium state of the system with the given “epsilon” as the maximum residual fraction.
+This function iteratively solves for the equilibrium state of the system using the Newton-Raphson method (calculate the stiffness matrix and take a step).
+Material nonlinearity is implemented as a reduction of the modulus of elasticity based on damage.
+This means that as the simulation iterates to get the equilibrium, it allways starts from the initial comfiguration (displacements do not get added together to get the final displacements).
+It starts with the initial live bonds and updates the stiffness matrix and bond damage based on the current live bonds.
+The displacement vector is calculated using sparse linear algebra operations, and the new coordinate vector is obtained by adding the displacement vector to the current coordinate vector.
+The bond stretches are calculated using the new coordinate vector, and the bond damage is updated accordingly.
+The live bonds are updated based on the current bond damage.
+The process is repeated until the maximum number of iterations is reached or the change in the residual force norm is smaller than the given epsilon.
+No geometric nonlinearity is implemented.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> (<a class="reference internal" href="#modules.PDFatigueModel.PDFatigueSolver" title="modules.PDFatigueModel.PDFatigueSolver"><em>PDFatigueSolver</em></a>) – The instance of the PDFatigueSolver class.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Prints:</dt><dd><p>Iteration number and the residual force norm at each iteration.
+The change in the residual force norm from the previous step</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.solve_lin_sys_for_f">
+<span class="sig-name descname"><span class="pre">solve_lin_sys_for_f</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disps</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.solve_lin_sys_for_f"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.solve_lin_sys_for_f" title="Link to this definition"></a></dt>
+<dd><p>Solve the linear system for the force density vector (RHS).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>disps</strong> (<em>np.ndarray</em>) – The displacement vector.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The force density vector.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel.PDFatigueSolver.update_bond_damage">
+<span class="sig-name descname"><span class="pre">update_bond_damage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_bondStretches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel.html#PDFatigueSolver.update_bond_damage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel.PDFatigueSolver.update_bond_damage" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.PDFatigueModel_work_copy">
+<span id="modules-pdfatiguemodel-work-copy-module"></span><h2>modules.PDFatigueModel_work_copy module<a class="headerlink" href="#module-modules.PDFatigueModel_work_copy" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.FatigueInputData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.PDFatigueModel_work_copy.</span></span><span class="sig-name descname"><span class="pre">FatigueInputData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numModel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.NumericalModel.NumericalModel" title="modules.NumericalModel.NumericalModel"><span class="pre">NumericalModel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#FatigueInputData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.FatigueInputData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.FatigueInputData.create_combined_disp_BC_vec">
+<span class="sig-name descname"><span class="pre">create_combined_disp_BC_vec</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#FatigueInputData.create_combined_disp_BC_vec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.FatigueInputData.create_combined_disp_BC_vec" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_emod_array">
+<span class="sig-name descname"><span class="pre">gen_bond_emod_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#FatigueInputData.gen_bond_emod_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_emod_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_material_array">
+<span class="sig-name descname"><span class="pre">gen_bond_material_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#FatigueInputData.gen_bond_material_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_material_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_mu_array">
+<span class="sig-name descname"><span class="pre">gen_bond_mu_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#FatigueInputData.gen_bond_mu_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.FatigueInputData.gen_bond_mu_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.FatigueInputData.gen_damage_evolution_stretch_arrays">
+<span class="sig-name descname"><span class="pre">gen_damage_evolution_stretch_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#FatigueInputData.gen_damage_evolution_stretch_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.FatigueInputData.gen_damage_evolution_stretch_arrays" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.LoadInc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.PDFatigueModel_work_copy.</span></span><span class="sig-name descname"><span class="pre">LoadInc</span></span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#LoadInc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.LoadInc" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.PDFatigueModel_work_copy.</span></span><span class="sig-name descname"><span class="pre">PDFatigueSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numModel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.NumericalModel.NumericalModel" title="modules.NumericalModel.NumericalModel"><span class="pre">NumericalModel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.apply_displacement_BC">
+<span class="sig-name descname"><span class="pre">apply_displacement_BC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BCvec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stiffnessMat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RHSvec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.apply_displacement_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.apply_displacement_BC" title="Link to this definition"></a></dt>
+<dd><p>Only works for dense matrix form</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.calc_bond_stretches">
+<span class="sig-name descname"><span class="pre">calc_bond_stretches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_coordVec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.calc_bond_stretches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.calc_bond_stretches" title="Link to this definition"></a></dt>
+<dd><p>Calculate the stretches of each bond</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_bond_displacement_vecs">
+<span class="sig-name descname"><span class="pre">gen_bond_displacement_vecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dispVec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.gen_bond_displacement_vecs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_bond_displacement_vecs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_bond_stiffness_matrices">
+<span class="sig-name descname"><span class="pre">gen_bond_stiffness_matrices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.gen_bond_stiffness_matrices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_bond_stiffness_matrices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_stiffness_matrix">
+<span class="sig-name descname"><span class="pre">gen_stiffness_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LiveBonds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bondDamage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.gen_stiffness_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.gen_stiffness_matrix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.incremental_solve_for_eq">
+<span class="sig-name descname"><span class="pre">incremental_solve_for_eq</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.incremental_solve_for_eq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.incremental_solve_for_eq" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.solve_for_eq3">
+<span class="sig-name descname"><span class="pre">solve_for_eq3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LoadInrement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.PDFatigueModel_work_copy.LoadInc" title="modules.PDFatigueModel_work_copy.LoadInc"><span class="pre">LoadInc</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.solve_for_eq3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.solve_for_eq3" title="Link to this definition"></a></dt>
+<dd><p>Solves for equlibirum state of the system with desegnated “epsilon” as the maximum residual fraction</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.solve_lin_sys_for_f">
+<span class="sig-name descname"><span class="pre">solve_lin_sys_for_f</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disps</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.solve_lin_sys_for_f"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.solve_lin_sys_for_f" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDFatigueModel_work_copy.PDFatigueSolver.update_bond_damage">
+<span class="sig-name descname"><span class="pre">update_bond_damage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_bondStretches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDFatigueModel_work_copy.html#PDFatigueSolver.update_bond_damage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDFatigueModel_work_copy.PDFatigueSolver.update_bond_damage" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.PDLinearStatic">
+<span id="modules-pdlinearstatic-module"></span><h2>modules.PDLinearStatic module<a class="headerlink" href="#module-modules.PDLinearStatic" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.FatigueInputData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.PDLinearStatic.</span></span><span class="sig-name descname"><span class="pre">FatigueInputData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numModel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.NumericalModel.NumericalModel" title="modules.NumericalModel.NumericalModel"><span class="pre">NumericalModel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#FatigueInputData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.FatigueInputData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.FatigueInputData.create_combined_disp_BC_vec">
+<span class="sig-name descname"><span class="pre">create_combined_disp_BC_vec</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#FatigueInputData.create_combined_disp_BC_vec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.FatigueInputData.create_combined_disp_BC_vec" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.FatigueInputData.gen_bond_emod_array">
+<span class="sig-name descname"><span class="pre">gen_bond_emod_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#FatigueInputData.gen_bond_emod_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.FatigueInputData.gen_bond_emod_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.FatigueInputData.gen_bond_material_array">
+<span class="sig-name descname"><span class="pre">gen_bond_material_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#FatigueInputData.gen_bond_material_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.FatigueInputData.gen_bond_material_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.FatigueInputData.gen_bond_mu_array">
+<span class="sig-name descname"><span class="pre">gen_bond_mu_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#FatigueInputData.gen_bond_mu_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.FatigueInputData.gen_bond_mu_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.FatigueInputData.gen_damage_evolution_stretch_arrays">
+<span class="sig-name descname"><span class="pre">gen_damage_evolution_stretch_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#FatigueInputData.gen_damage_evolution_stretch_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.FatigueInputData.gen_damage_evolution_stretch_arrays" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.PDFatigueSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.PDLinearStatic.</span></span><span class="sig-name descname"><span class="pre">PDFatigueSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numModel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.NumericalModel.NumericalModel" title="modules.NumericalModel.NumericalModel"><span class="pre">NumericalModel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#PDFatigueSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.PDFatigueSolver" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.PDFatigueSolver.apply_displacement_BC">
+<span class="sig-name descname"><span class="pre">apply_displacement_BC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BCvec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stiffnessMat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RHSvec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#PDFatigueSolver.apply_displacement_BC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.PDFatigueSolver.apply_displacement_BC" title="Link to this definition"></a></dt>
+<dd><p>Only works for dense matrix form</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.PDFatigueSolver.calc_bond_stretches">
+<span class="sig-name descname"><span class="pre">calc_bond_stretches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_coordVec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#PDFatigueSolver.calc_bond_stretches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.PDFatigueSolver.calc_bond_stretches" title="Link to this definition"></a></dt>
+<dd><p>Calculate the stretches of each bond</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.PDFatigueSolver.gen_stiffness_matrix">
+<span class="sig-name descname"><span class="pre">gen_stiffness_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LiveBonds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bondDamage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#PDFatigueSolver.gen_stiffness_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.PDFatigueSolver.gen_stiffness_matrix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.PDFatigueSolver.solve_for_eq3">
+<span class="sig-name descname"><span class="pre">solve_for_eq3</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#PDFatigueSolver.solve_for_eq3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.PDFatigueSolver.solve_for_eq3" title="Link to this definition"></a></dt>
+<dd><p>Solves for equlibirum state of the system with desegnated “epsilon” as the maximum residual fraction</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.PDFatigueSolver.solve_lin_sys">
+<span class="sig-name descname"><span class="pre">solve_lin_sys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disps</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#PDFatigueSolver.solve_lin_sys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.PDFatigueSolver.solve_lin_sys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.PDLinearStatic.PDFatigueSolver.update_bond_damage">
+<span class="sig-name descname"><span class="pre">update_bond_damage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_bondStretches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/modules/PDLinearStatic.html#PDFatigueSolver.update_bond_damage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.PDLinearStatic.PDFatigueSolver.update_bond_damage" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.data">
+<span id="modules-data-module"></span><h2>modules.data module<a class="headerlink" href="#module-modules.data" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.data.HistoryOutput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.data.</span></span><span class="sig-name descname"><span class="pre">HistoryOutput</span></span><a class="reference internal" href="_modules/modules/data.html#HistoryOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.HistoryOutput" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simply stores “Results” objects into a list.
+Each index of the list corresponds to a step in the simulation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.HistoryOutput.add_result_to_history">
+<span class="sig-name descname"><span class="pre">add_result_to_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.data.Results" title="modules.data.Results"><span class="pre">Results</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#HistoryOutput.add_result_to_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.HistoryOutput.add_result_to_history" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.data.Results">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.data.</span></span><span class="sig-name descname"><span class="pre">Results</span></span><a class="reference internal" href="_modules/modules/data.html#Results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Results" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This type stores the results of a increment or step of the simulation. It does not have fixed result categories.
+Each result is stored in a dictionary with the name of the result as the key (e.g. “stress”) and the result as the value.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Results.add_result">
+<span class="sig-name descname"><span class="pre">add_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#Results.add_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Results.add_result" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Results.is_from_increment">
+<span class="sig-name descname"><span class="pre">is_from_increment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#Results.is_from_increment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Results.is_from_increment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Results.is_from_step">
+<span class="sig-name descname"><span class="pre">is_from_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#Results.is_from_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Results.is_from_step" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.data.Set">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.data.</span></span><span class="sig-name descname"><span class="pre">Set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrayOfIDs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Set'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#Set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Set" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Meant for storing nodes</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Set.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#Set.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Set.get_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Set.get_number_of_points">
+<span class="sig-name descname"><span class="pre">get_number_of_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#Set.get_number_of_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Set.get_number_of_points" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Set.is_in_set">
+<span class="sig-name descname"><span class="pre">is_in_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/modules/data.html#Set.is_in_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Set.is_in_set" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Set.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">type</span></span></span><a class="reference internal" href="_modules/modules/data.html#Set.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Set.type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.data.Sets">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.data.</span></span><span class="sig-name descname"><span class="pre">Sets</span></span><a class="reference internal" href="_modules/modules/data.html#Sets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Sets" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Sets.create_set">
+<span class="sig-name descname"><span class="pre">create_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrayOfIDs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'set</span> <span class="pre">name'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/data.html#Sets.create_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Sets.create_set" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.data.Sets.delete_set">
+<span class="sig-name descname"><span class="pre">delete_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'set</span> <span class="pre">name'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#Sets.delete_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.Sets.delete_set" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="modules.data.get_user_decision">
+<span class="sig-prename descclassname"><span class="pre">modules.data.</span></span><span class="sig-name descname"><span class="pre">get_user_decision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/data.html#get_user_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.data.get_user_decision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-modules.disretization">
+<span id="modules-disretization-module"></span><h2>modules.disretization module<a class="headerlink" href="#module-modules.disretization" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.disretization.Discretization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.disretization.</span></span><span class="sig-name descname"><span class="pre">Discretization</span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretization.activate_cracks">
+<span class="sig-name descname"><span class="pre">activate_cracks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization.activate_cracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization.activate_cracks" title="Link to this definition"></a></dt>
+<dd><p>Activates the cracks by setting the <cite>hasInitialCrack</cite> attribute to True.</p>
+<p>This function does not take any parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This function does not return anything.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretization.create_crack">
+<span class="sig-name descname"><span class="pre">create_crack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p1x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p1y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p2x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p2y</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization.create_crack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization.create_crack" title="Link to this definition"></a></dt>
+<dd><p>Creates a crack and adds it to the initial cracks list.
+The bonds that intersect with any of the bonds in this list is not added to the family of a material point.
+Therefore, when creating A matrices (from PDDO to create g functions), the points connected by these bonds are not included in the summation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p1x</strong> (<em>float</em>) – The x-coordinate of the first point of the crack.</p></li>
+<li><p><strong>p1y</strong> (<em>float</em>) – The y-coordinate of the first point of the crack.</p></li>
+<li><p><strong>p2x</strong> (<em>float</em>) – The x-coordinate of the second point of the crack.</p></li>
+<li><p><strong>p2y</strong> (<em>float</em>) – The y-coordinate of the second point of the crack.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretization.deactivate_cracks">
+<span class="sig-name descname"><span class="pre">deactivate_cracks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization.deactivate_cracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization.deactivate_cracks" title="Link to this definition"></a></dt>
+<dd><p>Deactivates the cracks by setting the <cite>hasInitialCrack</cite> attribute to False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This function does not return anything.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretization.generate_bonds">
+<span class="sig-name descname"><span class="pre">generate_bonds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partNodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_PartNodes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization.generate_bonds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization.generate_bonds" title="Link to this definition"></a></dt>
+<dd><p>Generates bonds between nodes in a given geometry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>partNodes</strong> (<em>geometry._PartNodes</em>) – The PartNodes object containing the nodes for which bonds need to be generated.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return anything.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p>This function generates bonds between nodes in a given geometry. It takes a PartNodes object as input, which contains the nodes for which bonds need to be generated.
+The function first checks if all the necessary data for generating bonds is available.
+Then, it saves the IDs and coordinates of each node in the partNodesTable to separate arrays.
+It creates a coordVec array for later use in pddoW2.
+If the object has an initial crack, it calls the find_neighbors2 function from the pddo module with the coordVec, a scaled delta value, and the initial cracks as parameters.
+Otherwise, it calls the find_neighbors function from the pddo module with the coordVec and a scaled delta value (this function does not tak into account the initial cracks).
+The function then calculates the number of points and bonds in the generated neighbors.
+It calculates the bond normals using the calc_bond_normals function from the pddo module.
+It initializes the live bonds and bond damage arrays with ones and zeros respectively.
+It calculates the initial bond lengths using the calc_bondLenghts function from the pddo module.
+It generates the Gvec matrix using the gen_Gmat2D_fixed2 function from the pddo module.
+Finally, it assigns the values from the Gvec matrix to the G11vec, G12vec, and G22vec arrays.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretization.get_node_family_IDs">
+<span class="sig-name descname"><span class="pre">get_node_family_IDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization.get_node_family_IDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization.get_node_family_IDs" title="Link to this definition"></a></dt>
+<dd><p>Returns ID’s of the nodes that are inside the family of the given node ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodeID</strong> (<em>int</em>) – The ID of the node for which the family IDs are to be retrieved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array of node family IDs that are included in the node defined with <cite>nodeID</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray[int,1]</p>
+</dd>
+</dl>
+<p>This function finds the position of the given node ID in the <cite>nodeIdIndeces</cite> array. It then uses the position to
+find the corresponding indices in the <cite>start_idx</cite> and <cite>end_idx</cite> arrays. It slices the <cite>neighbors</cite> array using
+these indices and retrieves the node family IDs from the <cite>nodeIdIndeces</cite> array. Finally, it returns the node family
+IDs as a 1-dimensional numpy array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretization.get_node_family_coords">
+<span class="sig-name descname"><span class="pre">get_node_family_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization.get_node_family_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization.get_node_family_coords" title="Link to this definition"></a></dt>
+<dd><p>Get the coordinates of the nodes that are part of the family of a given node ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodeID</strong> (<em>int</em>) – The ID of the node whose family members coordinates are to be retireved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array of shape (n, 2) containing the coordinates of the nodes in the family of the given “nodeID” parameter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray[int,2]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretization.is_crack_active">
+<span class="sig-name descname"><span class="pre">is_crack_active</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization.is_crack_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization.is_crack_active" title="Link to this definition"></a></dt>
+<dd><p>Returns a boolean value indicating whether the crack is currently active or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A boolean value indicating whether the crack is currently active or not.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretization.set_horizon">
+<span class="sig-name descname"><span class="pre">set_horizon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">horizonRad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretization.set_horizon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretization.set_horizon" title="Link to this definition"></a></dt>
+<dd><p>Set the horizon radius of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>horizonRad</strong> (<em>float</em>) – The radius of the horizon in units of your choice.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return anything.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.disretization.Discretizations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.disretization.</span></span><span class="sig-name descname"><span class="pre">Discretizations</span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretizations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretizations" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretizations.create_discretization">
+<span class="sig-name descname"><span class="pre">create_discretization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">discName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Discretization</span> <span class="pre">Name'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/disretization.html#Discretizations.create_discretization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretizations.create_discretization" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.disretization.Discretizations.set_selected_discretization">
+<span class="sig-name descname"><span class="pre">set_selected_discretization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">DiscretizationName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/disretization.html#Discretizations.set_selected_discretization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.disretization.Discretizations.set_selected_discretization" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.geometry">
+<span id="modules-geometry-module"></span><h2>modules.geometry module<a class="headerlink" href="#module-modules.geometry" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.geometry.Geometry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.geometry.</span></span><span class="sig-name descname"><span class="pre">Geometry</span></span><a class="reference internal" href="_modules/modules/geometry.html#Geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.geometry.Geometry" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.geometry.Geometry.input_part_nodes">
+<span class="sig-name descname"><span class="pre">input_part_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputCoordinates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputVolumes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/geometry.html#Geometry.input_part_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.geometry.Geometry.input_part_nodes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.interactions">
+<span id="modules-interactions-module"></span><h2>modules.interactions module<a class="headerlink" href="#module-modules.interactions" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.interactions.Interactions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.interactions.</span></span><span class="sig-name descname"><span class="pre">Interactions</span></span><a class="reference internal" href="_modules/modules/interactions.html#Interactions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.interactions.Interactions" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-modules.loads">
+<span id="modules-loads-module"></span><h2>modules.loads module<a class="headerlink" href="#module-modules.loads" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.loads.BoundaryCons">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.loads.</span></span><span class="sig-name descname"><span class="pre">BoundaryCons</span></span><a class="reference internal" href="_modules/modules/loads.html#BoundaryCons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.loads.BoundaryCons" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.loads.DisplacementLoad">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.loads.</span></span><span class="sig-name descname"><span class="pre">DisplacementLoad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeSet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.data.Set" title="modules.data.Set"><span class="pre">Set</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispY</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispZ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/loads.html#DisplacementLoad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.loads.DisplacementLoad" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#modules.loads.Load" title="modules.loads.Load"><code class="xref py py-class docutils literal notranslate"><span class="pre">Load</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.loads.ForceLoad">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.loads.</span></span><span class="sig-name descname"><span class="pre">ForceLoad</span></span><a class="reference internal" href="_modules/modules/loads.html#ForceLoad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.loads.ForceLoad" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#modules.loads.Load" title="modules.loads.Load"><code class="xref py py-class docutils literal notranslate"><span class="pre">Load</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.loads.Load">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.loads.</span></span><span class="sig-name descname"><span class="pre">Load</span></span><a class="reference internal" href="_modules/modules/loads.html#Load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.loads.Load" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.loads.Loads">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.loads.</span></span><span class="sig-name descname"><span class="pre">Loads</span></span><a class="reference internal" href="_modules/modules/loads.html#Loads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.loads.Loads" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.loads.Loads.create_disp_load">
+<span class="sig-name descname"><span class="pre">create_disp_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeSet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.data.Set" title="modules.data.Set"><span class="pre">Set</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispY</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispZ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DispLoad'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/loads.html#Loads.create_disp_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.loads.Loads.create_disp_load" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.loads.Loads.create_total_force_load">
+<span class="sig-name descname"><span class="pre">create_total_force_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeSet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.data.Set" title="modules.data.Set"><span class="pre">Set</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">forceX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forceY</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forceZ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/loads.html#Loads.create_total_force_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.loads.Loads.create_total_force_load" title="Link to this definition"></a></dt>
+<dd><p>The load values specified are distributed over all points in the defined nodeSet.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.material">
+<span id="modules-material-module"></span><h2>modules.material module<a class="headerlink" href="#module-modules.material" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.material.Anisotropic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.material.</span></span><span class="sig-name descname"><span class="pre">Anisotropic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materialName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Material'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Anisotropic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Anisotropic" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#modules.material.Material" title="modules.material.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.Anisotropic.set_tensile_properties">
+<span class="sig-name descname"><span class="pre">set_tensile_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">youngModx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">youngMody</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">youngModz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poisx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poisy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poisz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Anisotropic.set_tensile_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Anisotropic.set_tensile_properties" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.material.Isotropic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.material.</span></span><span class="sig-name descname"><span class="pre">Isotropic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materialName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Material'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Isotropic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Isotropic" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#modules.material.Material" title="modules.material.Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">Material</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.Isotropic.set_tensile_properties">
+<span class="sig-name descname"><span class="pre">set_tensile_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">youngMod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poisson</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Isotropic.set_tensile_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Isotropic.set_tensile_properties" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.material.Material">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.material.</span></span><span class="sig-name descname"><span class="pre">Material</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materialName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Material'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Material"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Material" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.Material.delete_material_id">
+<span class="sig-name descname"><span class="pre">delete_material_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/material.html#Material.delete_material_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Material.delete_material_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.material.Material.deleted_ids">
+<span class="sig-name descname"><span class="pre">deleted_ids</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#modules.material.Material.deleted_ids" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.Material.get_material_properties">
+<span class="sig-name descname"><span class="pre">get_material_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Material.get_material_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Material.get_material_properties" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="modules.material.Material.next_id">
+<span class="sig-name descname"><span class="pre">next_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#modules.material.Material.next_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.Material.set_density">
+<span class="sig-name descname"><span class="pre">set_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Material.set_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Material.set_density" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.Material.set_stretch_thresholds">
+<span class="sig-name descname"><span class="pre">set_stretch_thresholds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">damageInitStretch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">breakageStretch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Material.set_stretch_thresholds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Material.set_stretch_thresholds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.material.MaterialInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.material.</span></span><span class="sig-name descname"><span class="pre">MaterialInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matSection1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.material.MaterialSection" title="modules.material.MaterialSection"><span class="pre">MaterialSection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">matSection2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.material.MaterialSection" title="modules.material.MaterialSection"><span class="pre">MaterialSection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interfaceMaterial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.material.Material" title="modules.material.Material"><span class="pre">Material</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">matIntName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MaterialInterface'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#MaterialInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.MaterialInterface" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.material.MaterialInterfaces">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.material.</span></span><span class="sig-name descname"><span class="pre">MaterialInterfaces</span></span><a class="reference internal" href="_modules/modules/material.html#MaterialInterfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.MaterialInterfaces" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.MaterialInterfaces.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materialSection1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.material.MaterialSection" title="modules.material.MaterialSection"><span class="pre">MaterialSection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">materialSection2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.material.MaterialSection" title="modules.material.MaterialSection"><span class="pre">MaterialSection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.material.Material" title="modules.material.Material"><span class="pre">Material</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'MaterialInterface'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#MaterialInterfaces.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.MaterialInterfaces.create" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.material.MaterialSection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.material.</span></span><span class="sig-name descname"><span class="pre">MaterialSection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeSet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.data.Set" title="modules.data.Set"><span class="pre">Set</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.material.Material" title="modules.material.Material"><span class="pre">Material</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'MaterialSection'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#MaterialSection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.MaterialSection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.material.MaterialSections">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.material.</span></span><span class="sig-name descname"><span class="pre">MaterialSections</span></span><a class="reference internal" href="_modules/modules/material.html#MaterialSections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.MaterialSections" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.MaterialSections.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodeSet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.data.Set" title="modules.data.Set"><span class="pre">Set</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#modules.material.Material" title="modules.material.Material"><span class="pre">Material</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#MaterialSections.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.MaterialSections.create" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.material.Materials">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.material.</span></span><span class="sig-name descname"><span class="pre">Materials</span></span><a class="reference internal" href="_modules/modules/material.html#Materials"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Materials" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.Materials.create_material">
+<span class="sig-name descname"><span class="pre">create_material</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materialName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'MaterialName'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isIsotropic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/material.html#Materials.create_material"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Materials.create_material" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="modules.material.Materials.delete_material">
+<span class="sig-name descname"><span class="pre">delete_material</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materialName</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/modules/material.html#Materials.delete_material"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.material.Materials.delete_material" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-modules.sections">
+<span id="modules-sections-module"></span><h2>modules.sections module<a class="headerlink" href="#module-modules.sections" title="Link to this heading"></a></h2>
+</section>
+<section id="module-modules.simulation_settings">
+<span id="modules-simulation-settings-module"></span><h2>modules.simulation_settings module<a class="headerlink" href="#module-modules.simulation_settings" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="modules.simulation_settings.SimulationSettings">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">modules.simulation_settings.</span></span><span class="sig-name descname"><span class="pre">SimulationSettings</span></span><a class="reference internal" href="_modules/modules/simulation_settings.html#SimulationSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#modules.simulation_settings.SimulationSettings" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to pyVerse2’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="libs.html" class="btn btn-neutral float-right" title="libs package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Filip Jerenec.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
