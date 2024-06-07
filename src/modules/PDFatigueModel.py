@@ -137,7 +137,7 @@ class PDFatigueSolver:
     def __init__(self, numModel: NumericalModel) -> None:
         """FID = FatigueInputData"""
         self.FID = FatigueInputData(numModel)
-        self.HistroryOutput = HistoryOutput()
+        self.HistoryOutput = HistoryOutput()
         pass
     
     def gen_stiffness_matrix(self,LiveBonds: np.ndarray, bondDamage: np.ndarray) -> np.ndarray:
@@ -188,6 +188,15 @@ class PDFatigueSolver:
     def update_bond_damage(self,cur_bondStretches:np.ndarray, s1:np.ndarray[float,1], sc:np.ndarray[float,1])-> np.ndarray:
         return _calc_bond_damage(cur_bondStretches,s1,sc)
     
+    def calc_fatigue_damage(self, results: Results):
+        self.bond_fatigue_damage_inc = np.zeros(self.FID.curBondDamage.shape[0])
+        for bond in range(self.FID.curLiveBonds.shape[0]):
+            bond_fat_dmg_inc = 0 # TODO Implement the fatigue damage calculation
+            self.bond_fat_dmg_inc[bond] = bond_fat_dmg_inc
+
+
+            pass
+        return
     def solve_lin_sys_for_f(self,disps) -> np.ndarray:
         """
         Solve the linear system for the force density vector (RHS).
@@ -268,22 +277,30 @@ class PDFatigueSolver:
                 print(f"Residual forces/Externalforces = {_residual_force_norm}")
                 print(f"Change of residual from previous step: {t1}")
                 self.result = _disps
+
+                # Save the data. Since we inside the eq. cond. statement the results that will be saved are from the equilibrium solution (to this is step)
+                results = Results()
+                results.add_result("displacements", _disps)
+                results.add_result("currentBondDamage", self.FID.curBondDamage)
+                results.add_result("currentLiveBonds", self.FID.curLiveBonds)
+                results.add_result("currentLiveBonds", self.FID.curLiveBonds)
+                results.add_result("forceConvergence", self.FID.force_convergence)
+                results.add_result("internalForces", _internal_force_vec)
+                results.is_from_step()
+                self.HistoryOutput.add_result_to_history(results)
                 return 
             _residual_force_norm_old = _residual_force_norm
         print("Solution did not converge!")
-        results = Results()
-        results.add_result("displacements", _disps)
-        results.add_result("currentBondDamage", self.FID.curBondDamage)
-        results.add_result("currentLiveBonds", self.FID.curLiveBonds)
-        results.add_result("currentLiveBonds", self.FID.curLiveBonds)
-        results.add_result("forceConvergence", self.FID.force_convergence)
-        results.is_from_increment()
-        self.HistroryOutput.add_result_to_history(results)
         return
+
+   
 
     def solve_for_fatigue(self):
         # Solve for the static part. Once equilibrium is reached for static part i can update bond damage based on the fatigue part
         self.solve_for_eq3()
+        # Take the data from the equilibrium and update the bond damage based on the fatigue part
+        self.calc_fatigue_damage(self.HistoryOutput.history[-1])
+        # End of loop cycle -> go to new loop cycle
 
 
 

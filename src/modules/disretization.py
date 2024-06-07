@@ -114,10 +114,10 @@ class Discretization():
         these indices and retrieves the node family IDs from the `nodeIdIndeces` array. Finally, it returns the node family
         IDs as a 1-dimensional numpy array.
         """
-        nodeIdPosition = np.where(self.nodeIdIndeces == nodeID)
-        firstMemberIndex = self.start_idx[nodeIdPosition]
-        lastMemberIndex = self.end_idx[nodeIdPosition]
-        nodeFamily = self.nodeIdIndeces[self.neighbors[firstMemberIndex:lastMemberIndex]]
+        # nodeIdPosition = np.where(self.nodeIdIndeces == nodeID)[0]
+        firstMemberIndex = self.start_idx[nodeID]
+        lastMemberIndex = self.end_idx[nodeID]
+        nodeFamily = self.neighbors[firstMemberIndex:lastMemberIndex]
         return nodeFamily
 
     def get_node_family_coords(self,nodeID: int) -> np.ndarray[int,2]:

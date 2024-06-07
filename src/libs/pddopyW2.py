@@ -1189,7 +1189,35 @@ def _generate_stiffness_matrix(coordVec,neighbors, start_idx, end_idx, G11vec, G
 
 @njit
 def _generate_stiffness_matrix2(coordVec,neighbors, start_idx, end_idx, G11vec, G12vec,G22vec, mu, LiveBonds, Damage, stiffMat):
-    """Function is only meant to be called inside the "gen_stiffness_matrix" method of the PDFatigueModel class!
+    """ 
+    Generates a stiffness matrix for a given set of coordinates, neighbors, start indices, end indices, G11vec, G12vec, G22vec, mu, LiveBonds, Damage, and an initial stiffness matrix.
+
+    Parameters:
+    - coordVec (ndarray): An array of coordinates.
+    - neighbors (ndarray): An array of indices representing the neighbors of each point.
+    - start_idx (ndarray): An array of start indices for each point's neighbors.
+    - end_idx (ndarray): An array of end indices for each point's neighbors.
+    - G11vec (ndarray): An array of G11 values for each point.
+    - G12vec (ndarray): An array of G12 values for each point.
+    - G22vec (ndarray): An array of G22 values for each point.
+    - mu (ndarray): An array of mu values for each point.
+    - LiveBonds (ndarray): An array of boolean values indicating the status of each bond.
+    - Damage (ndarray): An array of damage values for each bond.
+    - stiffMat (ndarray): An initial stiffness matrix.
+
+    Returns:
+    - stiffMat (ndarray): The updated stiffness matrix after calculating the contributions of each bond and its family members.
+
+    Comments:
+    Function is only meant to be called inside the "gen_stiffness_matrix" method of the PDFatigueModel class!
+    
+    This function assumes the volumes of all the points in the model are the same.
+    Explanation:
+    The force density acting on a point is calculated as: rho * a [N/m^^3] = Suma{i=1}{N} (fi[N/m^^6] * Vi[m^^3]) = L
+    If all point volumes are the same, then we can rewrite this equation as: rho * a = (Suma{i=1}{N} (fi)) * V = L ; V = Vi for all i.
+    This way we do not need to multiply the force density vectors with Vi for each bonds stiffness contribution, since the equilibrium can be fully obtained using only (Suma{i=1}{N} (fi)) (less computation).
+    BUT!!! -> This also means that the output of K*u != L !!!. To get L we need to multiply the result of K*u with Vi (or V since all Vi = V).
+    To get the force in newtons we need to multiply this L with Vi again.
     """
     for pt in range(coordVec.shape[0]):
         for j in range(start_idx[pt],end_idx[pt]):
