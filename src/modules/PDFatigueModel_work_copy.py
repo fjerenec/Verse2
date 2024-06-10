@@ -248,8 +248,8 @@ def _calc_bond_damage(cur_bondStretches:np.ndarray, s0arr:np.ndarray[float,1], s
 
 @njit
 def _update_live_bonds(bond_damage: np.ndarray[float,1]) -> np.ndarray[int,1]:
-    live_bonds = np.zeros_like(bond_damage)
+    live_bonds = np.ones_like(bond_damage)
     for bond in range(live_bonds.shape[0]):
-        if bond_damage[bond] < 1:
-            live_bonds[bond] = 1
+        if bond_damage[bond] >= float(1):
+            live_bonds[bond] = 0
     return live_bonds

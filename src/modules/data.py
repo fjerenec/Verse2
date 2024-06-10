@@ -70,16 +70,16 @@ def get_user_decision():
 
 
 
-class Results():
+class State():
     """
-    This type stores the results of a increment or step of the simulation. It does not have fixed result categories.
+    This type stores the state (so the results) of a increment or step of the simulation. It does not have fixed result categories.
     Each result is stored in a dictionary with the name of the result as the key (e.g. "stress") and the result as the value.
     """
     def __init__(self) -> None:
-        self.results = {}
+        self.state_data = {}
 
-    def add_result(self, name: str, result):
-        self.results[name] = result
+    def add_state_data(self, name: str, state):
+        self.state_data[name] = state
 
     def is_from_step(self):
         self.from_step = True
@@ -87,13 +87,27 @@ class Results():
     def is_from_increment(self):
         self.from_increment = True
 
+    def has_state_data(self, name: str) -> bool:
+        """
+        Check if the given name exists as a key in the `state_data` dictionary.
+
+        Parameters:
+            name (str): The name to check for in the `state_data` dictionary.
+
+        Returns:
+            bool: True if the name exists as a key in the `state_data` dictionary, False otherwise.
+        """
+        if name in self.state_data.keys():
+            return True
+        else: return False
+
 class HistoryOutput():
     """
-    Simply stores "Results" objects into a list.
+    Simply stores "State" objects into a list.
     Each index of the list corresponds to a step in the simulation.
     """
     def __init__(self) -> None:
         self.history = []
     
-    def add_result_to_history(self, result: Results):
-        self.history.append(result)
+    def add_state_to_history(self, state: State):
+        self.history.append(state)
