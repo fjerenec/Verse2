@@ -188,10 +188,17 @@ class PDFatigueSolver:
     def update_bond_damage(self,cur_bondStretches:np.ndarray, s1:np.ndarray[float,1], sc:np.ndarray[float,1])-> np.ndarray:
         return _calc_bond_damage(cur_bondStretches,s1,sc)
     
-    def calc_static_damage_inc(self, state: State):
+    def update_max_stretches_hist(self, current_state: State) -> np.ndarray[float, 1]:
+        old_max_stretches = current_state.state_data["s_max_arr"]
+        current_stretches = current_state.state_data["bondStretches"]
+        new_max_stretches = _update_max_stretches_hist(old_max_stretches, current_stretches)
+        return new_max_stretches
+
+
+    def calc_static_damage_inc(self, state: State) -> np.ndarray[float, 1]:
         """
         Calculate the static damage increment based on the given state.
-        This function calculates the static damage increment based on the s1_arr, sc_arr, s_max_arr, and stretch_arr attributes of the FID object and the s_max_arr and stretch_arr attributes of the state object.
+        This function calculates the static damage increment based on the s1_arr, sc_arr, s_max_arr, and bondStretches attributes of the FID object and the s_max_arr and stretch_arr attributes of the state object.
         It uses the _calc_static_damage_inc function to perform the calculation.
 
         Args:
@@ -204,24 +211,20 @@ class PDFatigueSolver:
 
         if not state.has_state_data("s_max_arr"):
             raise ValueError("The state object does not have the required data to calculate the static damage increment -> 's_max_arr' is missing from the state object.")
-        if not state.has_state_data("stretch_arr"):
+        if not state.has_state_data("bondStretches"):
             raise ValueError("The state object does not have the required data to calculate the static damage increment -> 'stretch_arr' is missing from the state object.")
         
         s1_arr = self.FID.s0arr
         sc_arr = self.FID.scarr
         s_max_arr = state.state_data["s_max_arr"]
-        stretch_arr = state.state_data["stretch_arr"]
-        return _calc_static_damage_inc(s1_arr=s1_arr, sc_arr=sc_arr, s_max_arr=s_max_arr, sNpN_arr=stretch_arr)
+        stretch_arr = state.state_data["bondStretches"]
+        delta_Ds_arr = _calc_static_damage_inc(s1_arr=s1_arr, sc_arr=sc_arr, s_max_arr=s_max_arr, sNpN_arr=stretch_arr)
+        return delta_Ds_arr
     
     def calc_fatigue_damage_inc(self, state: State):
-        bond_fatigue_damage_inc = np.zeros(self.FID.curBondDamage.shape[0])
-        ###------------------------------ This needs to a a njit functon for speed
-        for bond in range(self.FID.curLiveBonds.shape[0]):
-            bond_fat_dmg_inc = 0 # TODO Implement the fatigue damage calculation
-            bond_fat_dmg_inc[bond] = bond_fat_dmg_inc
-        ###------------------------------    
-        state.add_state_data('bond_fatigue_damage_inc', bond_fatigue_damage_inc)
-        return bond_fatigue_damage_inc
+        test_arr = state.state_data["bondStretches"]/np.max(state.state_data["bondStretches"])
+        delta_Df_arr = _calc_fatigue_damage_inc(test_arr)
+        return delta_Df_arr
     
     def solve_lin_sys_for_f(self,disps) -> np.ndarray:
         """
@@ -309,15 +312,17 @@ class PDFatigueSolver:
                 # Save the data. Since we inside the eq. cond. statement the results that will be saved are from the equilibrium solution (to this is step)
                 state = State()
                 state.add_state_data("displacements", _disps)
-                state.add_state_data("currentBondDamage", self.FID.curBondDamage)
-                state.add_state_data("currentLiveBonds", self.FID.curLiveBonds)
+                state.add_state_data("BondDamage", self.FID.curBondDamage)
+                print(self.FID.curBondDamage)
+                state.add_state_data("LiveBonds", self.FID.curLiveBonds)
                 state.add_state_data("forceConvergence", self.FID.force_convergence)
-                state.add_state_data("internalForces", _internal_force_vec)
+                state.add_state_data("internalForces", _BC_RHSvec) 
                 state.add_state_data("bondStretches", _cur_bond_stretches)
                 state.is_from_step()
                 self.HistoryOutput.add_state_to_history(state)
                 return 
             _residual_force_norm_old = _residual_force_norm
+        self.result = _disps
         print("Solution did not converge!")
         return
 
@@ -326,87 +331,97 @@ class PDFatigueSolver:
     def solve_for_fatigue_eq(self, inputState: State):
         ### Create local history output to be added to the globl histroy output after the simulation ends
         local_history_output = HistoryOutput()
-        local_history_output.add_state_to_history(inputState)
+        BCvec = self.FID.combined_BC_vec
         
         ### Check if inputState contains all required data
-        if inputState["s_max"] is None:
-            inputState.add_state_data("s_max", inputState["bondStretches"])
-            if inputState["bondStretches"] is None:
+        if not inputState.has_state_data("s_max_arr"):
+            inputState.add_state_data("s_max_arr", inputState.state_data["bondStretches"])
+            if not inputState.has_state_data("bondStretches"):
                 raise ValueError("WARNING: s_max not specified. Tries setting s_max array = bondStretches array but bondStretches array is not specified.")
-            print("WARNING: s_max not specified. Setting s_max array = bondStretches array")
+            print("WARNING: s_max not specified. Setting s_max array = bondStretches array (bondStretches from inputState)")
 
+        local_history_output.add_state_to_history(inputState)
         epsilon = self.FID.epsilon
 
         ## Check if inputState contains all required data
-        if not inputState.has_state_data('currentBondDamage'):
-            raise ValueError("Input state does not contain currentBondDamage!")
+        if not inputState.has_state_data('BondDamage'):
+            raise ValueError("Input state does not contain BondDamage!")
         
-        if not inputState.has_state_data('currentLiveBonds'):
-            raise ValueError("Input state does not contain currentLiveDamage!")
-
+        if not inputState.has_state_data('LiveBonds'):
+            raise ValueError("Input state does not contain LiveDamage!")
+        
+        curState = State()
+        ## Initialiye max stretches as the bond stretches for the initial step
         # Take the data from the equilibrium and update the bond damage based on the fatigue part
-        bond_fatigue_damage_inc = self.calc_fatigue_damage_inc(state = inputState)
-        # bond_static_damage_inc = np.zeros_like(bond_fatigue_damage_inc)
-        
+        _bond_fatigue_damage_inc = self.calc_fatigue_damage_inc(state = inputState)
         # First we add the damage increment from fatigue to the absolute damage in each bond
-        self.FID.curBondDamage = self.FID.curBondDamage + bond_fatigue_damage_inc
-        self.FID.curLiveBonds = _update_live_bonds(self.FID.curBondDamage)
+        _curBondDamage = inputState.state_data["BondDamage"] + _bond_fatigue_damage_inc
+        _curLiveBonds = _update_live_bonds(_curBondDamage)
+
+        curState.add_state_data("bond_fatigue_damage_inc", _bond_fatigue_damage_inc)
+        curState.add_state_data("bond_static_damage_inc", np.zeros_like(_bond_fatigue_damage_inc))
+        curState.add_state_data("BondDamage", _curBondDamage)
+        curState.add_state_data("LiveBonds", _curLiveBonds)
+        curState.add_state_data("s_max_arr", inputState.state_data["s_max_arr"])
 
         _residual_force_norm_old =  1
         for step in range(10):
+            print("Step {}".format(step))
+
             ### Inside the loop we now look for the equilibrium from equations 18 and 19 from the paper.
 
             ### We now have the damage state and can calculate for equilibrium
             ## Create a Stiffness matrix using updated bond damage states 
             if step == 0: # If its the first step we need to create the stiffness matrix. If its not the first step we can use the new stiffness matrix from the previous step
-                _stiffmat = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
+                _stiffmat = self.gen_stiffness_matrix(curState.state_data["LiveBonds"],curState.state_data["BondDamage"])
             else: 
                 _stiffmat = _stiffmat_new
                 
             ## Create a RHS vector using updated bond damage states and apply BC
             _RHSvec = np.zeros(self.FID.coordVec.shape[0]*2)
-            _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(self.FID.BCvec,_stiffmat,_RHSvec)
+            _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
+            curState.add_state_data("internalForces", _BC_RHSvec)
 
             ## Convert to CSR format
             _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
 
-            ## Solve the system of linear equations and reshape 1d array to 2d -> shape = (N,2)s
+            ## Solve the system of linear equations and reshape 1d array to 2d -> shape = (N,2)
             _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
             _disps = np.reshape(_solu,(int(_solu.shape[0]/2),2))
-
+            curState.add_state_data("displacements", _disps)
             ## Create a new coordinate vector based on initial state and currect displacements
             _newCoordVec = self.FID.coordVec + _disps
 
             ## Calculate new bond stretches
-            _cur_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
+            _new_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
+            curState.add_state_data("bondStretches", _new_bond_stretches)
 
             ## Update maximum stretches in history of fatigue simulation
-            _max_hist_bond_stretches = self.update_max_hist_stretches(_cur_bond_stretches, cur_max_stretches = inputState["s_max"])
-            ##################### CHECK THE LINE ABOVE. HAD TO GO::: NOT SURE IF ITS OKAY!!!!!!!!!!!
-            
-            ## Save the data to a new state and append to local history output
-            newState = State()
-            newState.add_state_data("displacements", _disps)
-            newState.add_state_data("currentBondDamage", self.FID.curBondDamage)
-            newState.add_state_data("currentLiveBonds", self.FID.curLiveBonds)
-            newState.add_state_data("forceConvergence", self.FID.force_convergence)
-            newState.add_state_data("internalForces", _internal_force_vec)
-            newState.is_from_step()
-            local_history_output.add_state_to_history(newState)
+            _new_max_bond_stretches = self.update_max_stretches_hist(current_state=curState)
+            curState.add_state_data("s_max_arr", _new_max_bond_stretches)
             
             ### The system is solved -> New stretches are calculated -> new damage is calculated ->
             ### -> Check if the new stiffness of the model produces equilibrium using previous displacements ->
             ### -> If force convergence is small enough (epsilon) then the somiulation is over!
             ## Update bond damage based on static and fatigue part of equation 18 and 19 in Zaccariotto et al.
-            _stadic_damage_inc = self.calc_static_damage_inc(state = inputState) #state = inputState is incorrect. Need to go to the next state in each step
-            _fatigue_damage_inc = self.calc_fatigue_damage_inc(state = inputState)
-            self.FID.curBondDamage = self.FID.curBondDamage + _stadic_damage_inc + _fatigue_damage_inc
-            
+            newState = State()
+            _static_damage_inc = self.calc_static_damage_inc(state = curState)
+            _fatigue_damage_inc = self.calc_fatigue_damage_inc(state = curState)
+            _newBondDamage = curState.state_data["BondDamage"] + _static_damage_inc + _fatigue_damage_inc
+
+            # The "s_max_arr" is not correct at the point of rewriting to the new state (below). It acts as a history of the "s_max_arr"
+            # that is used in the "update_max_stretches_hist" method and then cahnged in place. After "update_max_stretches_hist" is called are the results okay!
+            # This is not a probles as only the "curState" gets written to HistoryOutput -> at this point "curState" has all its data updated
+            newState.add_state_data("s_max_arr", curState.state_data["s_max_arr"])
+            newState.add_state_data("bond_fatigue_damage_inc", _static_damage_inc)
+            newState.add_state_data("bond_static_damage_inc", _fatigue_damage_inc)
+            newState.add_state_data("BondDamage", _newBondDamage)
             ## Update live bonds
-            self.FID.curLiveBonds = _update_live_bonds(self.FID.curBondDamage)
+            _newLiveBonds = _update_live_bonds(_newBondDamage)
+            newState.add_state_data("LiveBonds", _newLiveBonds)
 
             ## Based on updated damage create new stiffness matrix to be used in equillibrium calculation
-            _stiffmat_new = self.gen_stiffness_matrix(self.FID.curLiveBonds, self.FID.curBondDamage)
+            _stiffmat_new = self.gen_stiffness_matrix(_newLiveBonds, _newBondDamage)
 
             ## Calculate internal forces using new stiffness matrix and old displacements -> (K_(step+1) * u_(step))
             _internal_force_vec = _stiffmat_new @ _solu
@@ -418,23 +433,37 @@ class PDFatigueSolver:
             # Normalize the difference using the internal forces from the old stiffness matrix
             _diff_in_internal_forces_norm = np.linalg.norm(_diff_in_internal_forces/ np.linalg.norm(_BC_RHSvec))
 
+
             # If there is no change then the normalized result is 1.0. If the dfference is small then it will be around 1.0 but not 1.0.
             # Shift the no change value to start from 0.0 and not 1.0. Subtract 1.0 to start from 0.0 and take the absolute value
             # Some changes can be positive and some negative. The np.abs() makes sure that all differences increase the difference in internal forces
             _residual_force_norm = np.abs(_diff_in_internal_forces_norm - 1)
             print("Residual force norm = ",_residual_force_norm)
             t1= np.abs(1-_residual_force_norm/_residual_force_norm_old)
+            
             self.FID.force_convergence.append(_residual_force_norm)
+            curState.add_state_data("forceConvergence", self.FID.force_convergence)
+            
+            curState.is_from_step()
+            local_history_output.add_state_to_history(curState)
+            curState = newState
+
             print(f"Change of residual from previous step: {t1}")
             if t1 <= epsilon:
+                # Add local history output to global history output
+                self.local_history_output = local_history_output
+
                 print(f"Damage has converged in {iter} FATIGUE CRACK GROWTH steps! Residual forces/Externalforces = {_residual_force_norm}.Change of residual from previous step: {t1}")
                 print(f"Residual forces/Externalforces = {_residual_force_norm}")
                 print(f"Change of residual from previous step: {t1}")
                 return 
+            _residual_force_norm_old = _residual_force_norm
 
-            self.restartSim = True
+        self.local_history_output = local_history_output
 
-            # End of loop cycle -> go to new loop cycle
+        ## Save the data to a new state and append to local history output
+        self.restartSim = True
+        # End of loop cycle -> go to new loop cycle
 
 
 
@@ -483,3 +512,15 @@ def _calc_static_damage_inc(s1_arr: np.ndarray[float,1], sc_arr: np.ndarray[floa
             delta_D_arr[bond] =  delta_D
     return delta_D_arr
 
+@njit
+def _update_max_stretches_hist(cur_max_stretches: np.ndarray[float, 1], current_stretches: np.ndarray[float,1]) -> np.ndarray[float, 1]:
+    for bond in range(cur_max_stretches.shape[0]):
+        if cur_max_stretches[bond] < current_stretches[bond]:
+            cur_max_stretches[bond] = current_stretches[bond]
+
+    return cur_max_stretches
+
+@njit
+def _calc_fatigue_damage_inc(array):
+
+    return array 

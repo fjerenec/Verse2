@@ -78,8 +78,8 @@ class State():
     def __init__(self) -> None:
         self.state_data = {}
 
-    def add_state_data(self, name: str, state):
-        self.state_data[name] = state
+    def add_state_data(self, name: str, data):
+        self.state_data[name] = data
 
     def is_from_step(self):
         self.from_step = True
