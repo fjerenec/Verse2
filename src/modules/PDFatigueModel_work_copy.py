@@ -211,15 +211,16 @@ class PDFatigueSolver:
             _stiffmat = self.gen_stiffness_matrix(LoadInrement.curLiveBonds, LoadInrement.curBondDamage)
             _internal_force_vec = _stiffmat @ _solu
             _residual_force_norm = np.abs(np.linalg.norm(_BC_RHSvec-_internal_force_vec) / np.linalg.norm(_BC_RHSvec)-1)
-            print("Residual force norm = ",_residual_force_norm)
-            t1= np.abs(1-_residual_force_norm/_residual_force_norm_old)
+            print("Normalized residual force = ",_residual_force_norm)
+            t1= np.abs(_residual_force_norm/_residual_force_norm_old)
             LoadInrement.force_convergence.append(_residual_force_norm)
-            print(f"Change of residual from previous step: {t1}")
+            print(f"Fraction of residual from previous step: {t1}")
             if _cur_bond_stretches.max() <= s0.min():
                 print("Applied load was not large enough to cause damage!")
                 break
             if t1<= epsilon:
-                print(f"Damage has converged in {iter} steps! Residual forces/Externalforces = {_residual_force_norm}.Change of residual from previous step: {t1}")
+                print("sample converged! -------------------------------")
+                print(f"Damage has converged in {iter} steps!")
                 print(f"Residual forces/Externalforces = {_residual_force_norm}")
                 print(f"Change of residual from previous step: {t1}")
                 self.result = _disps

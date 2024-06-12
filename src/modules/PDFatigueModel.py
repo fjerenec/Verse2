@@ -305,7 +305,7 @@ class PDFatigueSolver:
                 print("Applied load was not large enough to cause damage!")
                 break
             if t1<= epsilon:
-                print(f"Damage has converged in {iter} steps! Residual forces/Externalforces = {_residual_force_norm}.Change of residual from previous step: {t1}")
+                print(f"Damage has converged in {iter} steps!")
                 print(f"Residual forces/Externalforces = {_residual_force_norm}")
                 print(f"Change of residual from previous step: {t1}")
 
@@ -428,18 +428,18 @@ class PDFatigueSolver:
 
             ## Calculate residual forces ( |F_(step) - K_(step+1) * u_(step)| / |F_(step)| - 1)
             # Calculate difference in internal forces between the new and old stiffness matrix (the same disaplcements are used)
-            _diff_in_internal_forces = np.linalg.norm(_BC_RHSvec -_internal_force_vec)
+            _diff_in_internal_forces = np.linalg.norm(_internal_force_vec - _BC_RHSvec)
 
             # Normalize the difference using the internal forces from the old stiffness matrix
-            _diff_in_internal_forces_norm = np.linalg.norm(_diff_in_internal_forces/ np.linalg.norm(_BC_RHSvec))
+            _diff_in_internal_forces_norm = (_diff_in_internal_forces/ np.linalg.norm(_BC_RHSvec))
 
 
             # If there is no change then the normalized result is 1.0. If the dfference is small then it will be around 1.0 but not 1.0.
             # Shift the no change value to start from 0.0 and not 1.0. Subtract 1.0 to start from 0.0 and take the absolute value
             # Some changes can be positive and some negative. The np.abs() makes sure that all differences increase the difference in internal forces
             _residual_force_norm = np.abs(_diff_in_internal_forces_norm - 1)
-            print("Residual force norm = ",_residual_force_norm)
-            t1= np.abs(1-_residual_force_norm/_residual_force_norm_old)
+            print("Normalized residual force = ", _residual_force_norm)
+            chng_of_res_frce_from_prev_step = np.abs((_residual_force_norm-_residual_force_norm_old)/_residual_force_norm_old)
             
             self.FID.force_convergence.append(_residual_force_norm)
             curState.add_state_data("forceConvergence", self.FID.force_convergence)
@@ -448,20 +448,19 @@ class PDFatigueSolver:
             local_history_output.add_state_to_history(curState)
             curState = newState
 
-            print(f"Change of residual from previous step: {t1}")
-            if t1 <= epsilon:
+            print(f"Fraction of residual from previous step: {chng_of_res_frce_from_prev_step}")
+            is_converged = chng_of_res_frce_from_prev_step <= epsilon and _residual_force_norm <= epsilon 
+            if is_converged:
                 # Add local history output to global history output
                 self.local_history_output = local_history_output
-
-                print(f"Damage has converged in {iter} FATIGUE CRACK GROWTH steps! Residual forces/Externalforces = {_residual_force_norm}.Change of residual from previous step: {t1}")
+                print("--------------------------------------------------------")
+                print(f"Damage has converged in {step} FATIGUE CRACK GROWTH step/s!. Tolerance = {epsilon}")
                 print(f"Residual forces/Externalforces = {_residual_force_norm}")
-                print(f"Change of residual from previous step: {t1}")
+                print(f"Fraction of residual from previous step: {chng_of_res_frce_from_prev_step}")
                 return 
             _residual_force_norm_old = _residual_force_norm
 
         self.local_history_output = local_history_output
-
-        ## Save the data to a new state and append to local history output
         self.restartSim = True
         # End of loop cycle -> go to new loop cycle
 
