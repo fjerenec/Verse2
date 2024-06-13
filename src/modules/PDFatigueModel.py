@@ -9,7 +9,8 @@ import libs.pddopyW2 as pddo
 from scipy.sparse.linalg import spsolve
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import cg
-from numba import njit
+from numba import njit, jit, prange
+from scipy.special import lambertw
 
 class FatigueInputData:
     def __init__(self, numModel: NumericalModel) -> None:
@@ -208,7 +209,9 @@ class PDFatigueSolver:
             np.ndarray[float,1]: The calculated static damage for each bond.
 
         """
-
+        # if 0 in state.state_data["s_max_arr"]:
+        #     raise ValueError("s_max = 0 -> division by zero. 0 encountered in static part of fatigue calculation.")
+        
         if not state.has_state_data("s_max_arr"):
             raise ValueError("The state object does not have the required data to calculate the static damage increment -> 's_max_arr' is missing from the state object.")
         if not state.has_state_data("bondStretches"):
@@ -218,13 +221,51 @@ class PDFatigueSolver:
         sc_arr = self.FID.scarr
         s_max_arr = state.state_data["s_max_arr"]
         stretch_arr = state.state_data["bondStretches"]
-        delta_Ds_arr = _calc_static_damage_inc(s1_arr=s1_arr, sc_arr=sc_arr, s_max_arr=s_max_arr, sNpN_arr=stretch_arr)
+        live_bonds = state.state_data["LiveBonds"]
+        delta_Ds_arr = _calc_static_damage_inc(live_bonds =live_bonds, s1_arr=s1_arr, sc_arr=sc_arr, s_max_arr=s_max_arr, sNpN_arr=stretch_arr)
         return delta_Ds_arr
     
-    def calc_fatigue_damage_inc(self, state: State):
-        test_arr = state.state_data["bondStretches"]/np.max(state.state_data["bondStretches"])
-        delta_Df_arr = _calc_fatigue_damage_inc(test_arr)
+    def calc_fatigue_damage_inc(self, state: State, cycle_increment: int):
+        """
+        Calculate the fatigue damage increment for each bond in the given state based on the specified cycle increment.
+
+        Args:
+            state (State): The current state of the system. Stores all data needed to progress to the next step. Currently, the user needs to make sure all the needed data is stored in the State instance.
+            cycle_increment (int): The cycle increment to use for the fatigue damage calculation.
+
+        Returns:
+            np.ndarray[float, 1]: The calculated fatigue damage increment for each bond.
+
+        Raises:
+            ValueError: If the state object does not have the required data to calculate the fatigue damage increment. This can happen if the state object does not contain the "bondStretches", "s_max_arr", or "bondDamage" data.
+
+        """
+        # if 0 in state.state_data["s_max_arr"]:
+        #     raise ValueError("s_max = 0 -> division by zero. 0 encountered in fatigue part of fatigue calculation.")
+
+        delta_Df_arr = _calculate_fatigue_damage_increment(
+        current_bond_stretches = state.state_data["bondStretches"],
+        max_stretch_history = state.state_data["s_max_arr"],
+        initial_damage = state.state_data["BondDamage"],
+        live_bonds= state.state_data["LiveBonds"],
+        s1_array = self.FID.s0arr,
+        sc_array = self.FID.scarr,
+        cycle_increment = cycle_increment,
+        lambd = 0.5,
+        mi = 0.7,
+        C = 2e-6,
+        beta = 2)
+
         return delta_Df_arr
+    
+    def calc_point_damage(self, state: State) -> np.ndarray:
+        point_damage = np.zeros_like(self.FID.n_neighbors,dtype=float)
+        bond_life = state.state_data["LiveBonds"]
+        strt = self.FID.start_idx
+        end = self.FID.end_idx
+        for point in range(self.FID.coordVec.shape[0]): 
+            point_damage[point] = 1.0 - (np.sum(bond_life[strt[point]:end[point]]))/np.float64(self.FID.n_neighbors[point])
+        return point_damage
     
     def solve_lin_sys_for_f(self,disps) -> np.ndarray:
         """
@@ -313,7 +354,6 @@ class PDFatigueSolver:
                 state = State()
                 state.add_state_data("displacements", _disps)
                 state.add_state_data("BondDamage", self.FID.curBondDamage)
-                print(self.FID.curBondDamage)
                 state.add_state_data("LiveBonds", self.FID.curLiveBonds)
                 state.add_state_data("forceConvergence", self.FID.force_convergence)
                 state.add_state_data("internalForces", _BC_RHSvec) 
@@ -328,7 +368,7 @@ class PDFatigueSolver:
 
    
 
-    def solve_for_fatigue_eq(self, inputState: State):
+    def solve_for_fatigue_eq(self, inputState: State, cycle_increment: int):
         ### Create local history output to be added to the globl histroy output after the simulation ends
         local_history_output = HistoryOutput()
         BCvec = self.FID.combined_BC_vec
@@ -353,7 +393,7 @@ class PDFatigueSolver:
         curState = State()
         ## Initialiye max stretches as the bond stretches for the initial step
         # Take the data from the equilibrium and update the bond damage based on the fatigue part
-        _bond_fatigue_damage_inc = self.calc_fatigue_damage_inc(state = inputState)
+        _bond_fatigue_damage_inc = self.calc_fatigue_damage_inc(state = inputState, cycle_increment = cycle_increment)
         # First we add the damage increment from fatigue to the absolute damage in each bond
         _curBondDamage = inputState.state_data["BondDamage"] + _bond_fatigue_damage_inc
         _curLiveBonds = _update_live_bonds(_curBondDamage)
@@ -365,7 +405,7 @@ class PDFatigueSolver:
         curState.add_state_data("s_max_arr", inputState.state_data["s_max_arr"])
 
         _residual_force_norm_old =  1
-        for step in range(10):
+        for step in range(3):
             print("Step {}".format(step))
 
             ### Inside the loop we now look for the equilibrium from equations 18 and 19 from the paper.
@@ -397,8 +437,9 @@ class PDFatigueSolver:
             curState.add_state_data("bondStretches", _new_bond_stretches)
 
             ## Update maximum stretches in history of fatigue simulation
-            _new_max_bond_stretches = self.update_max_stretches_hist(current_state=curState)
-            curState.add_state_data("s_max_arr", _new_max_bond_stretches)
+            #_new_max_bond_stretches = self.update_max_stretches_hist(current_state=curState) - > this is not correct. The max bond stretches stay constant in a single cycle increment
+            # curState.add_state_data("s_max_arr", _new_max_bond_stretches)
+            curState.add_state_data("s_max_arr", inputState.state_data["s_max_arr"])
             
             ### The system is solved -> New stretches are calculated -> new damage is calculated ->
             ### -> Check if the new stiffness of the model produces equilibrium using previous displacements ->
@@ -406,13 +447,13 @@ class PDFatigueSolver:
             ## Update bond damage based on static and fatigue part of equation 18 and 19 in Zaccariotto et al.
             newState = State()
             _static_damage_inc = self.calc_static_damage_inc(state = curState)
-            _fatigue_damage_inc = self.calc_fatigue_damage_inc(state = curState)
-            _newBondDamage = curState.state_data["BondDamage"] + _static_damage_inc + _fatigue_damage_inc
+            _fatigue_damage_inc = self.calc_fatigue_damage_inc(state = curState, cycle_increment = cycle_increment)
+            _newBondDamage = inputState.state_data["BondDamage"] + _static_damage_inc + _fatigue_damage_inc
 
             # The "s_max_arr" is not correct at the point of rewriting to the new state (below). It acts as a history of the "s_max_arr"
             # that is used in the "update_max_stretches_hist" method and then cahnged in place. After "update_max_stretches_hist" is called are the results okay!
             # This is not a probles as only the "curState" gets written to HistoryOutput -> at this point "curState" has all its data updated
-            newState.add_state_data("s_max_arr", curState.state_data["s_max_arr"])
+            newState.add_state_data("s_max_arr", inputState.state_data["s_max_arr"])
             newState.add_state_data("bond_fatigue_damage_inc", _static_damage_inc)
             newState.add_state_data("bond_static_damage_inc", _fatigue_damage_inc)
             newState.add_state_data("BondDamage", _newBondDamage)
@@ -479,14 +520,20 @@ def _calc_bond_damage(cur_bondStretches:np.ndarray, s0arr:np.ndarray[float,1], s
 
 @njit
 def _update_live_bonds(bond_damage: np.ndarray[float,1]) -> np.ndarray[int,1]:
-    live_bonds = np.zeros_like(bond_damage)
+    live_bonds = np.ones_like(bond_damage)
     for bond in range(live_bonds.shape[0]):
-        if bond_damage[bond] < 1:
-            live_bonds[bond] = 1
+        if bond_damage[bond] >= 1:
+            live_bonds[bond] = 0
     return live_bonds
 
 @njit
-def _calc_static_damage_inc(s1_arr: np.ndarray[float,1], sc_arr: np.ndarray[float,1], s_max_arr: np.ndarray[float,1], sNpN_arr: np.ndarray[float,1]) -> np.ndarray[float,1]:
+def _calc_static_damage_inc(
+    live_bonds: np.ndarray[int,1],
+    s1_arr: np.ndarray[float,1],
+    sc_arr: np.ndarray[float,1],
+    s_max_arr: np.ndarray[float,1],
+    sNpN_arr: np.ndarray[float,1]
+    ) -> np.ndarray[float,1]:
     """
     Calculate the incremental static damage based on the given parameters.
 
@@ -506,7 +553,7 @@ def _calc_static_damage_inc(s1_arr: np.ndarray[float,1], sc_arr: np.ndarray[floa
         sc = sc_arr[bond]
         s_max = s_max_arr[bond]
         sNpN = sNpN_arr[bond]
-        if  sNpN >= sc:
+        if  sNpN >= sc and s_max != 0:
             delta_D = s1*sc/(sc-s1) * (1.0/s_max - 1.0/sNpN)
             delta_D_arr[bond] =  delta_D
     return delta_D_arr
@@ -518,8 +565,48 @@ def _update_max_stretches_hist(cur_max_stretches: np.ndarray[float, 1], current_
             cur_max_stretches[bond] = current_stretches[bond]
 
     return cur_max_stretches
+@jit
+def _calculate_fatigue_damage_increment(
+    current_bond_stretches: np.ndarray[float,1],
+    max_stretch_history: np.ndarray[float,1],
+    initial_damage: np.ndarray[float,1],
+    live_bonds: np.ndarray[int,1],
+    s1_array: np.ndarray[float,1],
+    sc_array: np.ndarray[float,1],
+    cycle_increment: float,
+    lambd: float,
+    mi: float,
+    C: float,
+    beta: float
+    ) -> np.ndarray:
+    """
+    Calculate the fatigue damage increment based on the given parameters.
 
-@njit
-def _calc_fatigue_damage_inc(array):
+    Parameters:
+        current_bond_stretches (np.ndarray): An array of current bond stretches.
+        max_stretch_history (np.ndarray): An array of maximum stretch history for each bond.
+        initial_damage (np.ndarray): An array of initial damage for each bond.
+        cycle_increment (float): The increment of the cycle.
+        s1_array (np.ndarray): An array of s1 values.
+        sc_array (np.ndarray): An array of sc values.
+        lambd (float): The lambda value.
+        mi (float): The mi value.
+        C (float): The C value.
+        beta (float): The beta value.
 
-    return array 
+    Returns:
+        fatigue_damage_increments (np.ndarray): An array of fatigue damage increments for each bond.
+    """
+    fatigue_damage_increments = np.zeros_like(current_bond_stretches)
+    for bond in prange(current_bond_stretches.shape[0]):
+        if current_bond_stretches[bond] >= max_stretch_history[bond] and live_bonds[bond] == 1 and current_bond_stretches[bond] != 0:
+            a = -1 / (lambd * mi)
+            b = -cycle_increment * ((lambd * mi * C) / (1 + beta))
+            c = ((1 - mi) * max_stretch_history[bond] + mi * current_bond_stretches[bond]) / (sc_array[bond])
+            c = c ** (1 + beta)
+            d = lambd * initial_damage[bond]
+            e = lambd * mi * (s1_array[bond] * sc_array[bond] / (sc_array[bond] - s1_array[bond])) * (1 / max_stretch_history[bond] - 1 / current_bond_stretches[bond])
+            f = np.exp(d * e)
+            fatigue_damage_increments[bond] = a * np.real(lambertw(b * c * f))
+    return fatigue_damage_increments
+
