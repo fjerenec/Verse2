@@ -47,7 +47,7 @@ class FatigueInputData:
         self.create_combined_disp_BC_vec()
         
         self.num_max_it = 10
-        self.epsilon = 0.05
+        self.epsilon = 0.1
         self.gen_damage_evolution_stretch_arrays()
         self.gen_bond_emod_array()
         self.gen_bond_mu_array()
@@ -403,25 +403,29 @@ class PDFatigueSolver:
         newState.add_state_data("bond_static_damage_inc", np.zeros_like(_bond_fatigue_damage_inc))
         newState.add_state_data("BondDamage", _newBondDamage)
         newState.add_state_data("LiveBonds", _newLiveBonds)
+        initialLive_bonds = inputState.state_data["LiveBonds"]
 
         #These are placholders for old data that needs to beupdated inside the loop.
         newState.add_state_data("displacements", inputState.state_data["displacements"])
         newState.add_state_data("s_max_arr", inputState.state_data["s_max_arr"])
-
+        
         _disps = inputState.state_data["displacements"] 
         _solu = _disps.reshape(_disps.shape[0]*2, 1)
         
+        # The stiffness matrix from the input state
+        _RHSvec = np.zeros(self.FID.coordVec.shape[0]*2)
+        _stiffmat = self.gen_stiffness_matrix(inputState.state_data["LiveBonds"],inputState.state_data["BondDamage"])
+        _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
+
         _residual_force_norm_old =  1
-        for iter in range(3):
+        max_iters=5
+        for iter in range(5):
             print("iter {}".format(iter))
             ### Inside the loop we now look for the equilibrium from equations 18 and 19 from the paper.
 
             ### We now have the damage state and can calculate for equilibrium
             ## Create a Stiffness matrix using updated bond damage states 
-            # if iter == 0: # If its the first iter we need to create the stiffness matrix. If its not the first iter we can use the new stiffness matrix from the previous iter
             _stiffmat_new = self.gen_stiffness_matrix(newState.state_data["LiveBonds"],newState.state_data["BondDamage"])
-            # else: 
-                # _stiffmat_new = _stiffmat_new
             
             ########### I need to check for eq. here! I already have u from the input state and a new K matrix
             
@@ -437,29 +441,47 @@ class PDFatigueSolver:
             _residual_force_norm = np.abs(_diff_in_internal_forces_norm - 1)
             _chng_of_res_frce_from_prev_iter = np.abs((_residual_force_norm-_residual_force_norm_old)/_residual_force_norm_old)
 
-            is_converged = _chng_of_res_frce_from_prev_iter <= epsilon and _residual_force_norm <= epsilon 
+            is_converged = 1-_chng_of_res_frce_from_prev_iter <= epsilon and _residual_force_norm <= epsilon 
             
-            curState = State
-            curState.add_state_data("displacements", newState.state_data["displacements"])
-            curState.add_state_data("bondStretches", newState.state_data["bondStretches"])
-            curState.add_state_data("bond_fatigue_damage_inc", newState.state_data["bond_fatigue_damage_inc"])
-            curState.add_state_data("bond_static_damage_inc", newState.state_data["bond_static_damage_inc"])
-            curState.add_state_data("BondDamage", newState.state_data["BondDamage"])
-            curState.add_state_data("LiveBonds", newState.state_data["LiveBonds"])
-            curState.add_state_data("s_max_arr", newState.state_data["s_max_arr"])
-            # s_max_hist_new = _update_max_stretches_hist(curState.state_data["s_max_arr"], newState.state_data["bondStretches"])
+            print("Normalized residual force = ", _residual_force_norm)
+            print(f"Fraction of residual from previous iter: {_chng_of_res_frce_from_prev_iter}")
+            print(f"Fractional change of residual from previous iter: {1-_chng_of_res_frce_from_prev_iter}")
+
+            curState = State()
+            curState.add_state_data("displacements", newState.state_data["displacements"]) #1 - For these displacements
+            curState.add_state_data("bondStretches", newState.state_data["bondStretches"])  #2 - and these bond stretches (from the stretches above)
+            curState.add_state_data("bond_fatigue_damage_inc", newState.state_data["bond_fatigue_damage_inc"]) #3 - we get this bond fatigue damage inc
+            curState.add_state_data("bond_static_damage_inc", newState.state_data["bond_static_damage_inc"])    #4 - and this bond static damage inc.
+            curState.add_state_data("BondDamage", newState.state_data["BondDamage"])    #5 - Resulting in this total damage
+            curState.add_state_data("LiveBonds", newState.state_data["LiveBonds"])      #6 - and these live bonds.
+            curState.add_state_data("s_max_arr", newState.state_data["s_max_arr"])      #7 - These are the same thorughout the loop. In a single cycle increment we dont update these!
 
             if is_converged:
                 local_history_output.add_state_to_history(newState)
 
                 self.local_history_output = local_history_output
+                broken_bonds = initialLive_bonds.sum() - newState.state_data["LiveBonds"].sum()
                 print("--------------------------------------------------------")
                 print(f"Damage has converged in {iter} FATIGUE CRACK GROWTH iter/s!. Tolerance = {epsilon}")
                 print(f"Residual forces/Externalforces = {_residual_force_norm}")
                 print(f"Fraction of residual from previous iter: {_chng_of_res_frce_from_prev_iter}")
+                print(f"Fractional change of residual from previous iter: {1-_chng_of_res_frce_from_prev_iter} -> Fraction + Fractional change = 1")
+                print(f"Nubmer of bonds broken during fatigue step = {broken_bonds}.")
                 return 
+            elif iter == max_iters-1:
+                local_history_output.add_state_to_history(newState)
+
+                self.local_history_output = local_history_output
+                broken_bonds = initialLive_bonds.sum() - newState.state_data["LiveBonds"].sum()
+                print("--------------------------------------------------------")
+                print(f"Damage has NOT converged in {iter} FATIGUE CRACK GROWTH iter/s!. Tolerance = {epsilon}")
+                print(f"Residual forces/Externalforces = {_residual_force_norm}")
+                print(f"Fraction of residual from previous iter: {_chng_of_res_frce_from_prev_iter}")
+                print(f"Fractional change of residual from previous iter: {1-_chng_of_res_frce_from_prev_iter} -> Fraction + Fractional change = 1")
+                print(f"Nubmer of bonds broken during fatigue step = {broken_bonds}.")
+                return
             
-            newState = State
+            newState = State()
             _stiffmat = _stiffmat_new
 
             _RHSvec = np.zeros(self.FID.coordVec.shape[0]*2)
@@ -470,30 +492,30 @@ class PDFatigueSolver:
             _solu_new = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
             _disps_new = np.reshape(_solu_new,(int(_solu_new.shape[0]/2),2))
             
-            _newCoordVecNew = self.FID.coordVec + _disps_new
-            _new_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVecNew))
+            _newCoordVec = self.FID.coordVec + _disps_new
+            _new_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
             
             newState.add_state_data("displacements", _disps_new)
             newState.add_state_data("bondStretches", _new_bond_stretches)
-            
-            _bond_static_damage_inc = self.calc_static_damage_inc(state = newState)
-            _bond_fatigue_damage_inc = self.calc_fatigue_damage_inc(state = newState, cycle_increment = cycle_increment)
-            
-            newState.add_state_data("bond_fatigue_damage_inc", _bond_fatigue_damage_inc)
-            newState.add_state_data("bond_static_damage_inc", _bond_static_damage_inc)
+            newState.add_state_data("s_max_arr", curState.state_data["s_max_arr"]) # the same as before
+            newState.add_state_data("LiveBonds", curState.state_data["LiveBonds"]) # just reuse the ones from before so that I skip the bonds that I know are broken
 
-            _newBondDamage = inputState.state_data["BondDamage"] + _bond_static_damage_inc + _bond_fatigue_damage_inc
+            _new_bond_static_damage_inc = self.calc_static_damage_inc(state = newState)
+            _new_bond_fatigue_damage_inc = self.calc_fatigue_damage_inc(state = curState, cycle_increment = cycle_increment)
+            
+            newState.add_state_data("bond_fatigue_damage_inc", _new_bond_fatigue_damage_inc)
+            newState.add_state_data("bond_static_damage_inc", _new_bond_static_damage_inc)
+
+            _newBondDamage = inputState.state_data["BondDamage"] + _new_bond_static_damage_inc + _new_bond_fatigue_damage_inc
             _newLiveBonds = _update_live_bonds(_newBondDamage)
 
             newState.add_state_data("BondDamage", _newBondDamage)
             newState.add_state_data("LiveBonds", _newLiveBonds)
 
-            _new_max_stretches = _update_max_stretches_hist(curState.state_data["s_max_arr"], _new_bond_stretches)
+            _solu = _solu_new
+            # _new_max_stretches = _update_max_stretches_hist(curState.state_data["s_max_arr"], _new_bond_stretches)
 
-            newState.add_state_data("s_max_arr", _new_max_stretches)
-
-            # _stiffmat_new = self.gen_stiffness_matrix(_newLiveBonds, _newBondDamage)
-            
+            # newState.add_state_data("s_max_arr", _new_max_stretches)
             ################
 
             # ## Create a RHS vector using updated bond damage states and apply BC
@@ -632,7 +654,7 @@ def _calc_static_damage_inc(
         sc = sc_arr[bond]
         s_max = s_max_arr[bond]
         sNpN = sNpN_arr[bond]
-        if  sNpN >= sc and s_max != 0:
+        if  live_bonds[bond] ==True and sNpN >= sc and s_max != 0:
             delta_D = s1*sc/(sc-s1) * (1.0/s_max - 1.0/sNpN)
             delta_D_arr[bond] =  delta_D
     return delta_D_arr
