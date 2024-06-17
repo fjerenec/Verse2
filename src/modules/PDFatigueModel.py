@@ -346,10 +346,14 @@ class PDFatigueSolver:
                 print("Applied load was not large enough to cause damage!")
                 break
             if t1<= epsilon:
-                print(f"Damage has converged in {iter} steps!")
-                print(f"Residual forces/Externalforces = {_residual_force_norm}")
-                print(f"Change of residual from previous step: {t1}")
-
+                # Equilibrium is reached for the change in stiffness. Now just update the displacements based on the updated stiffness matrix to get the final results
+                _RHSvec = np.zeros(self.FID.coordVec.shape[0]*2)
+                _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
+                _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
+                _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
+                # _solu, info = cg(_BC_stiffmatCSR,_BC_RHSvec)
+                _disps = np.reshape(_solu,(int(_solu.shape[0]/2),2))
+                
                 # Save the data. Since we inside the eq. cond. statement the results that will be saved are from the equilibrium solution (to this is step)
                 state = State()
                 state.add_state_data("displacements", _disps)
@@ -360,6 +364,9 @@ class PDFatigueSolver:
                 state.add_state_data("bondStretches", _cur_bond_stretches)
                 state.is_from_step()
                 self.HistoryOutput.add_state_to_history(state)
+                print(f"Damage has converged in {iter} steps!")
+                print(f"Residual forces/Externalforces = {_residual_force_norm}")
+                print(f"Change of residual from previous step: {t1}")
                 return 
             _residual_force_norm_old = _residual_force_norm
         self.result = _disps
@@ -404,13 +411,13 @@ class PDFatigueSolver:
         newState.add_state_data("BondDamage", _newBondDamage)
         newState.add_state_data("LiveBonds", _newLiveBonds)
         initialLive_bonds = inputState.state_data["LiveBonds"]
-
+        print("Max fatigue damage increment = ",_bond_fatigue_damage_inc.max())
         #These are placholders for old data that needs to beupdated inside the loop.
         newState.add_state_data("displacements", inputState.state_data["displacements"])
         newState.add_state_data("s_max_arr", inputState.state_data["s_max_arr"])
         
         _disps = inputState.state_data["displacements"] 
-        _solu = _disps.reshape(_disps.shape[0]*2, 1)
+        _solu = _disps.flatten()#reshape(_disps.shape[0]*2, 1)
         
         # The stiffness matrix from the input state
         _RHSvec = np.zeros(self.FID.coordVec.shape[0]*2)
@@ -419,7 +426,7 @@ class PDFatigueSolver:
 
         _residual_force_norm_old =  1
         max_iters=5
-        for iter in range(5):
+        for iter in range(max_iters):
             print("iter {}".format(iter))
             ### Inside the loop we now look for the equilibrium from equations 18 and 19 from the paper.
 
@@ -431,11 +438,13 @@ class PDFatigueSolver:
             
             ## Calculate internal forces using new stiffness matrix and old displacements -> (K_(iter+1) * u_(iter))
             _internal_force_vec = _stiffmat_new @ _solu
-
             ## Calculate residual forces ( |F_(iter) - K_(iter+1) * u_(iter)| / |F_(iter)| - 1)
             # Calculate difference in internal forces between the new and old stiffness matrix (the same disaplcements are used)
-            _diff_in_internal_forces = np.linalg.norm(_internal_force_vec - _BC_RHSvec)
-
+            _diff_in_internal_forces = np.linalg.norm(_BC_RHSvec-_internal_force_vec)
+            self.test1 = _BC_RHSvec
+            self.test2 = _internal_force_vec
+            print("BCRHs",np.linalg.norm(_BC_RHSvec))
+            print("INTFVEC",np.linalg.norm(_internal_force_vec))
             # Normalize the difference using the internal forces from the old stiffness matrix
             _diff_in_internal_forces_norm = (_diff_in_internal_forces/ np.linalg.norm(_BC_RHSvec))
             _residual_force_norm = np.abs(_diff_in_internal_forces_norm - 1)
@@ -513,95 +522,7 @@ class PDFatigueSolver:
             newState.add_state_data("LiveBonds", _newLiveBonds)
 
             _solu = _solu_new
-            # _new_max_stretches = _update_max_stretches_hist(curState.state_data["s_max_arr"], _new_bond_stretches)
-
-            # newState.add_state_data("s_max_arr", _new_max_stretches)
-            ################
-
-            # ## Create a RHS vector using updated bond damage states and apply BC
-            # _RHSvec = np.zeros(self.FID.coordVec.shape[0]*2)
-            # _BC_stiffmat,_BC_RHSvec = self.apply_displacement_BC(BCvec,_stiffmat,_RHSvec)
-            # curState.add_state_data("internalForces", _BC_RHSvec)
-
-            # ## Convert to CSR format
-            # _BC_stiffmatCSR = csr_matrix(_BC_stiffmat)
-
-            # ## Solve the system of linear equations and reshape 1d array to 2d -> shape = (N,2)
-            # _solu = spsolve(_BC_stiffmatCSR,_BC_RHSvec)
-            # _disps = np.reshape(_solu,(int(_solu.shape[0]/2),2))
-            # curState.add_state_data("displacements", _disps)
-            # ## Create a new coordinate vector based on initial state and currect displacements
-            # _newCoordVec = self.FID.coordVec + _disps
-
-            # ## Calculate new bond stretches
-            # _new_bond_stretches = np.abs(self.calc_bond_stretches(_newCoordVec))
-            # curState.add_state_data("bondStretches", _new_bond_stretches)
-
-            # ## Update maximum stretches in history of fatigue simulation
-            # #_new_max_bond_stretches = self.update_max_stretches_hist(current_state=curState) - > this is not correct. The max bond stretches stay constant in a single cycle increment
-            # # curState.add_state_data("s_max_arr", _new_max_bond_stretches)
-            # curState.add_state_data("s_max_arr", inputState.state_data["s_max_arr"])
-            
-            # ### The system is solved -> New stretches are calculated -> new damage is calculated ->
-            # ### -> Check if the new stiffness of the model produces equilibrium using previous displacements ->
-            # ### -> If force convergence is small enough (epsilon) then the somiulation is over!
-            # ## Update bond damage based on static and fatigue part of equation 18 and 19 in Zaccariotto et al.
-            # newState = State()
-            # _static_damage_inc = self.calc_static_damage_inc(state = curState)
-            # _fatigue_damage_inc = self.calc_fatigue_damage_inc(state = curState, cycle_increment = cycle_increment)
-            # _newBondDamage = inputState.state_data["BondDamage"] + _static_damage_inc + _fatigue_damage_inc
-
-            # # The "s_max_arr" is not correct at the point of rewriting to the new state (below). It acts as a history of the "s_max_arr"
-            # # that is used in the "update_max_stretches_hist" method and then cahnged in place. After "update_max_stretches_hist" is called are the results okay!
-            # # This is not a probles as only the "curState" gets written to HistoryOutput -> at this point "curState" has all its data updated
-            # newState.add_state_data("s_max_arr", inputState.state_data["s_max_arr"])
-            # newState.add_state_data("bond_fatigue_damage_inc", _static_damage_inc)
-            # newState.add_state_data("bond_static_damage_inc", _fatigue_damage_inc)
-            # newState.add_state_data("BondDamage", _newBondDamage)
-            # ## Update live bonds
-            # _newLiveBonds = _update_live_bonds(_newBondDamage)
-            # newState.add_state_data("LiveBonds", _newLiveBonds)
-
-            # ## Based on updated damage create new stiffness matrix to be used in equillibrium calculation
-            # _stiffmat_new = self.gen_stiffness_matrix(_newLiveBonds, _newBondDamage)
-
-            # ## Calculate internal forces using new stiffness matrix and old displacements -> (K_(iter+1) * u_(iter))
-            # _internal_force_vec = _stiffmat_new @ _solu
-
-            # ## Calculate residual forces ( |F_(iter) - K_(iter+1) * u_(iter)| / |F_(iter)| - 1)
-            # # Calculate difference in internal forces between the new and old stiffness matrix (the same disaplcements are used)
-            # _diff_in_internal_forces = np.linalg.norm(_internal_force_vec - _BC_RHSvec)
-
-            # # Normalize the difference using the internal forces from the old stiffness matrix
-            # _diff_in_internal_forces_norm = (_diff_in_internal_forces/ np.linalg.norm(_BC_RHSvec))
-
-
-            # # If there is no change then the normalized result is 1.0. If the dfference is small then it will be around 1.0 but not 1.0.
-            # # Shift the no change value to start from 0.0 and not 1.0. Subtract 1.0 to start from 0.0 and take the absolute value
-            # # Some changes can be positive and some negative. The np.abs() makes sure that all differences increase the difference in internal forces
-            # _residual_force_norm = np.abs(_diff_in_internal_forces_norm - 1)
-            # print("Normalized residual force = ", _residual_force_norm)
-            # chng_of_res_frce_from_prev_iter = np.abs((_residual_force_norm-_residual_force_norm_old)/_residual_force_norm_old)
-            
-            # self.FID.force_convergence.append(_residual_force_norm)
-            # curState.add_state_data("forceConvergence", self.FID.force_convergence)
-            
-            # curState.is_from_step()
-            # local_history_output.add_state_to_history(curState)
-            # curState = newState
-
-            # print(f"Fraction of residual from previous iter: {chng_of_res_frce_from_prev_iter}")
-            # is_converged = chng_of_res_frce_from_prev_iter <= epsilon and _residual_force_norm <= epsilon 
-            # if is_converged:
-            #     # Add local history output to global history output
-            #     self.local_history_output = local_history_output
-            #     print("--------------------------------------------------------")
-            #     print(f"Damage has converged in {iter} FATIGUE CRACK GROWTH iteration/s!. Tolerance = {epsilon}")
-            #     print(f"Residual forces/Externalforces = {_residual_force_norm}")
-            #     print(f"Fraction of residual from previous iter: {chng_of_res_frce_from_prev_iter}")
-            #     return 
-            # _residual_force_norm_old = _residual_force_norm
-
+        
         self.local_history_output = local_history_output
         self.restartSim = True
         # End of loop cycle -> go to new loop cycle
