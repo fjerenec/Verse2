@@ -441,10 +441,10 @@ class PDFatigueSolver:
             ## Calculate residual forces ( |F_(iter) - K_(iter+1) * u_(iter)| / |F_(iter)| - 1)
             # Calculate difference in internal forces between the new and old stiffness matrix (the same disaplcements are used)
             _diff_in_internal_forces = np.linalg.norm(_BC_RHSvec-_internal_force_vec)
-            self.test1 = _BC_RHSvec
-            self.test2 = _internal_force_vec
-            print("BCRHs",np.linalg.norm(_BC_RHSvec))
-            print("INTFVEC",np.linalg.norm(_internal_force_vec))
+            # self.test1 = _BC_RHSvec
+            # self.test2 = _internal_force_vec
+            # print("BCRHs",np.linalg.norm(_BC_RHSvec))
+            # print("INTFVEC",np.linalg.norm(_internal_force_vec))
             # Normalize the difference using the internal forces from the old stiffness matrix
             _diff_in_internal_forces_norm = (_diff_in_internal_forces/ np.linalg.norm(_BC_RHSvec))
             _residual_force_norm = np.abs(_diff_in_internal_forces_norm - 1)
