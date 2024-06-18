@@ -281,7 +281,7 @@ class PDFatigueSolver:
         forceDensVec = stiffMat @ disps
         return forceDensVec
     
-    def solve_for_static_eq(self, staticSim: bool = True, fatigueSim: bool = False):
+    def solve_for_static_eq(self):
         """
         Solves for the equilibrium state of the system with the given "epsilon" as the maximum residual fraction.
         This function iteratively solves for the equilibrium state of the system using the Newton-Raphson method (calculate the stiffness matrix and take a step).
