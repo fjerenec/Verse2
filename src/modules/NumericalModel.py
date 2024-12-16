@@ -12,7 +12,12 @@ import modules.data as data
 from typing import IO
 
 class NumericalModel():
+    """This class combines all the different modules into one which represents the numerical model.
+        This numerical model is used to create the input files for the solvers.
+    """
+
     def __init__(self,name: str = "Model") -> None:
+
         self.name = name
         self.Geometry = geometry.Geometry()
         self.Materials= material.Materials()
@@ -24,6 +29,10 @@ class NumericalModel():
         self.SimulationSettings = simulation_settings.SimulationSettings()
     
     def createInputFile(self) -> IO[str]:
+        """
+        This function has not been defined yet. The idea for it was to create a .txt file that could be used as the input to the solvers.
+        This has not been needed yet, hence its missing definition.
+        """
         pass
 
     

@@ -39,32 +39,97 @@ class Discretization():
         self.hasInitialCrack = False
         self.initialCracks = np.zeros(shape=(0,2,2))
 
-    def set_horizon(self, horizonRad) -> None:
+    def set_horizon(self, horizonRad: float) -> None:
+        """
+        Set the horizon radius of the object.
+
+        Args:
+            horizonRad (float): The radius of the horizon in units of your choice.
+
+        Returns:
+            None: This function does not return anything.
+        """
         self.delta = float(horizonRad)
 
     def create_crack(self,p1x,p1y,p2x,p2y) -> None:
+        """
+        Creates a crack and adds it to the initial cracks list.
+        The bonds that intersect with any of the bonds in this list is not added to the family of a material point.
+        Therefore, when creating A matrices (from PDDO to create g functions), the points connected by these bonds are not included in the summation.
+
+        Parameters:
+            p1x (float): The x-coordinate of the first point of the crack.
+            p1y (float): The y-coordinate of the first point of the crack.
+            p2x (float): The x-coordinate of the second point of the crack.
+            p2y (float): The y-coordinate of the second point of the crack.
+
+        Returns:
+            None
+        """
         crack = np.array([[[p1x,p1y],[p2x,p2y]]],dtype=float)
         self.initialCracks = np.append(self.initialCracks,crack,axis=0)
-        # self.initialCracks.append(crack)
         self.hasInitialCrack = True
 
-    def deactivate_cracks(self) -> bool:
+    def deactivate_cracks(self) -> None:
+        """
+        Deactivates the cracks by setting the `hasInitialCrack` attribute to False.
+
+        Returns:
+            None: This function does not return anything.
+        """
         self.hasInitialCrack = False
 
-    def activate_cracks(self) -> bool:
+    def activate_cracks(self) -> None:
+        """
+        Activates the cracks by setting the `hasInitialCrack` attribute to True.
+
+        This function does not take any parameters.
+
+        Returns:
+            None: This function does not return anything.
+        """
         self.hasInitialCrack = True
 
     def is_crack_active(self) -> bool:
+        """
+        Returns a boolean value indicating whether the crack is currently active or not.
+
+        Returns:
+            bool: A boolean value indicating whether the crack is currently active or not.
+        """
         return self.hasInitialCrack
 
     def get_node_family_IDs(self,nodeID: int) -> np.ndarray[int,1]:
-        nodeIdPosition = np.where(self.nodeIdIndeces == nodeID)
-        firstMemberIndex = self.start_idx[nodeIdPosition]
-        lastMemberIndex = self.end_idx[nodeIdPosition]
-        nodeFamily = self.nodeIdIndeces[self.neighbors[firstMemberIndex:lastMemberIndex]]
+        """
+        Returns ID's of the nodes that are inside the family of the given node ID.
+
+        Args:
+            nodeID (int): The ID of the node for which the family IDs are to be retrieved.
+
+        Returns:
+            np.ndarray[int,1]: An array of node family IDs that are included in the node defined with `nodeID`.
+
+        This function finds the position of the given node ID in the `nodeIdIndeces` array. It then uses the position to
+        find the corresponding indices in the `start_idx` and `end_idx` arrays. It slices the `neighbors` array using
+        these indices and retrieves the node family IDs from the `nodeIdIndeces` array. Finally, it returns the node family
+        IDs as a 1-dimensional numpy array.
+        """
+        # nodeIdPosition = np.where(self.nodeIdIndeces == nodeID)[0]
+        firstMemberIndex = self.start_idx[nodeID]
+        lastMemberIndex = self.end_idx[nodeID]
+        nodeFamily = self.neighbors[firstMemberIndex:lastMemberIndex]
         return nodeFamily
 
     def get_node_family_coords(self,nodeID: int) -> np.ndarray[int,2]:
+        """
+        Get the coordinates of the nodes that are part of the family of a given node ID.
+
+        Parameters:
+            nodeID (int): The ID of the node whose family members coordinates are to be retireved.
+
+        Returns:
+            np.ndarray[int,2]: An array of shape (n, 2) containing the coordinates of the nodes in the family of the given "nodeID" parameter.
+        """
         firstMemberIndex = self.start_idx[nodeID]
         lastMemberIndex = self.end_idx[nodeID]
         nodeFamilyCoords = self.coordVec[self.neighbors[firstMemberIndex:lastMemberIndex]]
@@ -72,8 +137,31 @@ class Discretization():
 
 
     def generate_bonds(self,partNodes: geometry._PartNodes) -> None:
-        #Check if everything needed for this function is satisfied!
+        """
+        Generates bonds between nodes in a given geometry.
 
+        Parameters:
+            partNodes (geometry._PartNodes): The PartNodes object containing the nodes for which bonds need to be generated.
+
+        Returns:
+            None: This function does not return anything.
+
+        This function generates bonds between nodes in a given geometry. It takes a PartNodes object as input, which contains the nodes for which bonds need to be generated.
+        The function first checks if all the necessary data for generating bonds is available.
+        Then, it saves the IDs and coordinates of each node in the partNodesTable to separate arrays.
+        It creates a coordVec array for later use in pddoW2. 
+        If the object has an initial crack, it calls the find_neighbors2 function from the pddo module with the coordVec, a scaled delta value, and the initial cracks as parameters.
+        Otherwise, it calls the find_neighbors function from the pddo module with the coordVec and a scaled delta value (this function does not tak into account the initial cracks).
+        The function then calculates the number of points and bonds in the generated neighbors.
+        It calculates the bond normals using the calc_bond_normals function from the pddo module.
+        It initializes the live bonds and bond damage arrays with ones and zeros respectively.
+        It calculates the initial bond lengths using the calc_bondLenghts function from the pddo module.
+        It generates the Gvec matrix using the gen_Gmat2D_fixed2 function from the pddo module.
+        Finally, it assigns the values from the Gvec matrix to the G11vec, G12vec, and G22vec arrays.
+        """
+        #Check if everything needed for this function is satisfied!
+        if partNodes.partNodesTable == {}:
+            raise ValueError('The partNodesTable is empty. The nodes are not generated yet.')
 
         #Save the IDs of each node to an array (deletions and additions of nodes -> node id might not be sequential -> save the ID in the sequence they are in in the partNodesTable)
         self.nodeIdIndeces = np.zeros(shape=(len(partNodes.partNodesTable)))

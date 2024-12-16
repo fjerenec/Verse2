@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>libs package &mdash; pyVerse2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="modules package" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyVerse2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">modules package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">libs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-libs.pddopyW2">libs.pddopyW2 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.PDDOderive"><code class="docutils literal notranslate"><span class="pre">PDDOderive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.applyDispBC"><code class="docutils literal notranslate"><span class="pre">applyDispBC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.applyDispBC2"><code class="docutils literal notranslate"><span class="pre">applyDispBC2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.axis1fact"><code class="docutils literal notranslate"><span class="pre">axis1fact()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.axis1prod"><code class="docutils literal notranslate"><span class="pre">axis1prod()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.calc_bondLenghts"><code class="docutils literal notranslate"><span class="pre">calc_bondLenghts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.calc_bond_normals"><code class="docutils literal notranslate"><span class="pre">calc_bond_normals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.ccw2"><code class="docutils literal notranslate"><span class="pre">ccw2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.family_integration"><code class="docutils literal notranslate"><span class="pre">family_integration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.find_neighbors"><code class="docutils literal notranslate"><span class="pre">find_neighbors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.find_neighbors2"><code class="docutils literal notranslate"><span class="pre">find_neighbors2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.find_valueID"><code class="docutils literal notranslate"><span class="pre">find_valueID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_Gmat2D"><code class="docutils literal notranslate"><span class="pre">gen_Gmat2D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_Gmat2D_fixed"><code class="docutils literal notranslate"><span class="pre">gen_Gmat2D_fixed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_Gmat2D_fixed2"><code class="docutils literal notranslate"><span class="pre">gen_Gmat2D_fixed2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_Gmat3D"><code class="docutils literal notranslate"><span class="pre">gen_Gmat3D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_StiffMat"><code class="docutils literal notranslate"><span class="pre">gen_StiffMat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_StiffMat3D"><code class="docutils literal notranslate"><span class="pre">gen_StiffMat3D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_bmat"><code class="docutils literal notranslate"><span class="pre">gen_bmat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_gComponents"><code class="docutils literal notranslate"><span class="pre">gen_gComponents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_gComponents2"><code class="docutils literal notranslate"><span class="pre">gen_gComponents2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.gen_xsigval"><code class="docutils literal notranslate"><span class="pre">gen_xsigval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.generate_force_dens_vecs"><code class="docutils literal notranslate"><span class="pre">generate_force_dens_vecs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.intersect2"><code class="docutils literal notranslate"><span class="pre">intersect2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.matinv"><code class="docutils literal notranslate"><span class="pre">matinv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.tse_pows"><code class="docutils literal notranslate"><span class="pre">tse_pows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.pddopyW2.tse_terms"><code class="docutils literal notranslate"><span class="pre">tse_terms()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyVerse2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">libs package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/libs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="libs-package">
+<h1>libs package<a class="headerlink" href="#libs-package" title="Link to this heading"></a></h1>
+<section id="module-libs.pddopyW2">
+<span id="libs-pddopyw2-module"></span><h2>libs.pddopyW2 module<a class="headerlink" href="#module-libs.pddopyW2" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.PDDOderive">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">PDDOderive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">funvals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#PDDOderive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.PDDOderive" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.applyDispBC">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">applyDispBC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BCvec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stiffnessMat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RHSvec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#applyDispBC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.applyDispBC" title="Link to this definition"></a></dt>
+<dd><p>Apply displacement boundary conditions to the global stiffnes matrix and RHS vector.
+Inputs:
+——-
+BCvec : 2d array of floats. Contains the points for which displacement BC will be applied to and the boundary conditions that will be applied to them. BCvec.shape = [number of constrained points, number of constrained DOF]</p>
+<blockquote>
+<div><p>BCvec.shape[0] -&gt; contains point ID’s from the discretization. POints with the ID writen here get constrained
+BCvec.shape[1] -&gt; for 2d, this dimension is of length 2 or 3. The first input in the ID’s, the second is the X direction constraints and third the Y direction constraints.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>stiffnessMat<span class="classifier">2d array of floats. The stiffness matrix created using the “pddo.gen_StiffMat()” function. stiffnessMat.shape = [number of points in discretization * 2, number of points in discretization * 2] = [number of DOF, number of DOF] -&gt; for 2D</span></dt><dd><p>This stiffness matrix does not have any BC applied to it!</p>
+</dd>
+</dl>
+<p>RHSvec : 1d array of floats. Array of zeros to be used to construct the RHS vector with applied BC’s. RHSvec.shape = [number of DOF]</p>
+<section id="outputs">
+<h3>Outputs:<a class="headerlink" href="#outputs" title="Link to this heading"></a></h3>
+<p>BCstiffnessMat : 2d array of floats. The stiffness matrix from the inputs but with BC’s applied! BCstiffnessMat.shape = [number of DOF,number of DOF]</p>
+<p>RHSvec : 1d array of floats. The RHS vector from the inputs but with applied BC’s. RHSvec.shape = [number of DOF]</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.applyDispBC2">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">applyDispBC2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BCvec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stiffnessMat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RHSvec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#applyDispBC2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.applyDispBC2" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Apply displacement boundary conditions to the global stiffnes matrix and RHS vector.</dt><dd><p>Works for many combined BCloads together.</p>
+</dd>
+</dl>
+<section id="inputs">
+<h3>Inputs:<a class="headerlink" href="#inputs" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>BCvec<span class="classifier">2d array of floats. Contains the points for which displacement BC will be applied to and the boundary conditions that will be applied to them. BCvec.shape = [number of constrained points, number of constrained DOF]</span></dt><dd><p>BCvec[:,0] -&gt; contains point ID’s from the discretization. Points with the ID writen here get constrained
+BCvec[:,1:4] -&gt; contains bool’s to see if the DOF is contrained. BCvec[:,1] -&gt; DOF 0, BCvec[:,2] -&gt; DOF 1, BCvec[:,2] -&gt; DOF 3.
+BCvec[:,4:7] -&gt; contains the value of the applied displacement for DOF’s from BCvec[:,1:4]</p>
+</dd>
+<dt>stiffnessMat<span class="classifier">2d array of floats. The stiffness matrix created using the “pddo.gen_StiffMat()” function. stiffnessMat.shape = [number of points in discretization * 2, number of points in discretization * 2] = [number of DOF, number of DOF] -&gt; for 2D</span></dt><dd><p>This stiffness matrix does not have any BC applied to it!</p>
+</dd>
+</dl>
+<p>RHSvec : 1d array of floats. Array of zeros to be used to construct the RHS vector with applied BC’s. RHSvec.shape = [number of DOF]</p>
+</section>
+<section id="id1">
+<h3>Outputs:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>BCstiffnessMat : 2d array of floats. The stiffness matrix from the inputs but with BC’s applied! BCstiffnessMat.shape = [number of DOF,number of DOF]</p>
+<p>RHSvec : 1d array of floats. The RHS vector from the inputs but with applied BC’s. RHSvec.shape = [number of DOF]</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.axis1fact">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">axis1fact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#axis1fact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.axis1fact" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.axis1prod">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">axis1prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#axis1prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.axis1prod" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.calc_bondLenghts">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">calc_bondLenghts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordVec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#calc_bondLenghts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.calc_bondLenghts" title="Link to this definition"></a></dt>
+<dd><p>Function to calculate the length of each bond based od points in coordVec.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.calc_bond_normals">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">calc_bond_normals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pd_point_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pd_bond_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordVec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#calc_bond_normals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.calc_bond_normals" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.ccw2">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">ccw2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#ccw2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.ccw2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.family_integration">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">family_integration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_volumes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/libs/pddopyW2.html#family_integration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.family_integration" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.find_neighbors">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">find_neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#find_neighbors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.find_neighbors" title="Link to this definition"></a></dt>
+<dd><p>Find the neigbors of point i that are in range of delta. The funtions works on multidimensional points.
+Inputs:
+———–
+coords : array of array of floats (coordinates of points=. shape = [number of points, dimensionality of points]. Coordinates should be floats.
+r      : radius of includivity. Points j that are distanced r or less, from point i, are considered to be members of point i. Should be float</p>
+<section id="id2">
+<h3>Outputs:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>neighbors   : 1D array of floats (ID numbers of points). Contains the ID’s of the neighbors of all points starting with the ID’s of neighbors of point 0.
+start_index : 1D array of ints. Component “i” of the start_index array shows at which index, in the neighbors array, the neighbors of point with ID = “i” start.
+end_index   : 1D array of ints. Component “i” of the end_index array shows at which index, in the neighbors array, the neighbors of point with ID = “i” end.
+n_neighbors : 1D array of ints. Component “i” contains the number of neighbors that the point with ID = “i” has.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.find_neighbors2">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">find_neighbors2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cracks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#find_neighbors2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.find_neighbors2" title="Link to this definition"></a></dt>
+<dd><p>Find the neigbors of point i that are in range of delta. The funtions works on multidimensional points. The same as find_neighbors2 but allows for cracks.
+Inputs:
+———–
+coords : array of array of floats (coordinates of points=. shape = [number of points, dimensionality of points]. Coordinates should be floats.
+r      : radius of includivity. Points j that are distanced r or less, from point i, are considered to be members of point i. Should be float
+cracks : 2d array of floats. Contains the couples of points that define all the cracks inthe model. shape = [number of crack lines,2]</p>
+<blockquote>
+<div><dl class="simple">
+<dt>example: cracks = [[[x0,y0],[x1,y1]],</dt><dd><p>[[x2,y2],[x3,y3]]]  -&gt; [x0,y0] is the first point of the crack 0th crack, and [x1,y1] is the second point</p>
+</dd>
+</dl>
+</div></blockquote>
+<section id="id3">
+<h3>Outputs:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>neighbors   : 1D array of floats (ID numbers of points). Contains the ID’s of the neighbors of all points starting with the ID’s of neighbors of point 0.
+start_index : 1D array of ints. Component “i” of the start_index array shows at which index, in the neighbors array, the neighbors of point with ID = “i” start.
+end_index   : 1D array of ints. Component “i” of the end_index array shows at which index, in the neighbors array, the neighbors of point with ID = “i” end.
+n_neighbors : 1D array of ints. Component “i” contains the number of neighbors that the point with ID = “i” has.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.find_valueID">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">find_valueID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#find_valueID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.find_valueID" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_Gmat2D">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_Gmat2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordVec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_Gmat2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_Gmat2D" title="Link to this definition"></a></dt>
+<dd><p>This function is flawed as of the 28/02/2024 github state. The inputs in the Amat are not
+multiplied by the area of ceah PD material point. Therefore the resulting calculation do not give a force density vector.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_Gmat2D_fixed">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_Gmat2D_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordVec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_Gmat2D_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_Gmat2D_fixed" title="Link to this definition"></a></dt>
+<dd><p>Non:_fixed function :This function is flawed as of the 28/02/2024 github state. The inputs in the Amat are not
+multiplied by the area of each PD material point. Therefore the resulting calculation do not give a force density vector.
+——–
+This _fixed function has the area part in the calculation. Need to cehck if it is correct.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_Gmat2D_fixed2">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_Gmat2D_fixed2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordVec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_Gmat2D_fixed2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_Gmat2D_fixed2" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>This function is does the same as gen_Gmat2D except for the fact that it takes the volume into account when creating A matrices.</dt><dd><p>Also in this implementation of this function, the area of EACH point is used and not a homogenous area across all points.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_Gmat3D">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_Gmat3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordVec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_Gmat3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_Gmat3D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_StiffMat">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_StiffMat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordVec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Emod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_StiffMat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_StiffMat" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_StiffMat3D">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_StiffMat3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordVec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Emod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_StiffMat3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_StiffMat3D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_bmat">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_bmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">porders</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pows</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_bmat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_bmat" title="Link to this definition"></a></dt>
+<dd><p>Function to compute the right hand side vector (or matrix if you want to compute more than 1 derivative). Relative function!
+Inputs
+——-
+porders: 2d array of floats. Contains the orders of differentiation for each dimension.</p>
+<blockquote>
+<div><p>porders.shape =[number of derivatives wanted/stated, dimensionality]
+porders = [[1,2],[0,1]] -&gt;
+proders[0,0] = order of differentiraion for 1st dimension for the first derivation
+proders[0,1] = order of differentiraion for 2st dimension for the first derivation
+proders[1,0] = order of differentiraion for 1st dimension for the second derivation
+proders[1,1] = order of differentiraion for 2st dimension for the second derivation</p>
+</div></blockquote>
+<section id="id4">
+<h3>Outputs<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>bmat: 2d array of floats. Contains the RHS vector/matrix. bmat.shape = [number of TSE terms,number of derrivatives to compute]</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_gComponents">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_gComponents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porders</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_gComponents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_gComponents" title="Link to this definition"></a></dt>
+<dd><p>Generate the “a” coeffs, powers(xsi_i) of xsi components and weights(xsi) of g(xsi) functions, for a relative function.
+If vols = 1, then the volume of each point is computed assuming we have a regular M dimensional grid
+Inputs
+——-
+coords  : 2d array of floats. Coordinates of points –&gt;coords.shape = [number of points, dimensionality of points].
+porders: 2d array of floats. Contains the orders of differentiation for each dimension.</p>
+<blockquote>
+<div><p>porders.shape =[number of derivatives wanted/stated, dimensionality]
+porders = [[1,2],[0,1]] -&gt;
+proders[0,0] = order of differentiraion for 1st dimension for the first derivation
+proders[0,1] = order of differentiraion for 2st dimension for the first derivation
+proders[1,0] = order of differentiraion for 1st dimension for the second derivation
+proders[1,1] = order of differentiraion for 2st dimension for the second derivation</p>
+</div></blockquote>
+<p>N : int. Maximum order of TSE terms
+delta : float. Radius of the horizon of point families
+vols :  array of floats. Contains the volume of each point. vols.shape = [number of points].</p>
+<blockquote>
+<div><p>If “vols” is not provided in inputs, it is assumed that each points has the same volume and that the domain is regularly discretized.
+The “vols” is thus filled with a single number computed as the product of the discretization step sizes for each dimension</p>
+</div></blockquote>
+<section id="id5">
+<h3>Outputs<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>ptavecs<span class="classifier">3d array of floats. Contains the values of “a” coefficients in g functions corresponding with the wanted/stated derivatives.</span></dt><dd><p>Since each point can have a different horizon shape and each point computes its Amat (which together with bmat defines the “a” coefficients),
+from the bonds in the family, each point can have different “a” coefficients in its g functions.
+ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms]</p>
+</dd>
+<dt>pvec<span class="classifier">2d array of floats. Contains the values of the product of xsi component powers for each TSE term for each xsi/bond.</span></dt><dd><p>pvec.shape = [numbers of xsi’s/bonds,number of TSE terms]</p>
+</dd>
+</dl>
+<p>weight : 1d array of floats. Contains the values of the weight function for every xsi/bond. weight.shape = [number of xsi’s/bonds]</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_gComponents2">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_gComponents2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porders</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_gComponents2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_gComponents2" title="Link to this definition"></a></dt>
+<dd><p>Generate the “a” coeffs, powers(xsi_i) of xsi components and weights(xsi) of g(xsi) functions, for a relative function.
+IT is different from the first “gen_gComponents” function only in the weight function. The wight here is w_n = (delta/<a href="#id10"><span class="problematic" id="id11">|xsi|</span></a>)n+1
+If vols = 1, then the volume of each point is computed assuming we have a regular M dimensional grid
+Inputs
+——-
+coords  : 2d array of floats. Coordinates of points –&gt;coords.shape = [number of points, dimensionality of points].
+porders: 2d array of floats. Contains the orders of differentiation for each dimension.</p>
+<blockquote>
+<div><p>porders.shape =[number of derivatives wanted/stated, dimensionality]
+porders = [[1,2],[0,1]] -&gt;
+proders[0,0] = order of differentiraion for 1st dimension for the first derivation
+proders[0,1] = order of differentiraion for 2st dimension for the first derivation
+proders[1,0] = order of differentiraion for 1st dimension for the second derivation
+proders[1,1] = order of differentiraion for 2st dimension for the second derivation</p>
+</div></blockquote>
+<p>N : int. Maximum order of TSE terms
+delta : float. Radius of the horizon of point families
+vols :  array of floats. Contains the volume of each point. vols.shape = [number of points].</p>
+<blockquote>
+<div><p>If “vols” is not provided in inputs, it is assumed that each points has the same volume and that the domain is regularly discretized.
+The “vols” is thus filled with a single number computed as the product of the discretization step sizes for each dimension</p>
+</div></blockquote>
+<section id="id6">
+<h3>Outputs<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>ptavecs<span class="classifier">3d array of floats. Contains the values of “a” coefficients in g functions corresponding with the wanted/stated derivatives.</span></dt><dd><p>Since each point can have a different horizon shape and each point computes its Amat (which together with bmat defines the “a” coefficients),
+from the bonds in the family, each point can have different “a” coefficients in its g functions.
+ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms]</p>
+</dd>
+<dt>pvec<span class="classifier">2d array of floats. Contains the values of the product of xsi component powers for each TSE term for each xsi/bond.</span></dt><dd><p>pvec.shape = [numbers of xsi’s/bonds,number of TSE terms]</p>
+</dd>
+</dl>
+<p>weight : 1d array of floats. Contains the values of the weight function for every xsi/bond. weight.shape = [number of xsi’s/bonds]</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.gen_xsigval">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">gen_xsigval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptavecs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pvec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#gen_xsigval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.gen_xsigval" title="Link to this definition"></a></dt>
+<dd><p>Calculates the value of g functions for each xsi/bond and stores it in an array so that they dont need to be computed again for the same domain.
+The outputs of “gen_gComponents()” are meant to be input into this function -&gt; ptavecs,pvec,weight = gen_gComponents()
+Inputs
+——-
+ptavecs : 3d array of floats. Contains the values of “a” coefficients in g functions corresponding with the wanted/stated derivatives.</p>
+<blockquote>
+<div><p>Since each point can have a different horizon shape and each point computes its Amat (which together with bmat defines the “a” coefficients),
+from the bonds in the family, each point can have different “a” coefficients in its g functions.
+ptavecs.shape = [number points,number of derivatives wanted/stated,number of TSE terms]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>pvec<span class="classifier">2d array of floats. Contains the values of the product of xsi component powers for each TSE term for each xsi/bond.</span></dt><dd><p>pvec.shape = [numbers of xsi’s/bonds,number of TSE terms]</p>
+</dd>
+</dl>
+<p>weight : 1d array of floats. Contains the values of the weight function for every xsi/bond. weight.shape = [number of xsi’s/bonds]</p>
+<p>start_index   : 1D array of ints. Component “i” of the start_index array shows at which index, in the neighbors array, the neighbors of point with ID = “i” start.
+end_index     : 1D array of ints. Component “i” of the end_index array shows at which index, in the neighbors array, the neighbors of point with ID = “i” end.</p>
+<section id="id7">
+<h3>Outputs:<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.generate_force_dens_vecs">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">generate_force_dens_vecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bond_stiffness_mat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_displacement_vecs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/libs/pddopyW2.html#generate_force_dens_vecs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.generate_force_dens_vecs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.intersect2">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">intersect2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#intersect2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.intersect2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.matinv">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">matinv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#matinv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.matinv" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.tse_pows">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">tse_pows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#tse_pows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.tse_pows" title="Link to this definition"></a></dt>
+<dd><p>Compute the powers of each xsi of each component of xsi (each dimension of xsi) and for each TSE term.
+Xsi represents a bond. Another way to look at a bond is simply as a connection between two points in a family.
+Since xsi is a connection it has some length in every dimension so it is a vector of relative position between two points
+with vector components xsi = (xsi1,xsi2,xsi3,..,xsiM)! -&gt; could also be wirtten as xsi = (x,y,z,..,t), but this way you quickly
+run out of characters to represent dimensions.</p>
+<section id="id8">
+<h3>Inputs:<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p>M : int. Dimensionality of pd points
+N : int. Maximum order of TSE terms
+D : int. Number of tse terms.</p>
+</section>
+<section id="output">
+<h3>Output:<a class="headerlink" href="#output" title="Link to this heading"></a></h3>
+<dl>
+<dt>p<span class="classifier">2d array[:,:]. Contains the powers of each xsi of each component of xsi (each dimension of xsi) and for each TSE term.</span></dt><dd><p>p.shape[0] = “number of tse terms”.
+p.shape[1] = “M” (the dimensionllality of the points).</p>
+<blockquote>
+<div><p>Each column in “p” (p[:,m]) contains the powers for one component of xsi.</p>
+</div></blockquote>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.pddopyW2.tse_terms">
+<span class="sig-prename descclassname"><span class="pre">libs.pddopyW2.</span></span><span class="sig-name descname"><span class="pre">tse_terms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/pddopyW2.html#tse_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.pddopyW2.tse_terms" title="Link to this definition"></a></dt>
+<dd><p>Calculate the number of TSE terms based on the dimensionality of PD points “M” and the specified maximum order of TSE terms “N”
+M must! be higher or equal to N. The output includes the term x1^0 * x2^0 * … * xi^0. For a relative function PDDO the output need to be
+lowered by 1.
+Inputs:
+———
+M : int. Dimensionality of pd points
+N : int. Maximum order of TSE terms</p>
+<section id="id9">
+<h3>Output:<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p>D : int. Number of tse terms.</p>
+</section>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="modules package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Filip Jerenec.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

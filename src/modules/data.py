@@ -57,6 +57,7 @@ class Set():
         return self.IDarray.shape[0]
 
 def get_user_decision():
+
     while True:
         decision = input("Please enter your decision (Y/N): ").upper()  # Convert input to uppercase
         if decision in ('Y', 'N'):
@@ -66,3 +67,47 @@ def get_user_decision():
                 return False
         else:
             print("Invalid input. Please enter either 'Y' or 'N'.")
+
+
+
+class State():
+    """
+    This type stores the state (so the results) of a increment or step of the simulation. It does not have fixed result categories.
+    Each result is stored in a dictionary with the name of the result as the key (e.g. "stress") and the result as the value.
+    """
+    def __init__(self) -> None:
+        self.state_data = {}
+
+    def add_state_data(self, name: str, data):
+        self.state_data[name] = data
+
+    def is_from_step(self):
+        self.from_step = True
+
+    def is_from_increment(self):
+        self.from_increment = True
+
+    def has_state_data(self, name: str) -> bool:
+        """
+        Check if the given name exists as a key in the `state_data` dictionary.
+
+        Parameters:
+            name (str): The name to check for in the `state_data` dictionary.
+
+        Returns:
+            bool: True if the name exists as a key in the `state_data` dictionary, False otherwise.
+        """
+        if name in self.state_data.keys():
+            return True
+        else: return False
+
+class HistoryOutput():
+    """
+    Simply stores "State" objects into a list.
+    Each index of the list corresponds to a step in the simulation.
+    """
+    def __init__(self) -> None:
+        self.history = []
+    
+    def add_state_to_history(self, state: State):
+        self.history.append(state)

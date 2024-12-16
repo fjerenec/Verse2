@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modules.PDFatigueModel &mdash; pyVerse2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pyVerse2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">modules package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../libs.html">libs package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyVerse2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modules.PDFatigueModel</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modules.PDFatigueModel</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">)))</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">modules.NumericalModel</span> <span class="kn">import</span> <span class="n">NumericalModel</span>
+<span class="kn">from</span> <span class="nn">modules.data</span> <span class="kn">import</span> <span class="n">HistoryOutput</span><span class="p">,</span> <span class="n">Results</span>
+<span class="kn">import</span> <span class="nn">libs.pddopyW2</span> <span class="k">as</span> <span class="nn">pddo</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">spsolve</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">cg</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+
+<div class="viewcode-block" id="FatigueInputData">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.FatigueInputData">[docs]</a>
+<span class="k">class</span> <span class="nc">FatigueInputData</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numModel</span><span class="p">:</span> <span class="n">NumericalModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span> <span class="o">=</span> <span class="n">numModel</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">part_nodes</span><span class="o">.</span><span class="n">coordVec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span> <span class="o">=</span> <span class="n">numModel</span><span class="o">.</span><span class="n">Discretizations</span><span class="o">.</span><span class="n">selectedDiscretization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">delta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ptVolumes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">ptArea</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialCracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">initialCracks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">start_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">end_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">n_neighbors</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pd_point_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">pd_point_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pd_bond_count</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">pd_bond_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bond_normals</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">bond_normals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initLiveBonds</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">initLiveBonds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initBondDamage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">initBondDamage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curLiveBonds</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">curLiveBonds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curBondDamage</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">curBondDamage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_BondLens</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">init_BondLens</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Gvec</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">Gvec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G11vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">G11vec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G12vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">G12vec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G22vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedDiscretization</span><span class="o">.</span><span class="n">G22vec</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">materialsByIDTable</span> <span class="o">=</span> <span class="n">numModel</span><span class="o">.</span><span class="n">Materials</span><span class="o">.</span><span class="n">materialsByIDTable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">materialSectionsTable</span> <span class="o">=</span> <span class="n">numModel</span><span class="o">.</span><span class="n">MaterialSections</span><span class="o">.</span><span class="n">materialSectionsTable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">materialInterfacesTable</span> <span class="o">=</span> <span class="n">numModel</span><span class="o">.</span><span class="n">MaterialInterfaces</span><span class="o">.</span><span class="n">materialInterfacesTable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">materialInterfaceFound</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">materialInterfacesTable</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">gen_bond_material_array</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dispLoadsTable</span> <span class="o">=</span> <span class="n">numModel</span><span class="o">.</span><span class="n">Loads</span><span class="o">.</span><span class="n">dispLoadsTable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">forceLoadsTable</span> <span class="o">=</span> <span class="n">numModel</span><span class="o">.</span><span class="n">Loads</span><span class="o">.</span><span class="n">forceLoadsTable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_combined_disp_BC_vec</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_max_it</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gen_damage_evolution_stretch_arrays</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gen_bond_emod_array</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gen_bond_mu_array</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="mi">2</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_convergence</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="FatigueInputData.gen_bond_material_array">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.FatigueInputData.gen_bond_material_array">[docs]</a>
+    <span class="k">def</span> <span class="nf">gen_bond_material_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="c1"># Loop over all bonds and extract the IDs of the two points in the bond</span>
+        <span class="k">for</span> <span class="n">point_id_1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordVec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_idx</span><span class="p">[</span><span class="n">point_id_1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_idx</span><span class="p">[</span><span class="n">point_id_1</span><span class="p">]):</span>
+                <span class="n">point_id_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialInterfaceFound</span><span class="p">:</span>
+                    <span class="c1"># Loop over all MaterialInterfaces</span>
+                    <span class="k">for</span> <span class="n">interface_name</span><span class="p">,</span> <span class="n">material_interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialInterfacesTable</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="c1"># Check if the points are in different MaterialSections of this MaterialInterface</span>
+                        <span class="n">point_1_in_section_1</span> <span class="o">=</span> <span class="n">point_id_1</span> <span class="ow">in</span> <span class="n">material_interface</span><span class="o">.</span><span class="n">materialSection1</span><span class="o">.</span><span class="n">nodeSet</span><span class="o">.</span><span class="n">IDTable</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="n">point_1_in_section_2</span> <span class="o">=</span> <span class="n">point_id_1</span> <span class="ow">in</span> <span class="n">material_interface</span><span class="o">.</span><span class="n">materialSection2</span><span class="o">.</span><span class="n">nodeSet</span><span class="o">.</span><span class="n">IDTable</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="n">point_2_in_section_1</span> <span class="o">=</span> <span class="n">point_id_2</span> <span class="ow">in</span> <span class="n">material_interface</span><span class="o">.</span><span class="n">materialSection1</span><span class="o">.</span><span class="n">nodeSet</span><span class="o">.</span><span class="n">IDTable</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="n">point_2_in_section_2</span> <span class="o">=</span> <span class="n">point_id_2</span> <span class="ow">in</span> <span class="n">material_interface</span><span class="o">.</span><span class="n">materialSection2</span><span class="o">.</span><span class="n">nodeSet</span><span class="o">.</span><span class="n">IDTable</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        
+                        <span class="c1"># If points are in different sections of this interface, retrieve Material id</span>
+                        <span class="n">isInMatInterface</span> <span class="o">=</span> <span class="p">(</span><span class="n">point_1_in_section_1</span> <span class="ow">and</span> <span class="n">point_2_in_section_2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">point_1_in_section_2</span> <span class="ow">and</span> <span class="n">point_2_in_section_1</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">isInMatInterface</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">=</span> <span class="n">material_interface</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">materialID</span>
+                            <span class="c1"># Store relevant data from Material object to a new array</span>
+                            <span class="c1"># Append to the new array, or perform any other required action</span>
+                            <span class="k">break</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">isInMatInterface</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">material_section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialSectionsTable</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="c1">#Loop over the MaterialSections -&gt; This means the bond was not in any interface</span>
+                        <span class="c1">#If the bond is not in a material interface, then both point MUST be in the same material section</span>
+                        <span class="c1">#So i only need to check one point!</span>
+                            <span class="n">point_in_material_section</span> <span class="o">=</span> <span class="n">point_id_1</span> <span class="ow">in</span> <span class="n">material_section</span><span class="o">.</span><span class="n">nodeSet</span><span class="o">.</span><span class="n">IDTable</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="n">point_in_material_section</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">=</span> <span class="n">material_section</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">materialID</span>
+                                <span class="k">break</span>
+                <span class="c1">#If there is no Material Interface that means that the whole model is made up from only one material.</span>
+                <span class="c1">#This also means that there is only one material section. So i can simply create an array filled with the material section material id</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#Check there is only one material interface:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">materialSectionsTable</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There is more than one material section and no material interface in the model. A material interface must be defined in the case of multiple material section!&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">material_section_same</span><span class="p">,</span> <span class="n">material_section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialSectionsTable</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="c1">#For loop not needed since in this case there is only one material section.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">material_section</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">materialID</span></div>
+
+    
+<div class="viewcode-block" id="FatigueInputData.gen_damage_evolution_stretch_arrays">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.FatigueInputData.gen_damage_evolution_stretch_arrays">[docs]</a>
+    <span class="k">def</span> <span class="nf">gen_damage_evolution_stretch_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s0arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scarr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">materialID</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s0arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialsByIDTable</span><span class="p">[</span><span class="n">materialID</span><span class="p">]</span><span class="o">.</span><span class="n">s0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialsByIDTable</span><span class="p">[</span><span class="n">materialID</span><span class="p">]</span><span class="o">.</span><span class="n">sc</span></div>
+
+
+<div class="viewcode-block" id="FatigueInputData.gen_bond_emod_array">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.FatigueInputData.gen_bond_emod_array">[docs]</a>
+    <span class="k">def</span> <span class="nf">gen_bond_emod_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emodArr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span><span class="p">,</span><span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">materialID</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bondMaterialIDarray</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emodArr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialsByIDTable</span><span class="p">[</span><span class="n">materialID</span><span class="p">]</span><span class="o">.</span><span class="n">Emod</span></div>
+
+
+<div class="viewcode-block" id="FatigueInputData.gen_bond_mu_array">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.FatigueInputData.gen_bond_mu_array">[docs]</a>
+    <span class="k">def</span> <span class="nf">gen_bond_mu_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emodArr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gen_bond_emod_array</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">muArr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emodArr</span><span class="p">,</span><span class="n">dtype</span> <span class="o">=</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">emod</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emodArr</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">muArr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">emod</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.25</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="FatigueInputData.create_combined_disp_BC_vec">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.FatigueInputData.create_combined_disp_BC_vec">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_combined_disp_BC_vec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">numOfPtsInAllSets</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">displacement_load</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispLoadsTable</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">numOfPtsInDispLoad</span> <span class="o">=</span> <span class="n">displacement_load</span><span class="o">.</span><span class="n">nodeSet</span><span class="o">.</span><span class="n">get_number_of_points</span><span class="p">()</span>
+            <span class="n">numOfPtsInAllSets</span> <span class="o">+=</span> <span class="n">numOfPtsInDispLoad</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">combined_BC_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">numOfPtsInAllSets</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+        <span class="n">previousSetsSum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">currentSetLength</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">displacement_load</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispLoadsTable</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">currentSetLength</span> <span class="o">=</span> <span class="n">displacement_load</span><span class="o">.</span><span class="n">nodeSet</span><span class="o">.</span><span class="n">get_number_of_points</span><span class="p">()</span>
+            <span class="n">currentSetsSum</span> <span class="o">=</span> <span class="n">previousSetsSum</span><span class="o">+</span><span class="n">currentSetLength</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">combined_BC_vec</span><span class="p">[</span><span class="n">previousSetsSum</span> <span class="p">:</span> <span class="n">currentSetsSum</span><span class="p">]</span> <span class="o">=</span> <span class="n">displacement_load</span><span class="o">.</span><span class="n">BC_vec</span>
+            <span class="n">previousSetsSum</span> <span class="o">=</span> <span class="n">currentSetsSum</span></div>
+</div>
+
+
+<div class="viewcode-block" id="PDFatigueSolver">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver">[docs]</a>
+<span class="k">class</span> <span class="nc">PDFatigueSolver</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numModel</span><span class="p">:</span> <span class="n">NumericalModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;FID = FatigueInputData&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FID</span> <span class="o">=</span> <span class="n">FatigueInputData</span><span class="p">(</span><span class="n">numModel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">HistoryOutput</span> <span class="o">=</span> <span class="n">HistoryOutput</span><span class="p">()</span>
+        <span class="k">pass</span>
+    
+<div class="viewcode-block" id="PDFatigueSolver.gen_stiffness_matrix">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.gen_stiffness_matrix">[docs]</a>
+    <span class="k">def</span> <span class="nf">gen_stiffness_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">LiveBonds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">bondDamage</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the stiffness matrix for the given LiveBonds and bondDamage.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            LiveBonds (np.ndarray): An array of live bonds.</span>
+<span class="sd">            bondDamage (np.ndarray): An array of bond damage values.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The stiffness matrix.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stiffMat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">coordVec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">coordVec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pddo</span><span class="o">.</span><span class="n">_generate_stiffness_matrix2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">coordVec</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">end_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">G11vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">G12vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">G22vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">muArr</span><span class="p">,</span> <span class="n">LiveBonds</span><span class="p">,</span> <span class="n">bondDamage</span><span class="p">,</span> <span class="n">stiffMat</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="PDFatigueSolver.gen_bond_stiffness_matrices">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.gen_bond_stiffness_matrices">[docs]</a>
+    <span class="k">def</span> <span class="nf">gen_bond_stiffness_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="mi">2</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the bond stiffness matrices.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray[float,2]: The bond stiffness matrices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pddo</span><span class="o">.</span><span class="n">_generate_bond_stiffnesses</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">coordVec</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">end_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">G11vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">G12vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">G22vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">muArr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PDFatigueSolver.apply_displacement_BC">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.apply_displacement_BC">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_displacement_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">BCvec</span><span class="p">,</span><span class="n">stiffnessMat</span><span class="p">,</span><span class="n">RHSvec</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Does not work for compressed matrix forms</span>
+<span class="sd">        Apply displacement boundary conditions to the given stiffness matrix and RHS vector.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            BCvec (np.ndarray): The boundary condition vector.</span>
+<span class="sd">            stiffnessMat (np.ndarray): The stiffness matrix.</span>
+<span class="sd">            RHSvec (np.ndarray): The RHS vector.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The modified stiffness matrix and RHS vector with boundary conditions applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pddo</span><span class="o">.</span><span class="n">applyDispBC2</span><span class="p">(</span><span class="n">BCvec</span><span class="p">,</span><span class="n">stiffnessMat</span><span class="p">,</span><span class="n">RHSvec</span><span class="p">,</span><span class="n">dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PDFatigueSolver.gen_bond_displacement_vecs">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.gen_bond_displacement_vecs">[docs]</a>
+    <span class="k">def</span> <span class="nf">gen_bond_displacement_vecs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dispVec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pddo</span><span class="o">.</span><span class="n">_generate_bond_displacement_vecs</span><span class="p">(</span><span class="n">dispVec</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">end_idx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PDFatigueSolver.calc_bond_stretches">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.calc_bond_stretches">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_bond_stretches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cur_coordVec</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the stretches of each bond&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">pddo</span><span class="o">.</span><span class="n">calc_bondLenghts</span><span class="p">(</span><span class="n">cur_coordVec</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">neighbors</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">start_idx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">end_idx</span><span class="p">)</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">init_BondLens</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">init_BondLens</span></div>
+
+
+<div class="viewcode-block" id="PDFatigueSolver.update_bond_damage">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.update_bond_damage">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_bond_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cur_bondStretches</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">s1</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">sc</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span><span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_calc_bond_damage</span><span class="p">(</span><span class="n">cur_bondStretches</span><span class="p">,</span><span class="n">s1</span><span class="p">,</span><span class="n">sc</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="PDFatigueSolver.calc_fatigue_damage">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.calc_fatigue_damage">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_fatigue_damage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">Results</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bond_fatigue_damage_inc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curBondDamage</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curLiveBonds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">bond_fat_dmg_inc</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># TODO Implement the fatigue damage calculation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bond_fat_dmg_inc</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">=</span> <span class="n">bond_fat_dmg_inc</span>
+
+
+            <span class="k">pass</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="PDFatigueSolver.solve_lin_sys_for_f">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.solve_lin_sys_for_f">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve_lin_sys_for_f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">disps</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve the linear system for the force density vector (RHS).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            disps (np.ndarray): The displacement vector.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The force density vector.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stiffMat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_stiffness_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curLiveBonds</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curBondDamage</span><span class="p">)</span>
+        <span class="n">forceDensVec</span> <span class="o">=</span> <span class="n">stiffMat</span> <span class="o">@</span> <span class="n">disps</span>
+        <span class="k">return</span> <span class="n">forceDensVec</span></div>
+
+    
+<div class="viewcode-block" id="PDFatigueSolver.solve_for_static_eq">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.solve_for_static_eq">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve_for_static_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solves for the equilibrium state of the system with the given &quot;epsilon&quot; as the maximum residual fraction.</span>
+<span class="sd">        This function iteratively solves for the equilibrium state of the system using the Newton-Raphson method (calculate the stiffness matrix and take a step).</span>
+<span class="sd">        Material nonlinearity is implemented as a reduction of the modulus of elasticity based on damage.</span>
+<span class="sd">        This means that as the simulation iterates to get the equilibrium, it allways starts from the initial comfiguration (displacements do not get added together to get the final displacements).</span>
+<span class="sd">        It starts with the initial live bonds and updates the stiffness matrix and bond damage based on the current live bonds.</span>
+<span class="sd">        The displacement vector is calculated using sparse linear algebra operations, and the new coordinate vector is obtained by adding the displacement vector to the current coordinate vector.</span>
+<span class="sd">        The bond stretches are calculated using the new coordinate vector, and the bond damage is updated accordingly.</span>
+<span class="sd">        The live bonds are updated based on the current bond damage.</span>
+<span class="sd">        The process is repeated until the maximum number of iterations is reached or the change in the residual force norm is smaller than the given epsilon.</span>
+<span class="sd">        No geometric nonlinearity is implemented.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            self (PDFatigueSolver): The instance of the PDFatigueSolver class.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        </span>
+<span class="sd">        Prints:</span>
+<span class="sd">            Iteration number and the residual force norm at each iteration.</span>
+<span class="sd">            The change in the residual force norm from the previous step</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">BCvec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">combined_BC_vec</span>
+        <span class="n">num_max_it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">num_max_it</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">epsilon</span>
+        <span class="n">s0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">s0arr</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">scarr</span>
+
+        <span class="k">if</span> <span class="n">num_max_it</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">num_max_it</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The maximum number of iterations can not be a negative value and it must be an integer type!&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">epsilon</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Epsilon can not be a negative value! Epsilon == 0 is not realistic and must be larger! (0 &lt; epsilon)&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curLiveBonds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">initLiveBonds</span>
+        <span class="n">_stiffmat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_stiffness_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curLiveBonds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curBondDamage</span><span class="p">)</span>
+        <span class="n">_residual_force_norm_old</span> <span class="o">=</span>  <span class="mi">1</span>
+        <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_max_it</span><span class="p">):</span><span class="c1"># and error &gt; epsilon:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iteration </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">iter</span><span class="p">))</span>
+            <span class="n">_RHSvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">coordVec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">_BC_stiffmat</span><span class="p">,</span><span class="n">_BC_RHSvec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_displacement_BC</span><span class="p">(</span><span class="n">BCvec</span><span class="p">,</span><span class="n">_stiffmat</span><span class="p">,</span><span class="n">_RHSvec</span><span class="p">)</span>
+            <span class="n">_BC_stiffmatCSR</span> <span class="o">=</span> <span class="n">csr_matrix</span><span class="p">(</span><span class="n">_BC_stiffmat</span><span class="p">)</span>
+            <span class="n">_solu</span> <span class="o">=</span> <span class="n">spsolve</span><span class="p">(</span><span class="n">_BC_stiffmatCSR</span><span class="p">,</span><span class="n">_BC_RHSvec</span><span class="p">)</span>
+            <span class="c1"># _solu, info = cg(_BC_stiffmatCSR,_BC_RHSvec)</span>
+            <span class="n">_disps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">_solu</span><span class="p">,(</span><span class="nb">int</span><span class="p">(</span><span class="n">_solu</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">_newCoordVec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">coordVec</span> <span class="o">+</span> <span class="n">_disps</span>
+            <span class="n">_cur_bond_stretches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calc_bond_stretches</span><span class="p">(</span><span class="n">_newCoordVec</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curBondDamage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_bond_damage</span><span class="p">(</span><span class="n">_cur_bond_stretches</span><span class="p">,</span><span class="n">s0</span><span class="p">,</span><span class="n">sc</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curLiveBonds</span> <span class="o">=</span> <span class="n">_update_live_bonds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curBondDamage</span><span class="p">)</span>
+            <span class="n">_stiffmat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_stiffness_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curLiveBonds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curBondDamage</span><span class="p">)</span>
+            <span class="n">_internal_force_vec</span> <span class="o">=</span> <span class="n">_stiffmat</span> <span class="o">@</span> <span class="n">_solu</span>
+            <span class="n">_residual_force_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">_BC_RHSvec</span><span class="o">-</span><span class="n">_internal_force_vec</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">_BC_RHSvec</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Residual force norm = &quot;</span><span class="p">,</span><span class="n">_residual_force_norm</span><span class="p">)</span>
+            <span class="n">t1</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">_residual_force_norm</span><span class="o">/</span><span class="n">_residual_force_norm_old</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">force_convergence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_residual_force_norm</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Change of residual from previous step: </span><span class="si">{</span><span class="n">t1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_cur_bond_stretches</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">s0</span><span class="o">.</span><span class="n">min</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Applied load was not large enough to cause damage!&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">t1</span><span class="o">&lt;=</span> <span class="n">epsilon</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Damage has converged in </span><span class="si">{</span><span class="nb">iter</span><span class="si">}</span><span class="s2"> steps! Residual forces/Externalforces = </span><span class="si">{</span><span class="n">_residual_force_norm</span><span class="si">}</span><span class="s2">.Change of residual from previous step: </span><span class="si">{</span><span class="n">t1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Residual forces/Externalforces = </span><span class="si">{</span><span class="n">_residual_force_norm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Change of residual from previous step: </span><span class="si">{</span><span class="n">t1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">_disps</span>
+
+                <span class="c1"># Save the data. Since we inside the eq. cond. statement the results that will be saved are from the equilibrium solution (to this is step)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span><span class="s2">&quot;displacements&quot;</span><span class="p">,</span> <span class="n">_disps</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span><span class="s2">&quot;currentBondDamage&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curBondDamage</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span><span class="s2">&quot;currentLiveBonds&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curLiveBonds</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span><span class="s2">&quot;currentLiveBonds&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">curLiveBonds</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span><span class="s2">&quot;forceConvergence&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FID</span><span class="o">.</span><span class="n">force_convergence</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">add_result</span><span class="p">(</span><span class="s2">&quot;internalForces&quot;</span><span class="p">,</span> <span class="n">_internal_force_vec</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">is_from_step</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">HistoryOutput</span><span class="o">.</span><span class="n">add_result_to_history</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                <span class="k">return</span> 
+            <span class="n">_residual_force_norm_old</span> <span class="o">=</span> <span class="n">_residual_force_norm</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Solution did not converge!&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+   
+
+<div class="viewcode-block" id="PDFatigueSolver.solve_for_fatigue">
+<a class="viewcode-back" href="../../modules.html#modules.PDFatigueModel.PDFatigueSolver.solve_for_fatigue">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve_for_fatigue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Solve for the static part. Once equilibrium is reached for static part i can update bond damage based on the fatigue part</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_for_eq3</span><span class="p">()</span>
+        <span class="c1"># Take the data from the equilibrium and update the bond damage based on the fatigue part</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calc_fatigue_damage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">HistoryOutput</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+</div>
+
+        <span class="c1"># End of loop cycle -&gt; go to new loop cycle</span>
+
+
+
+<span class="k">def</span> <span class="nf">_calc_bond_damage</span><span class="p">(</span><span class="n">cur_bondStretches</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">s0arr</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">scarr</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">new_damage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">cur_bondStretches</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cur_bondStretches</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">s0</span> <span class="o">=</span> <span class="n">s0arr</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">scarr</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span>
+        <span class="k">if</span>  <span class="n">s0</span> <span class="o">&lt;=</span> <span class="n">cur_bondStretches</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">sc</span><span class="p">:</span>
+            <span class="n">new_damage</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">=</span> <span class="n">sc</span><span class="o">/</span><span class="p">(</span><span class="n">sc</span><span class="o">-</span><span class="n">s0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span> <span class="n">s0</span><span class="o">/</span><span class="n">cur_bondStretches</span><span class="p">[</span><span class="n">bond</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cur_bondStretches</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">sc</span><span class="p">:</span>
+            <span class="n">new_damage</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">new_damage</span>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">_update_live_bonds</span><span class="p">(</span><span class="n">bond_damage</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="n">live_bonds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">bond_damage</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">live_bonds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">bond_damage</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">live_bonds</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">live_bonds</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Filip Jerenec.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
