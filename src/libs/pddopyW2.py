@@ -1188,7 +1188,7 @@ def _generate_stiffness_matrix(coordVec,neighbors, start_idx, end_idx, G11vec, G
     return stiffMat
 
 @njit
-def _generate_stiffness_matrix2(coordVec,neighbors, start_idx, end_idx, G11vec, G12vec,G22vec, mu, LiveBonds, Damage, stiffMat):
+def _generate_stiffness_matrix2(coordVec,neighbors, start_idx, end_idx, G11vec, G12vec,G22vec, mu, LiveBonds, Damage, stiffMat, vols):
     """ 
     Generates a stiffness matrix for a given set of coordinates, neighbors, start indices, end indices, G11vec, G12vec, G22vec, mu, LiveBonds, Damage, and an initial stiffness matrix.
 
@@ -1244,9 +1244,9 @@ def _generate_stiffness_matrix2(coordVec,neighbors, start_idx, end_idx, G11vec, 
                 jS22 = jG11G22 + 2*jG22
 
                 #Calculate Sbar for bond pt_j (pt is main point j in fam member)
-                Sbar11 = (1-Damage[j])*0.5*(S11+jS11) * mu[j]
-                Sbar12 = (1-Damage[j])*0.5*(S12+jS12) * mu[j]
-                Sbar22 = (1-Damage[j])*0.5*(S22+jS22) * mu[j]
+                Sbar11 = (1-Damage[j])*0.5*(S11+jS11) * mu[j] * vols[neighbors[j]]
+                Sbar12 = (1-Damage[j])*0.5*(S12+jS12) * mu[j] * vols[neighbors[j]]
+                Sbar22 = (1-Damage[j])*0.5*(S22+jS22) * mu[j] * vols[neighbors[j]]
 
                 #Sum of contibutions of main point in every Xsi
                 stiffMat[pt*2,pt*2] = stiffMat[pt*2,pt*2] - Sbar11
