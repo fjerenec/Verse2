@@ -69,6 +69,7 @@ class Discretization():
         crack = np.array([[[p1x,p1y],[p2x,p2y]]],dtype=float)
         self.initialCracks = np.append(self.initialCracks,crack,axis=0)
         self.hasInitialCrack = True
+        self.define_crack_mode("familyExclusion")
 
     def deactivate_cracks(self) -> None:
         """
@@ -98,6 +99,13 @@ class Discretization():
             bool: A boolean value indicating whether the crack is currently active or not.
         """
         return self.hasInitialCrack
+    
+    def define_crack_mode(self, crackMode: str = "familyExclusion") -> None:
+        """
+        crackMode = "familyExclusion" means that the crack should be used to exclude nodes from the family of a material point.
+        crackMode = "bondIntersection" means that the crack should not be used to exclude nodes from the family of a material point, but rather to create an additional live bonds array.
+        """
+        self.initial_crack_mode = crackMode
 
     def get_node_family_IDs(self,nodeID: int) -> np.ndarray[int,1]:
         """
@@ -175,17 +183,25 @@ class Discretization():
             self.ptArea[i] = node.vol()
             i += 1
             
-        if self.hasInitialCrack == True:
+        if self.hasInitialCrack == True and self.initial_crack_mode == "familyExclusion":
             self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors2(self.coordVec,1.01*self.delta,self.initialCracks)
+            self.initLiveBonds = np.ones_like(self.neighbors)
+            self.curLiveBonds = np.ones_like(self.neighbors)
+
+        elif self.hasInitialCrack == True and self.initial_crack_mode == "bondIntersection":
+            print("Itersect style")
+            self.neighbors, self.start_idx, self.end_idx, self.n_neighbors, self.initLiveBonds = pddo.find_neighbors3(self.coordVec,1.01*self.delta,self.initialCracks)
+            self.curLiveBonds = self.initLiveBonds
 
         else:
+            print("Undef")
             self.neighbors, self.start_idx, self.end_idx, self.n_neighbors = pddo.find_neighbors(self.coordVec,1.01*self.delta)
+            self.initLiveBonds = np.ones_like(self.neighbors)
+            self.curLiveBonds = np.ones_like(self.neighbors)
 
         self.pd_point_count = self.n_neighbors.shape[0]
         self.pd_bond_count = self.neighbors.shape[0]
         self.bond_normals = pddo.calc_bond_normals(self.pd_point_count, self.pd_bond_count, self.coordVec, self.neighbors, self.start_idx, self.end_idx)
-        self.initLiveBonds = np.ones_like(self.neighbors)
-        self.curLiveBonds = np.ones_like(self.neighbors)
         self.initBondDamage = np.zeros_like(self.neighbors)
         self.curBondDamage = np.zeros_like(self.neighbors)
         self.init_BondLens = pddo.calc_bondLenghts(self.coordVec,self.neighbors,self.start_idx,self.end_idx)

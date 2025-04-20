@@ -165,6 +165,20 @@ class PDFatigueSolver:
         """
         return pddo._generate_bond_stiffnesses(self.FID.coordVec,self.FID.neighbors, self.FID.start_idx, self.FID.end_idx, self.FID.G11vec, self.FID.G12vec, self.FID.G22vec, self.FID.muArr)
 
+    def calc_SED(self, displacements):
+        """
+        Calculates the strain energy density at a point.
+        """
+        coordVecNew = self.FID.coordVec + displacements
+        bond_stifnesses = self.gen_bond_stiffness_matrices()
+        bond_displacement_diff = self.gen_bond_displacement_vecs(displacements)
+        force_dens_vecs = pddo.generate_force_dens_vecs(bond_stifnesses,bond_displacement_diff)
+        bond_lens = pddo.calc_bondLenghts(self.FID.coordVec,self.FID.neighbors,self.FID.start_idx,self.FID.end_idx)
+        bond_len_change = self.calc_bond_stretches(coordVecNew) * bond_lens
+        bond_micro_potentials = np.linalg.norm(force_dens_vecs,axis=1) * bond_len_change /2
+        point_SED = pddo.family_integration2(self.FID.neighbors,self.FID.start_idx,self.FID.end_idx,bond_micro_potentials,self.FID.ptVolumes,self.FID.initLiveBonds)/2
+        return point_SED/1_000_000
+
     def apply_displacement_BC(self,BCvec,stiffnessMat,RHSvec):
         """Does not work for compressed matrix forms
         Apply displacement boundary conditions to the given stiffness matrix and RHS vector.

@@ -48,7 +48,7 @@ def find_neighbors(coords, r):
 @njit
 def find_neighbors2(coords, r, cracks):
     """
-    Find the neigbors of point i that are in range of delta. The funtions works on multidimensional points. The same as find_neighbors2 but allows for cracks.
+    Find the neigbors of point i that are in range of delta. The funtions works on multidimensional points. The same as find_neighbors but allows for cracks.
     Inputs:
     -----------
     coords : array of array of floats (coordinates of points=. shape = [number of points, dimensionality of points]. Coordinates should be floats.
@@ -90,6 +90,87 @@ def find_neighbors2(coords, r, cracks):
     end_index = np.cumsum(n_neighbors)
     start_index[1:] = end_index[:n_points-1]
     return neighbors[:end_index[n_points-1]], start_index,end_index, n_neighbors
+
+@njit
+def find_neighbors3(coords, r, cracks):
+    """
+    Find the neigbors of point i that are in range of delta. The funtions works on multidimensional points. The same as find_neighbors2 but it doesnt exclude points that are connected through a crack line.
+    Instead it finds all the neighbors and puts them in the neighbors array teh same as find_neighbors but also creates an array of live bonds. This array can then be used for calculations without the crack
+    being intrinsically present at family search. This means that in the simulation we dont get the surface effect at the crack surfaces that we get at normal PD boundaries.
+    Inputs:
+    -----------
+    coords : array of array of floats (coordinates of points=. shape = [number of points, dimensionality of points]. Coordinates should be floats.
+    r      : radius of includivity. Points j that are distanced r or less, from point i, are considered to be members of point i. Should be float
+    cracks : 2d array of floats. Contains the couples of points that define all the cracks inthe model. shape = [number of crack lines,2]
+                example: cracks = [[[x0,y0],[x1,y1]],
+                                   [[x2,y2],[x3,y3]]]  -> [x0,y0] is the first point of the crack 0th crack, and [x1,y1] is the second point
+    Outputs:
+    -----------
+    neighbors   : 1D array of floats (ID numbers of points). Contains the ID's of the neighbors of all points starting with the ID's of neighbors of point 0.
+    start_index : 1D array of ints. Component "i" of the start_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" start.
+    end_index   : 1D array of ints. Component "i" of the end_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" end.
+    n_neighbors : 1D array of ints. Component "i" contains the number of neighbors that the point with ID = "i" has.
+
+    """
+    n_points = coords.shape[0]
+    max_neighbors = 120 # This should change based on the dimensionality of the points. 28 is just for 2d and delta = 3 * dx.
+    neighbors = np.full((n_points*max_neighbors), -1, dtype=np.int64)
+    start_index = np.zeros(n_points, dtype=np.int64)
+    end_index = np.zeros(n_points, dtype=np.int64)
+    n_neighbors = np.zeros(n_points, dtype=np.int64)
+    live_bonds = np.ones_like(neighbors)
+    current_neighbor = 0
+    for i in range(n_points):
+        for j in range(n_points):
+            if i!=j:
+                dist = 0
+                for m in range(coords.shape[1]):
+                    dist += (coords[i,m]-coords[j,m])**2
+                dist = dist**0.5
+                if dist <= r:
+                    alive = True
+                    for curcrack in range(cracks.shape[0]):
+                        #if intersect2(point1 of crack,point2 of crack,point1 of bond,point2 of crack)
+                        alive = alive*np.logical_not(intersect2(cracks[curcrack,0],cracks[curcrack,1],coords[i],coords[j])) #first the cracks then the point
+                    if alive == False:
+                        live_bonds[current_neighbor] = 0
+                    neighbors[current_neighbor] = j
+                    n_neighbors[i] += 1
+                    current_neighbor += 1
+    end_index = np.cumsum(n_neighbors)
+    start_index[1:] = end_index[:n_points-1]
+    return neighbors[:end_index[n_points-1]], start_index,end_index, n_neighbors, live_bonds[:end_index[n_points-1]]
+
+@njit
+def find_neighbors4(center, coords, r):
+    """
+    Find the neigbors that are in range of delta of a single point located at the CENTER. The funtions works on multidimensional points.
+    Inputs:
+    -----------
+    center : array of floats -> [x_location, y_location]
+    coords : array of array of floats (coordinates of points=. shape = [number of points, dimensionality of points]. Coordinates should be floats.
+    r      : radius of includivity. Points j that are distanced r or less, from point i, are considered to be members of point i. Should be float
+
+    Outputs:
+    -----------
+    neighbors   : 1D array of floats (ID numbers of points). Contains the ID's of the neighbors of all points starting with the ID's of neighbors of point 0.
+    start_index : 1D array of ints. Component "i" of the start_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" start.
+    end_index   : 1D array of ints. Component "i" of the end_index array shows at which index, in the neighbors array, the neighbors of point with ID = "i" end.
+    n_neighbors : 1D array of ints. Component "i" contains the number of neighbors that the point with ID = "i" has.
+
+    """
+    n_points = coords.shape[0]
+    neighbors = np.full((n_points), -1, dtype=np.int64)
+    n_neighbors = -1
+    for i in range(n_points):
+        dist = 0
+        for m in range(coords.shape[1]):
+            dist += (coords[i,m]-center[m])**2
+        dist = dist**0.5
+        if dist <= r:
+            n_neighbors += 1
+            neighbors[n_neighbors] = i
+    return neighbors[:n_neighbors+1]
 
 @njit
 def ccw2(A,B,C):
@@ -1328,5 +1409,18 @@ def family_integration(neighbors: np.ndarray[float,1], start_idx:np.ndarray[int,
         cur_sum = 0
         for j in range(start_idx[pt],end_idx[pt]):
             cur_sum = cur_sum + bond_values[j] * point_volumes[neighbors[j]]
+        pt_sum[pt] = cur_sum
+    return pt_sum
+
+def family_integration2(neighbors: np.ndarray[float,1], start_idx:np.ndarray[int,1], end_idx:np.ndarray[int,1], bond_values:np.ndarray[float,1],point_volumes: np.ndarray[float,1],live_bonds: np.ndarray[int,1]) -> np.ndarray[float,1]:
+    """
+    For integration over families which had a full horizon when searching for neighbors but some neighbors get dropped. because of a crack.
+    """
+    pt_sum = np.empty_like(point_volumes)
+    for pt in range(point_volumes.shape[0]):
+        cur_sum = 0
+        for j in range(start_idx[pt],end_idx[pt]):
+            if live_bonds[j] == True:
+                cur_sum = cur_sum + bond_values[j] * point_volumes[neighbors[j]]
         pt_sum[pt] = cur_sum
     return pt_sum
