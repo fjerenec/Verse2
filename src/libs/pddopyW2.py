@@ -1055,6 +1055,7 @@ def applyDispBC(BCvec,stiffnessMat,RHSvec):
         for i in range(BCpts.shape[0]):
             pt = np.int64(BCpts[i])
             for locdof in range(BCdofs):
+            # for locdof in bc_directions:
                 globdof = np.int64(pt*dim + locdof)
                 RHSvec2cur = BCstiffnessMat[:,globdof] * BCvec[i,locdof+1]
 
@@ -1100,7 +1101,6 @@ def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2],
     BCstiffnessMat : 2d array of floats. The stiffness matrix from the inputs but with BC's applied! BCstiffnessMat.shape = [number of DOF,number of DOF]
 
     RHSvec : 1d array of floats. The RHS vector from the inputs but with applied BC's. RHSvec.shape = [number of DOF]
-
     """
 
     if (stiffnessMat.shape[1] == RHSvec.shape[0]):
@@ -1111,7 +1111,7 @@ def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2],
         for i in range(BCpts.shape[0]):
             pt = np.int64(BCpts[i])
             for locdof in range(BCdofs):
-                locdof_isFixed = bool(BCvec[i,locdof+1])
+                locdof_isFixed = bool(int(BCvec[i,locdof+1]))
                 if locdof_isFixed:
                     globdof = np.int64(pt*dim + locdof)
                     RHSvec2cur = BCstiffnessMat[:,globdof] * BCvec[i,locdof+4]
@@ -1121,8 +1121,8 @@ def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2],
                     RHSvec[globdof] = BCvec[i,locdof+4]
 
                     #Modify the stiffnes matrix
-                    BCstiffnessMat[:,globdof] = 0
-                    BCstiffnessMat[globdof,:] = 0
+                    BCstiffnessMat[:,globdof] = 0.0
+                    BCstiffnessMat[globdof,:] = 0.0
                     BCstiffnessMat[globdof,globdof] = np.float64(1)
 
         RHSvec = RHSvec - RHSvec2
@@ -1130,8 +1130,10 @@ def applyDispBC2(BCvec: np.ndarray[float,2], stiffnessMat:  np.ndarray[float,2],
         for i in range(BCpts.shape[0]):
             pt = np.int64(BCpts[i])
             for locdof in range(BCdofs):
-                globdof = pt*dim + locdof
-                RHSvec[globdof] = BCvec[i,locdof+4]
+                locdof_isFixed = bool(int(BCvec[i,locdof+1]))
+                if locdof_isFixed:
+                    globdof = np.int64(pt*dim + locdof)
+                    RHSvec[globdof] = BCvec[i,locdof+4]
 
         return BCstiffnessMat,RHSvec
 
